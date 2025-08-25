@@ -148,21 +148,16 @@ export default class TypstManager {
   }
 
   renderInline(code: string, containerEl: HTMLElement) {
-    let processor = DEFAULT_SETTINGS.processor.inline.processors.at(-1)!;
+    const processor =
+      this.plugin.settings.processor.inline.processors.find((processor) =>
+        code.startsWith(`${processor.id}`),
+      ) ?? this.plugin.settings.processor.inline.processors.at(-1)!;
+    code = code.slice(processor.id.length);
 
-    for (const processor_ of this.plugin.settings.processor.inline.processors) {
-      if (code.startsWith(`${processor_.id}:`)) {
-        processor = processor_;
-        code = code.slice(processor_.id.length + 1);
-        break;
-      }
-    }
-
-    if (processor.renderingEngine === 'mathjax') {
+    if (processor.renderingEngine === 'mathjax')
       return this.plugin.originalTex2chtml(code, {
         display: false,
       });
-    }
 
     containerEl.addClass(
       'typstmate-inline',
@@ -174,22 +169,16 @@ export default class TypstManager {
   }
 
   renderDisplay(code: string, containerEl: HTMLElement) {
-    let processor = DEFAULT_SETTINGS.processor.display.processors.at(-1)!;
+    const processor =
+      this.plugin.settings.processor.display.processors.find((processor) =>
+        code.startsWith(`${processor.id}`),
+      ) ?? this.plugin.settings.processor.display.processors.at(-1)!;
+    code = code.slice(processor.id.length);
 
-    for (const processor_ of this.plugin.settings.processor.display
-      .processors) {
-      if (code.startsWith(`${processor_.id}`)) {
-        processor = processor_;
-        code = code.slice(processor_.id.length);
-        break;
-      }
-    }
-
-    if (processor.renderingEngine === 'mathjax') {
+    if (processor.renderingEngine === 'mathjax')
       return this.plugin.originalTex2chtml(code, {
         display: true,
       });
-    }
 
     containerEl.addClass(
       'typstmate-display',
@@ -206,17 +195,17 @@ export default class TypstManager {
         (processor) => processor.id === id,
       ) ?? this.plugin.settings.processor.codeblock.processors.at(-1)!;
 
-    if (processor.renderingEngine === 'mathjax') {
+    if (processor.renderingEngine === 'mathjax')
       return this.plugin.originalTex2chtml(code, {
         display: true,
       });
-    }
 
     containerEl.addClass(
       'typstmate-codeblock',
       `typstmate-style-${processor.styling}`,
       `typstmate-id-${processor.id}`,
     );
+
     switch (processor.styling) {
       case 'codeblock': {
         containerEl.addClass(
