@@ -24,3 +24,12 @@ Typst Mate also provides flexible styling options to customize the look of your 
 - 機能: フォーマット編集でシンタックスハイライトを有効にする.
 - 機能: エラー・ヒント箇所がわかるようにする. また, 表示を改善する.
 - 機能(MobileApp): モバイル版からでもカスタムフォントを読み込めるようにする.
+
+---
+
+Typst Mate leverages the following open-source projects:
+
+- [Typst](https://typst.app/) – a powerful typesetting system
+- [Myriad-Dreamin/typst.ts](https://github.com/Myriad-Dreamin/typst.ts) – the TypeScript bindings for Typst
+
+I am grateful to the developers of these projects for making this plugin possible.
