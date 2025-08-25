@@ -151,7 +151,7 @@ export default class TypstManager {
     const processor =
       this.plugin.settings.processor.inline.processors.find((processor) =>
         code.startsWith(`${processor.id}`),
-      ) ?? this.plugin.settings.processor.inline.processors.at(-1)!;
+      ) ?? DEFAULT_SETTINGS.processor.inline.processors.at(-1)!;
     code = code.slice(processor.id.length);
 
     if (processor.renderingEngine === 'mathjax')
@@ -172,7 +172,7 @@ export default class TypstManager {
     const processor =
       this.plugin.settings.processor.display.processors.find((processor) =>
         code.startsWith(`${processor.id}`),
-      ) ?? this.plugin.settings.processor.display.processors.at(-1)!;
+      ) ?? DEFAULT_SETTINGS.processor.display.processors.at(-1)!;
     code = code.slice(processor.id.length);
 
     if (processor.renderingEngine === 'mathjax')
@@ -193,7 +193,7 @@ export default class TypstManager {
     const processor =
       this.plugin.settings.processor.codeblock.processors.find(
         (processor) => processor.id === id,
-      ) ?? this.plugin.settings.processor.codeblock.processors.at(-1)!;
+      ) ?? DEFAULT_SETTINGS.processor.codeblock.processors.at(-1)!;
 
     if (processor.renderingEngine === 'mathjax')
       return this.plugin.originalTex2chtml(code, {
