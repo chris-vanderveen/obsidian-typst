@@ -1,0 +1,48 @@
+.typstmate-error {
+  color: red;
+  background-color: yellow;
+  cursor: pointer;
+}
+
+/* inline */
+.typstmate-inline.typstmate-style-inline {
+  vertical-align: baseline;
+}
+
+.typstmate-inline.typstmate-style-inline-middle {
+  vertical-align: middle;
+}
+
+/* display */
+
+/* biome-ignore lint/suspicious/noEmptyBlock: readability */
+.typstmate-display.typstmate-style-block {
+}
+
+.typstmate-display.typstmate-style-block-center {
+  text-align: center;
+}
+
+/* codeblock */
+.typstmate-codeblock.typstmate-style-codeblock svg {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+/* biome-ignore lint/suspicious/noEmptyBlock: readability */
+.typstmate-codeblock.typstmate-style-block {
+}
+
+.typstmate-codeblock.typstmate-style-block-center {
+  text-align: center;
+}
+
+/* share */
+.typstmate-display,
+.typstmate-codeblock {
+  margin-left: 0px;
+  margin-right: 0px;
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}

@@ -1,0 +1,56 @@
+version: "3"
+
+vars:
+  PLUGIN_ID: "typst-mate"
+
+dotenv:
+  - ".env"
+
+tasks:
+  default:
+    - task: help
+
+  help:
+    silent: true
+    cmds:
+      - task -l
+
+  check:
+    cmds:
+      - bun update --latest
+      - bunx biome check
+
+  putstatic:
+    vars:
+      PLUGIN_DIR: "{{.CONFIG_DIR}}/plugins/{{.PLUGIN_ID}}"
+    cmds:
+      - touch '{{.PLUGIN_DIR}}/.hotreload'
+      - cp manifest.json '{{.PLUGIN_DIR}}'
+      - cp node_modules/@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm '{{.PLUGIN_DIR}}'
+      - mv '{{.PLUGIN_DIR}}/typst_ts_renderer_bg.wasm' '{{.PLUGIN_DIR}}/renderer.wasm'
+      - cp node_modules/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm '{{.PLUGIN_DIR}}'
+      - mv '{{.PLUGIN_DIR}}/typst_ts_web_compiler_bg.wasm' '{{.PLUGIN_DIR}}/compiler.wasm'
+  dev: bunx --bun vite build -w -m development --outDir '{{.CONFIG_DIR}}/plugins/{{.PLUGIN_ID}}'
+
+  commit:
+    cmds:
+      - bun run check
+      - git add .
+      - git commit -m "{{.MESSAGE}}"
+    preconditions:
+      - sh: "[ {{.MESSAGE}} != '' ]"
+    desc: "e.g. task commit MESSAGE=update"
+
+  release:
+    vars:
+      tag:
+        sh: "bun scripts/version.ts --type {{.TYPE}}"
+    cmds:
+      - git add manifest.json versions.json
+      - git commit -m "update version {{.tag}}"
+      - git tag "{{.tag}}"
+      - git push
+      - git push origin "{{.tag}}"
+    preconditions:
+      - sh: "[ {{.TYPE}} != '' ]"
+    desc: "e.g. task release TYPE=patch"

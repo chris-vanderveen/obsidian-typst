@@ -1,0 +1,26 @@
+# Typst Mate
+
+Render math expressions in [Obsidian](https://obsidian.md) using [Typst](https://typst.app/) instead of MathJax.
+Typst Mate also provides flexible styling options to customize the look of your formulas.
+
+## Features
+
+- Replaces MathJax with Typst for rendering math in Obsidian
+- Supports inline math (`$...$`)
+- Supports display math (`$$...$$`)
+- Supports code blocks (`\`\`\`...\`\`\``)
+- Additional styling customization for better readability
+- Allows easy import of system fonts to your vault (Desktop app only)
+
+## TODO
+- 不具合修正: 設定の変更後に `onConfigFileChange` が2回呼ばれてしまう.
+- 不具合修正: フォントサイズが絶妙に合っていない.
+- 不具合修正(MobileApp): スタイルが正しく適用されない.
+- 最適化: プラグインを再読み込みせずに `MarkdownCodeBlockProcessor` の登録を解除する.
+- 最適化: SVGではなくHTMLをレンダリングするようにする.
+- 最適化(DesktopApp): デスクトップ版では, コンパイラとアクセスモデルにNode APIとElectron APIを組み込んで高速化する.
+- 機能: ローカルパッケージを利用できるようにする.
+- 機能: プラグイン外で画像やbibliography, wasmなどのアセットを読み込めるようにする.
+- 機能: フォーマット編集でシンタックスハイライトを有効にする.
+- 機能: エラー・ヒント箇所がわかるようにする. また, 表示を改善する.
+- 機能(MobileApp): モバイル版からでもカスタムフォントを読み込めるようにする.

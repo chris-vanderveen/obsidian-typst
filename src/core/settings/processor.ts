@@ -1,0 +1,209 @@
+import { Notice, Setting } from 'obsidian';
+
+import {
+  DefaultNewProcessor,
+  type Processor,
+  type ProcessorType,
+  type RenderingEngine,
+  type Styling,
+} from '@/lib/processor';
+import type ObsidianTypstMate from '@/main';
+
+export class ProcessorList {
+  plugin: ObsidianTypstMate;
+  type: ProcessorType;
+
+  processorsEl: HTMLElement;
+
+  constructor(
+    plugin: ObsidianTypstMate,
+    type: ProcessorType,
+    containerEl: HTMLElement,
+    summaryText: string,
+  ) {
+    this.plugin = plugin;
+    this.type = type;
+
+    const detailEl = containerEl.createEl('details');
+    new Setting(detailEl).addButton((button) => {
+      button.setButtonText('New');
+
+      button.onClick(this.newProcessor.bind(this));
+    });
+
+    const summaryEl = detailEl.createEl('summary');
+    summaryEl.textContent = summaryText;
+
+    this.processorsEl = detailEl.createEl('div');
+    this.plugin.settings.processor[type].processors.forEach(
+      this.addProcessor.bind(this),
+    );
+    this.numbering();
+  }
+
+  newProcessor() {
+    this.plugin.settings.processor[this.type].processors.unshift(
+      DefaultNewProcessor[this.type] as any,
+    );
+    this.plugin.saveSettings();
+
+    this.addProcessor(DefaultNewProcessor[this.type]);
+
+    this.processorsEl.insertBefore(
+      this.processorsEl.lastChild!,
+      this.processorsEl.firstChild!,
+    );
+
+    this.numbering();
+  }
+
+  addProcessor(processor: Processor) {
+    const processorEl = this.processorsEl.createDiv(
+      'typstmate-settings-processor',
+    );
+
+    new Setting(processorEl)
+      .addButton((moveUpButton) => {
+        moveUpButton.setIcon('chevrons-up');
+        moveUpButton.setTooltip('Move up');
+
+        moveUpButton.onClick(() =>
+          this.moveProcessor(Number(processorEl.id), 'up'),
+        );
+      })
+      .addButton((moveDownButton) => {
+        moveDownButton.setIcon('chevrons-down');
+        moveDownButton.setTooltip('Move down');
+
+        moveDownButton.onClick(() =>
+          this.moveProcessor(Number(processorEl.id), 'down'),
+        );
+      })
+      .addDropdown((renderingEngineDropdown) => {
+        renderingEngineDropdown.addOption('typst', 'Typst');
+        renderingEngineDropdown.addOption('mathjax', 'MathJax');
+        renderingEngineDropdown.setValue(processor.renderingEngine);
+
+        renderingEngineDropdown.onChange((renderingEngine) => {
+          this.plugin.settings.processor[this.type].processors[
+            Number(processorEl.id)
+          ]!.renderingEngine = renderingEngine as RenderingEngine;
+
+          this.plugin.saveSettings();
+        });
+      })
+      .addDropdown((stylingDropdown) => {
+        switch (this.type) {
+          case 'inline':
+            stylingDropdown.addOption('inline', 'inline');
+            stylingDropdown.addOption('inline-middle', 'inline-middle');
+            break;
+          case 'display':
+            stylingDropdown.addOption('block', 'block');
+            stylingDropdown.addOption('block-center', 'block-center');
+            break;
+          case 'codeblock':
+            stylingDropdown.addOption('block', 'block');
+            stylingDropdown.addOption('block-center', 'block-center');
+            stylingDropdown.addOption('codeblock', 'codeblock');
+            break;
+        }
+        stylingDropdown.setValue(processor.styling);
+
+        stylingDropdown.onChange((styling) => {
+          this.plugin.settings.processor[this.type].processors[
+            Number(processorEl.id)
+          ]!.styling = styling as Styling;
+
+          this.plugin.saveSettings();
+        });
+      })
+      .addText((idText) => {
+        idText.setValue(processor.id);
+        idText.setPlaceholder('id');
+
+        idText.onChange((id) => {
+          this.plugin.settings.processor[this.type].processors[
+            Number(processorEl.id)
+          ]!.id = id;
+
+          this.plugin.saveSettings();
+        });
+      })
+      .addButton((removeButton) => {
+        removeButton.buttonEl.style.color = 'red';
+        removeButton.setTooltip('Remove');
+        removeButton.setIcon('trash');
+
+        removeButton.onClick(() =>
+          this.removeProcessor(Number(processorEl.id)),
+        );
+      });
+
+    const formatTextEl = processorEl.createEl('textarea');
+    formatTextEl.value = processor.format;
+    formatTextEl.placeholder = 'format';
+
+    formatTextEl.addEventListener('input', () => {
+      this.plugin.settings.processor[this.type].processors[
+        Number(processorEl.id)
+      ]!.format = formatTextEl.value;
+
+      this.plugin.saveSettings();
+    });
+  }
+
+  removeProcessor(index: number) {
+    this.plugin.settings.processor[this.type].processors.splice(index, 1);
+    this.plugin.saveSettings();
+
+    this.processorsEl.children.namedItem(index.toString())?.remove();
+
+    this.numbering();
+  }
+
+  swapProcessor(index1: number, index2: number) {
+    if (
+      index1 < 0 ||
+      index2 < 0 ||
+      index1 >= this.processorsEl.children.length ||
+      index2 >= this.processorsEl.children.length ||
+      index1 === index2
+    ) {
+      new Notice('Invalid index');
+      return;
+    }
+
+    const processors = this.plugin.settings.processor[this.type].processors;
+    const processor1 = processors[index1]!;
+    const processor2 = processors[index2]!;
+
+    this.plugin.settings.processor[this.type].processors[index1] = processor2;
+    this.plugin.settings.processor[this.type].processors[index2] = processor1;
+
+    this.plugin.saveSettings();
+
+    const el1 = document.getElementById(String(index1))!;
+    const el2 = document.getElementById(String(index2))!;
+
+    const tmp = document.createElement('div');
+    el1.replaceWith(tmp);
+    el2.replaceWith(el1);
+    tmp.replaceWith(el2);
+
+    this.numbering();
+  }
+
+  moveProcessor(index: number, direction: 'up' | 'down') {
+    this.swapProcessor(index, index + (direction === 'up' ? -1 : 1));
+  }
+
+  numbering() {
+    for (let i = 0; i < this.processorsEl.children.length; i++) {
+      const child = this.processorsEl.children[i];
+      if (!child) continue;
+
+      child.id = i.toString();
+    }
+  }
+}

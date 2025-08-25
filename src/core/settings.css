@@ -1,0 +1,41 @@
+/* processor */
+.typstmate-settings-processor textarea {
+  width: 100%;
+  min-height: 2em;
+  resize: vertical;
+  field-sizing: content;
+}
+
+/* preview */
+.typstmate-settings-preview-preview {
+  width: 100%;
+  margin: 1em;
+}
+
+.typstmate-settings-preview-input span {
+  padding: 0;
+  color: #ccc;
+}
+
+.typstmate-settings-preview-input input {
+  padding: 0;
+  border: none;
+  field-sizing: content;
+}
+
+.typstmate-settings-preview-input textarea {
+  width: 100%;
+  display: block;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* font, package */
+.typstmate-settings-table {
+  overflow: scroll;
+  max-height: 320px;
+  border: 2px solid #ccc;
+  padding: 8px;
+}
