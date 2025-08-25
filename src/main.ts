@@ -4,9 +4,11 @@ import {
   debounce,
   loadMathJax,
   MarkdownView,
+  Notice,
   Platform,
   Plugin,
   renderMath,
+  requestUrl,
   type WorkspaceLeaf,
 } from 'obsidian';
 
@@ -49,6 +51,19 @@ export default class ObsidianTypstMate extends Plugin {
 
     // ? ディレクトリの存在確認の挙動が安定しないので, 作成して例外を無視する
     await this.createDirs();
+
+    // Wasmをダウンロードする
+    const rendererPath = `${this.pluginDirPath}/renderer.wasm`;
+    const compilerPath = `${this.pluginDirPath}/compiler.wasm`;
+    if (
+      !(await this.app.vault.adapter.exists(rendererPath)) ||
+      !(await this.app.vault.adapter.exists(compilerPath))
+    ) {
+      new Notice('Downloading renderer and compiler...');
+      await this.downloadWasm()
+        .then(() => new Notice('Downloaded successfully!'))
+        .catch(() => new Notice('Failed to download wasm files.'));
+    }
 
     // MathJaxを読み込む
     await loadMathJax(); // MathJaxが読み込まれると解決する
@@ -98,6 +113,51 @@ export default class ObsidianTypstMate extends Plugin {
     for (const leaf of leafs) {
       leaf.detach();
     }
+  }
+
+  async downloadWasm() {
+    const manifestPath = `${this.pluginDirPath}/manifest.json`;
+    const manifestContent = await this.app.vault.adapter.read(manifestPath);
+    const version = (JSON.parse(manifestContent) as { version: string })
+      ?.version;
+
+    if (!version) {
+      throw new Error('Version not found in manifest.json');
+    }
+
+    const releaseUrl = `https://api.github.com/repos/azyarashi/obsidian-typst-mate/releases/tags/${version}`;
+    const releaseResponse = await requestUrl(releaseUrl);
+    const releaseData = await releaseResponse.json;
+
+    const getAsset = (name: string) =>
+      releaseData.assets.find((a: any) => a.name === name);
+
+    const rendererAsset = getAsset('renderer.wasm');
+    const compilerAsset = getAsset('compiler.wasm');
+
+    if (!rendererAsset || !compilerAsset) {
+      throw new Error(
+        'Could not find renderer.wasm or compiler.wasm in release assets',
+      );
+    }
+
+    await this.downloadAsset(
+      rendererAsset.url,
+      `${this.pluginDirPath}/renderer.wasm`,
+    );
+    await this.downloadAsset(
+      compilerAsset.url,
+      `${this.pluginDirPath}/compiler.wasm`,
+    );
+  }
+
+  async downloadAsset(url: string, path: string) {
+    const response = await requestUrl({
+      url,
+      headers: { Accept: 'application/octet-stream' },
+    });
+    const data = response.arrayBuffer;
+    await this.app.vault.adapter.writeBinary(path, data);
   }
 
   async createDirs() {
