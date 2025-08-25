@@ -50,7 +50,11 @@ export default class ObsidianTypstMate extends Plugin {
     this.packagesDirPath = `${this.pluginDirPath}/packages`;
 
     // ? ディレクトリの存在確認の挙動が安定しないので, 作成して例外を無視する
-    await this.createDirs();
+    await this.tryCreateDirs([
+      this.fontsDirPath,
+      this.cachesDirPath,
+      this.packagesDirPath,
+    ]);
 
     // Wasmをダウンロードする
     const rendererPath = `${this.pluginDirPath}/renderer.wasm`;
@@ -160,16 +164,10 @@ export default class ObsidianTypstMate extends Plugin {
     await this.app.vault.adapter.writeBinary(path, data);
   }
 
-  async createDirs() {
-    const dirPaths = [
-      this.fontsDirPath,
-      this.cachesDirPath,
-      this.packagesDirPath,
-    ];
-
+  async tryCreateDirs(dirPaths: string[]) {
     await Promise.allSettled(
       dirPaths.map((dirPath) => this.app.vault.adapter.mkdir(dirPath)),
-    );
+    ).catch(() => {});
   }
 
   async activateLeaf() {
