@@ -16,6 +16,11 @@ import { TypstToolsView } from '@/core/leaf';
 import { DEFAULT_SETTINGS, type Settings, SettingTab } from '@/core/settings';
 import TypstManager from '@/lib/typst';
 
+interface GitHubAsset {
+  name: string;
+  url: string;
+}
+
 export default class ObsidianTypstMate extends Plugin {
   pluginId = 'typst-mate';
   pluginDirPath!: string;
@@ -64,7 +69,8 @@ export default class ObsidianTypstMate extends Plugin {
       !(await this.app.vault.adapter.exists(compilerPath))
     ) {
       new Notice('Downloading renderer and compiler...');
-      await this.downloadWasm()
+
+      await this.downloadWasmAssets()
         .then(() => new Notice('Downloaded successfully!'))
         .catch(() => new Notice('Failed to download wasm files.'));
     }
@@ -119,31 +125,29 @@ export default class ObsidianTypstMate extends Plugin {
     }
   }
 
-  async downloadWasm() {
+  async downloadWasmAssets() {
+    // バージョンを取得
     const manifestPath = `${this.pluginDirPath}/manifest.json`;
     const manifestContent = await this.app.vault.adapter.read(manifestPath);
-    const version = (JSON.parse(manifestContent) as { version: string })
-      ?.version;
-
-    if (!version) {
-      throw new Error('Version not found in manifest.json');
-    }
+    const version = JSON.parse(manifestContent)?.version;
+    if (!version) throw new Error('Version not found in manifest.json');
 
     const releaseUrl = `https://api.github.com/repos/azyarashi/obsidian-typst-mate/releases/tags/${version}`;
     const releaseResponse = await requestUrl(releaseUrl);
-    const releaseData = await releaseResponse.json;
+    const releaseData = (await releaseResponse.json) as {
+      assets: GitHubAsset[];
+    };
 
-    const getAsset = (name: string) =>
-      releaseData.assets.find((a: any) => a.name === name);
+    const findAsset = (name: string) =>
+      releaseData.assets.find((asset) => asset.name === name);
 
-    const rendererAsset = getAsset('renderer.wasm');
-    const compilerAsset = getAsset('compiler.wasm');
+    const rendererAsset = findAsset('renderer.wasm');
+    const compilerAsset = findAsset('compiler.wasm');
 
-    if (!rendererAsset || !compilerAsset) {
+    if (!rendererAsset || !compilerAsset)
       throw new Error(
         'Could not find renderer.wasm or compiler.wasm in release assets',
       );
-    }
 
     await this.downloadAsset(
       rendererAsset.url,
@@ -155,13 +159,14 @@ export default class ObsidianTypstMate extends Plugin {
     );
   }
 
-  async downloadAsset(url: string, path: string) {
+  async downloadAsset(url: string, filePath: string) {
     const response = await requestUrl({
       url,
       headers: { Accept: 'application/octet-stream' },
     });
     const data = response.arrayBuffer;
-    await this.app.vault.adapter.writeBinary(path, data);
+
+    await this.app.vault.adapter.writeBinary(filePath, data);
   }
 
   async tryCreateDirs(dirPaths: string[]) {

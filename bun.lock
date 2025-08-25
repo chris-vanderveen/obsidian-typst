@@ -4,9 +4,9 @@
     "": {
       "name": "obsidian-typst",
       "dependencies": {
-        "@myriaddreamin/typst-ts-renderer": "0.6.1-rc2",
-        "@myriaddreamin/typst-ts-web-compiler": "0.6.1-rc2",
-        "@myriaddreamin/typst.ts": "0.6.1-rc2",
+        "@myriaddreamin/typst-ts-renderer": "^0.6.1-rc3",
+        "@myriaddreamin/typst-ts-web-compiler": "^0.6.1-rc3",
+        "@myriaddreamin/typst.ts": "^0.6.1-rc3",
         "json5": "^2.2.3",
       },
       "devDependencies": {
@@ -143,11 +143,11 @@
 
     "@mermaid-js/parser": ["@mermaid-js/parser@0.3.0", "", { "dependencies": { "langium": "3.0.0" } }, "sha512-HsvL6zgE5sUPGgkIDlmAWR1HTNHz2Iy11BAWPTa4Jjabkpguy4Ze2gzfLrg6pdRuBvFwgUYyxiaNqZwrEEXepA=="],
 
-    "@myriaddreamin/typst-ts-renderer": ["@myriaddreamin/typst-ts-renderer@0.6.1-rc2", "", {}, "sha512-0RDCCIn2L9k5jfLY9PpKkdrN+akRUpp8bF1w36zSRS12XpIEp/ufz0raDWNi6A+3lzazIa6W3OOdK0EIPyIKzQ=="],
+    "@myriaddreamin/typst-ts-renderer": ["@myriaddreamin/typst-ts-renderer@0.6.1-rc3", "", {}, "sha512-m4OHUXYvxDcE6yEvTIl+s7Y721RMWpVTUDXRN2o08P2ckkgxmtloVwHkdCAbrV5w19b5f/fcSaCW2xbxaw+XnA=="],
 
-    "@myriaddreamin/typst-ts-web-compiler": ["@myriaddreamin/typst-ts-web-compiler@0.6.1-rc2", "", {}, "sha512-c52rCB8CQHNvCPNRDKOFmj/TPRAi8icQ/1hfG3cCouml02EpNEKtA5OiZxmz7mPQScmbWQhJw6RZl7M4MOnhRA=="],
+    "@myriaddreamin/typst-ts-web-compiler": ["@myriaddreamin/typst-ts-web-compiler@0.6.1-rc3", "", {}, "sha512-6KD2QKUI1KVcBpKxh/LQX02224NnjMWlRQy/IqtROekDKUdoCoSlf5PV7aETYyI4bA1mtNrzMkBGdCeum/4frA=="],
 
-    "@myriaddreamin/typst.ts": ["@myriaddreamin/typst.ts@0.6.1-rc2", "", { "dependencies": { "idb": "^7.1.1" }, "peerDependencies": { "@myriaddreamin/typst-ts-renderer": "^0.6.1-rc2", "@myriaddreamin/typst-ts-web-compiler": "^0.6.1-rc2" }, "optionalPeers": ["@myriaddreamin/typst-ts-renderer", "@myriaddreamin/typst-ts-web-compiler"] }, "sha512-z3YEp2Nii/N1kR4Gdop0dTBdoW/cKxosdk11rKHd9/g5rtTE77tNf6/ZL/4tU6h9adWqVt/HnspJ7mm1r8lFRA=="],
+    "@myriaddreamin/typst.ts": ["@myriaddreamin/typst.ts@0.6.1-rc3", "", { "dependencies": { "idb": "^7.1.1" }, "peerDependencies": { "@myriaddreamin/typst-ts-renderer": "^0.6.1-rc3", "@myriaddreamin/typst-ts-web-compiler": "^0.6.1-rc3" }, "optionalPeers": ["@myriaddreamin/typst-ts-renderer", "@myriaddreamin/typst-ts-web-compiler"] }, "sha512-pGzaJ5SV0JjrNWn14Bicy0nPTtfD5+4kHwGUDYSebSMbfAtNHfi+Et7k4PiXqunwRm7Obkk5iZufiRM2jOlfbg=="],
 
     "@napi-rs/canvas": ["@napi-rs/canvas@0.1.77", "", { "optionalDependencies": { "@napi-rs/canvas-android-arm64": "0.1.77", "@napi-rs/canvas-darwin-arm64": "0.1.77", "@napi-rs/canvas-darwin-x64": "0.1.77", "@napi-rs/canvas-linux-arm-gnueabihf": "0.1.77", "@napi-rs/canvas-linux-arm64-gnu": "0.1.77", "@napi-rs/canvas-linux-arm64-musl": "0.1.77", "@napi-rs/canvas-linux-riscv64-gnu": "0.1.77", "@napi-rs/canvas-linux-x64-gnu": "0.1.77", "@napi-rs/canvas-linux-x64-musl": "0.1.77", "@napi-rs/canvas-win32-x64-msvc": "0.1.77" } }, "sha512-N9w2DkEKE1AXGp3q55GBOP6BEoFrqChDiFqJtKViTpQCWNOSVuMz7LkoGehbnpxtidppbsC36P0kCZNqJKs29w=="],
 
