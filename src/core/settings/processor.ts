@@ -1,4 +1,4 @@
-import { Notice, Setting } from 'obsidian';
+import { Setting } from 'obsidian';
 
 import {
   DefaultNewProcessor,

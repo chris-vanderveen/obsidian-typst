@@ -281,9 +281,21 @@
 }
 
 /* Utility classes */
-.typstmate-mt-1 { margin-top: 0.5em; }
-.typstmate-mt-2 { margin-top: 1em; }
-.typstmate-mb-1 { margin-bottom: 0.5em; }
-.typstmate-mb-2 { margin-bottom: 1em; }
-.typstmate-text-muted { color: var(--text-muted); }
-.typstmate-text-center { text-align: center; }
+.typstmate-mt-1 {
+  margin-top: 0.5em;
+}
+.typstmate-mt-2 {
+  margin-top: 1em;
+}
+.typstmate-mb-1 {
+  margin-bottom: 0.5em;
+}
+.typstmate-mb-2 {
+  margin-bottom: 1em;
+}
+.typstmate-text-muted {
+  color: var(--text-muted);
+}
+.typstmate-text-center {
+  text-align: center;
+}
