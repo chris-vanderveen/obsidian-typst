@@ -207,9 +207,7 @@ export default class FontManager {
   }
 
   async getSystemFontDataList(): Promise<FontData[]> {
-    if ((window as any).queryLocalFonts) {
-      return await (window as any).queryLocalFonts();
-    }
+    if (window.queryLocalFonts) return await window.queryLocalFonts();
 
     return [];
   }
