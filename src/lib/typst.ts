@@ -152,7 +152,7 @@ export default class TypstManager {
       this.plugin.settings.processor.inline.processors.find((processor) =>
         code.startsWith(`${processor.id}`),
       ) ?? DEFAULT_SETTINGS.processor.inline.processors.at(-1)!;
-    code = code.slice(processor.id.length + 1);
+    if (processor.id.length !== 0) code = code.slice(processor.id.length + 1);
 
     if (processor.renderingEngine === 'mathjax')
       return this.plugin.originalTex2chtml(code, {
