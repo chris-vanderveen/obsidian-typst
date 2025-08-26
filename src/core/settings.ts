@@ -92,7 +92,7 @@ export const DEFAULT_SETTINGS: Settings = {
           format: [
             '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
             '#set text(size: {FONTSIZE}pt)',
-            '${CODE}$',
+            '$\n{CODE}\n$',
           ].join('\n'),
           styling: 'block',
         },
@@ -102,7 +102,7 @@ export const DEFAULT_SETTINGS: Settings = {
           format: [
             '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
             '#set text(size: {FONTSIZE}pt)',
-            '${CODE}$',
+            '$\n{CODE}\n$',
           ].join('\n'),
           styling: 'block-center',
         },
