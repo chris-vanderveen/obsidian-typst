@@ -10,9 +10,9 @@ export class PackagesList {
   constructor(plugin: ObsidianTypstMate, containerEl: HTMLElement) {
     this.plugin = plugin;
 
-    this.packageTableEl = containerEl.createEl('div');
-    this.packageTableEl.addClass('typstmate-settings-table');
-    this.packageTableEl.style.display = 'none';
+    this.packageTableEl = containerEl.createDiv(
+      'typstmate-settings-table typstmate-hidden',
+    );
 
     this.displayPackageList();
   }
@@ -25,7 +25,7 @@ export class PackagesList {
       .then((specs) => {
         if (specs.length === 0) return;
 
-        this.packageTableEl.style.display = '';
+        this.packageTableEl.removeClass('typstmate-hidden');
 
         specs.forEach((spec) => {
           const packageEl = new Setting(this.packageTableEl)
@@ -46,7 +46,10 @@ export class PackagesList {
               });
             })
             .addButton((delButton) => {
-              delButton.buttonEl.style.color = 'red';
+              delButton.buttonEl.addClass(
+                'typstmate-button',
+                'typstmate-button-danger',
+              );
               delButton.setTooltip('Remove');
               delButton.setIcon('trash');
 
@@ -73,7 +76,7 @@ export class PackagesList {
       ?.remove();
 
     if (this.packageTableEl.children.length === 0)
-      this.packageTableEl.style.display = 'none';
+      this.packageTableEl.addClass('typstmate-hidden');
 
     await this.plugin.init();
   }

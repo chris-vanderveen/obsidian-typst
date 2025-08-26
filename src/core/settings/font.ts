@@ -35,9 +35,9 @@ export class FontList {
           button.onClick(this.displaySystemFontList.bind(this));
         });
 
-      this.fontDataTableEl = containerEl.createDiv();
-      this.fontDataTableEl.addClass('typstmate-settings-table');
-      this.fontDataTableEl.style.display = 'none';
+      this.fontDataTableEl = containerEl.createDiv(
+        'typstmate-settings-table typstmate-hidden',
+      );
 
       this.fontDataCountEl = containerEl.createDiv();
       this.fontDataCountEl.textContent = 'Click to get system font list';
@@ -50,9 +50,9 @@ export class FontList {
         'The string next to the font name is used to identify fonts that share the same PostScript name.',
       );
 
-    this.importedFontTableEl = containerEl.createDiv();
-    this.importedFontTableEl.addClass('typstmate-settings-table');
-    this.importedFontTableEl.style.display = 'none';
+    this.importedFontTableEl = containerEl.createDiv(
+      'typstmate-settings-table typstmate-hidden',
+    );
 
     this.displayImportedFontList();
   }
@@ -64,9 +64,9 @@ export class FontList {
       const name = child.id ?? '';
 
       if (name.includes(filter)) {
-        child.style.display = '';
+        child.classList.remove('typstmate-hidden');
       } else {
-        child.style.display = 'none';
+        child.classList.add('typstmate-hidden');
       }
     });
   }
@@ -79,7 +79,7 @@ export class FontList {
 
     if (fontDataList.length === 0) return;
 
-    this.fontDataTableEl!.style.display = '';
+    this.fontDataTableEl!.classList.remove('typstmate-hidden');
 
     for (const fontData of fontDataList) {
       const setting = new Setting(this.fontDataTableEl!);
@@ -138,7 +138,10 @@ export class FontList {
       .addButton((button) => {
         button.setIcon('trash');
         button.setTooltip('Remove');
-        button.buttonEl.style.color = 'red';
+        button.buttonEl.classList.add(
+          'typstmate-button',
+          'typstmate-button-danger',
+        );
 
         button.onClick(this.removeFont.bind(this, basename));
       });
@@ -149,9 +152,12 @@ export class FontList {
 
     const fontPaths =
       await this.plugin.typstManager.fontManager.getImportedFontPaths();
-    if (fontPaths.length === 0) return;
+    if (fontPaths.length === 0) {
+      this.importedFontTableEl.classList.add('typstmate-hidden');
+      return;
+    }
 
-    this.importedFontTableEl.style.display = '';
+    this.importedFontTableEl.classList.remove('typstmate-hidden');
 
     for (const fontPath of fontPaths) {
       this.addImportedFontSetting(fontPath);
@@ -195,7 +201,7 @@ export class FontList {
     // 表示
     this.importedFontTableEl.children.namedItem(basename)?.remove();
     if (this.importedFontTableEl.children.length === 0)
-      this.importedFontTableEl.style.display = 'none';
+      this.importedFontTableEl.classList.add('typstmate-hidden');
 
     new Notice('Removed successfully!');
   }

@@ -170,7 +170,6 @@ export class ProcessorList {
       index2 >= this.processorsEl.children.length ||
       index1 === index2
     ) {
-      new Notice('Invalid index');
       return;
     }
 
@@ -183,8 +182,8 @@ export class ProcessorList {
 
     this.plugin.saveSettings();
 
-    const el1 = document.getElementById(String(index1))!;
-    const el2 = document.getElementById(String(index2))!;
+    const el1 = this.processorsEl.children.namedItem(String(index1))!;
+    const el2 = this.processorsEl.children.namedItem(String(index2))!;
 
     const tmp = document.createElement('div');
     el1.replaceWith(tmp);

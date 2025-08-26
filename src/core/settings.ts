@@ -212,7 +212,11 @@ export class SettingTab extends PluginSettingTab {
   }
 
   addPreview(containerEl: HTMLElement) {
-    new Setting(containerEl)
+    const previewContainer = containerEl.createDiv(
+      'typstmate-settings-preview',
+    );
+
+    new Setting(previewContainer)
       .setName('Preview')
       .setHeading()
       .addDropdown((dropdown) => {
@@ -222,86 +226,144 @@ export class SettingTab extends PluginSettingTab {
         dropdown.setValue('inline');
 
         dropdown.onChange((value) => {
-          inputEl.innerHTML = '';
-          previewEl.style = '';
+          inputEl.empty();
+          previewEl.empty();
 
           switch (value) {
             case 'inline': {
               inputEl.createEl('span', { text: '$' });
-              const idEl = inputEl.createEl('input', { placeholder: 'id' });
+              const idEl = inputEl.createEl('input', {
+                type: 'text',
+                placeholder: 'id',
+                cls: 'typstmate-form-control',
+              });
               inputEl.createEl('span', { text: ':' });
-              const codeEl = inputEl.createEl('input', { placeholder: 'code' });
+              const codeEl = inputEl.createEl('input', {
+                type: 'text',
+                placeholder: 'code',
+                cls: 'typstmate-form-control',
+              });
               inputEl.createEl('span', { text: '$' });
 
-              inputEl.addEventListener('input', () => {
+              const updatePreview = () => {
                 const id = idEl.value;
                 const code = codeEl.value;
+                previewEl.empty();
+                if (code) {
+                  this.plugin.typstManager.renderInline(
+                    `${id ? `${id}:` : ''}${code}`,
+                    previewEl,
+                  );
+                }
+              };
 
-                this.plugin.typstManager.renderInline(
-                  `${id}:${code}`,
-                  previewEl,
-                );
-              });
+              idEl.addEventListener('input', updatePreview);
+              codeEl.addEventListener('input', updatePreview);
               break;
             }
             case 'display': {
               inputEl.createEl('span', { text: '$$' });
-              const idEl = inputEl.createEl('input', { placeholder: 'id' });
-              inputEl.createEl('span', { text: '\\n' });
+              const idEl = inputEl.createEl('input', {
+                type: 'text',
+                placeholder: 'id',
+                cls: 'typstmate-form-control',
+              });
+              inputEl.createEl('br');
               const codeEl = inputEl.createEl('textarea', {
                 placeholder: 'code',
+                cls: 'typstmate-form-control',
               });
-              inputEl.createEl('span', { text: '\\n' });
+              inputEl.createEl('br');
               inputEl.createEl('span', { text: '$$' });
 
-              inputEl.addEventListener('input', () => {
+              const updatePreview = () => {
                 const id = idEl.value;
                 const code = codeEl.value;
-                this.plugin.typstManager.renderDisplay(
-                  `${id}\n${code}\n`,
-                  previewEl,
-                );
-              });
+                previewEl.empty();
+                if (code) {
+                  this.plugin.typstManager.renderDisplay(
+                    `${id ? `${id}\n` : ''}${code}\n`,
+                    previewEl,
+                  );
+                }
+              };
+
+              idEl.addEventListener('input', updatePreview);
+              codeEl.addEventListener('input', updatePreview);
               break;
             }
             case 'codeblock': {
               inputEl.createEl('span', { text: '```' });
-              const idEl = inputEl.createEl('input', { placeholder: 'id' });
+              const idEl = inputEl.createEl('input', {
+                type: 'text',
+                placeholder: 'id',
+                cls: 'typstmate-form-control',
+              });
+              inputEl.createEl('br');
               const codeEl = inputEl.createEl('textarea', {
                 placeholder: 'code',
+                cls: 'typstmate-form-control',
               });
+              inputEl.createEl('br');
               inputEl.createEl('span', { text: '```' });
 
-              inputEl.addEventListener('input', () => {
+              const updatePreview = () => {
                 const id = idEl.value;
                 const code = codeEl.value;
+                previewEl.empty();
+                if (code) {
+                  this.plugin.typstManager.renderCodeblock(
+                    code,
+                    previewEl,
+                    id || '',
+                  );
+                }
+              };
 
-                this.plugin.typstManager.renderCodeblock(code, previewEl, id);
-              });
+              idEl.addEventListener('input', updatePreview);
+              codeEl.addEventListener('input', updatePreview);
               break;
             }
           }
         });
       });
 
-    const inputEl = containerEl.createEl('div');
-    inputEl.addClass('typstmate-settings-preview-input');
+    const inputEl = previewContainer.createDiv(
+      'typstmate-settings-preview-input',
+    );
     inputEl.createEl('span', { text: '$' });
-    const idEl = inputEl.createEl('input', { placeholder: 'id' });
+    const idEl = inputEl.createEl('input', {
+      type: 'text',
+      placeholder: 'id',
+      cls: 'typstmate-form-control',
+    });
     inputEl.createEl('span', { text: ':' });
-    const codeEl = inputEl.createEl('input', { placeholder: 'code' });
+    const codeEl = inputEl.createEl('input', {
+      type: 'text',
+      placeholder: 'code',
+      cls: 'typstmate-form-control',
+    });
     inputEl.createEl('span', { text: '$' });
 
-    inputEl.addEventListener('input', () => {
+    const updatePreview = () => {
       const id = idEl.value;
       const code = codeEl.value;
+      previewEl.empty();
+      if (code) {
+        this.plugin.typstManager.renderInline(
+          `${id ? `${id}:` : ''}${code}`,
+          previewEl,
+        );
+      }
+    };
 
-      this.plugin.typstManager.renderInline(`${id}:${code}`, previewEl);
-    });
+    idEl.addEventListener('input', updatePreview);
+    codeEl.addEventListener('input', updatePreview);
 
-    const previewEl = containerEl.createEl('div');
-    previewEl.addClass('typstmate-settings-preview-preview');
-    previewEl.setText('Enter to preview');
+    const previewEl = previewContainer.createDiv(
+      'typstmate-settings-preview-preview',
+    );
+    previewEl.setText('Type in the input above to see the preview');
   }
 
   addFontSettings(containerEl: HTMLElement) {
@@ -310,7 +372,6 @@ export class SettingTab extends PluginSettingTab {
     if (Platform.isDesktopApp) {
       setting.addButton((button) => {
         button.setIcon('folder-open');
-        button.buttonEl.style.color = this.plugin.app.vault.config.accentColor;
 
         button.setTooltip('Open Fonts Directory');
         button.onClick(() => {
@@ -374,7 +435,6 @@ export class SettingTab extends PluginSettingTab {
       setting.addButton((button) => {
         button.setIcon('folder-open');
 
-        button.buttonEl.style.color = this.plugin.app.vault.config.accentColor;
         button.setTooltip('Open Packages Directory');
 
         button.onClick(() => {
@@ -393,119 +453,151 @@ export class SettingTab extends PluginSettingTab {
     containerEl: HTMLElement,
     type: 'inline' | 'display' | 'codeblock',
   ) {
-    const processorsListEl = containerEl.createEl('div');
+    const processorsListEl = containerEl.createDiv('typstmate-processor-list');
 
     this.plugin.settings.processor[type].processors.forEach(
       (processor, processorIndex) => {
         const processorEl = processorsListEl.createDiv(
           'typstmate-settings-processor',
         );
-        processorEl.id = processorIndex.toString();
+        processorEl.id = `processor-${type}-${processorIndex}`;
 
-        new Setting(processorEl)
-          .addButton((button) => {
-            button.setTooltip('Move up');
-            button.setIcon('chevrons-up');
-            button.buttonEl.style.color =
-              this.plugin.app.vault.config.accentColor;
+        const setting = new Setting(processorEl);
 
-            button.onClick(async () => {
-              const processors =
-                this.plugin.settings.processor[type].processors;
-              const index = processors.findIndex((p) => p.id === processor.id);
-              if (index === 0) {
-                return;
-              }
-              processors[index] = processors[index - 1]!;
-              processors[index - 1] = processor;
+        // Move up button
+        setting.addButton((button) => {
+          button.setTooltip('Move up');
+          button.setIcon('chevrons-up');
+          button.buttonEl.addClass('typstmate-button');
 
-              this.plugin.saveSettings();
-              this.plugin.app.setting.openTabById(this.plugin.pluginId);
-            });
-          })
-          .addButton((button) => {
-            button.setTooltip('Move down');
-            button.setIcon('chevrons-down');
-            button.buttonEl.style.color =
-              this.plugin.app.vault.config.accentColor;
+          button.onClick(async () => {
+            const processors = this.plugin.settings.processor[type].processors;
+            const index = processors.findIndex((p) => p.id === processor.id);
+            if (index === 0) return;
 
-            button.onClick(async () => {
-              const processors =
-                this.plugin.settings.processor[type].processors;
-              const index = processors.findIndex((p) => p.id === processor.id);
-              if (index === processors.length - 1) {
-                return;
-              }
-              processors[index] = processors[index + 1]!;
-              processors[index + 1] = processor;
+            // Swap with previous processor
+            [processors[index], processors[index - 1]] = [
+              processors[index - 1]!,
+              processors[index]!,
+            ];
 
-              this.plugin.saveSettings();
-              this.plugin.app.setting.openTabById(this.plugin.pluginId);
-            });
-          })
-          .addDropdown((renderingEngineDropdown) => {
-            renderingEngineDropdown.addOption('typst', 'Typst');
-            renderingEngineDropdown.addOption('mathjax', 'MathJax');
-            renderingEngineDropdown.setValue(processor.renderingEngine);
-            renderingEngineDropdown.onChange((value) => {
-              this.plugin.settings.processor[type].processors[
-                processorIndex
-              ]!.renderingEngine = value as RenderingEngine;
-
-              this.plugin.saveSettings();
-              this.plugin.app.setting.openTabById(this.plugin.pluginId);
-            });
-          })
-          .addDropdown((stylingDropdown) => {
-            switch (type) {
-              case 'inline':
-                stylingDropdown.addOption('inline', 'inline');
-                stylingDropdown.addOption('inline-middle', 'inline-middle');
-                break;
-              case 'display':
-                stylingDropdown.addOption('block', 'block');
-                stylingDropdown.addOption('block-center', 'block-center');
-                break;
-              case 'codeblock':
-                stylingDropdown.addOption('block', 'block');
-                stylingDropdown.addOption('block-center', 'block-center');
-                stylingDropdown.addOption('codeblock', 'codeblock');
-                break;
-            }
-            stylingDropdown.setValue(processor.styling);
-            stylingDropdown.onChange((value) => {
-              this.plugin.settings.processor[type].processors[
-                processorIndex
-              ]!.styling = value as InlineStyling;
-
-              this.plugin.saveSettings();
-            });
-          })
-          .addText((text) => {
-            text.setValue(processor.id);
-            text.onChange((value) => {
-              this.plugin.settings.processor[type].processors[
-                processorIndex
-              ]!.id = value;
-
-              this.plugin.saveSettings();
-            });
-          })
-          .addButton((button) => {
-            button.buttonEl.style.color = 'red';
-            button.setTooltip('Remove');
-            button.setIcon('trash');
-            button.onClick(async () => {
-              if (confirm('Remove')) {
-                this.plugin.settings.processor[type].processors =
-                  this.plugin.settings.processor[type].processors.filter(
-                    (p) => p.id !== processor.id,
-                  ) as InlineProcessor[];
-                this.plugin.saveSettings();
-                processorEl.remove();
-              }
-            });
+            await this.plugin.saveSettings();
+            this.plugin.app.setting.openTabById(this.plugin.pluginId);
           });
+        });
+
+        // Move down button
+        setting.addButton((button) => {
+          button.setTooltip('Move down');
+          button.setIcon('chevrons-down');
+          button.buttonEl.addClass('typstmate-button');
+
+          button.onClick(async () => {
+            const processors = this.plugin.settings.processor[type].processors;
+            const index = processors.findIndex((p) => p.id === processor.id);
+            if (index === processors.length - 1) return;
+
+            // Swap with next processor
+            [processors[index], processors[index + 1]] = [
+              processors[index + 1]!,
+              processors[index]!,
+            ];
+
+            await this.plugin.saveSettings();
+            this.plugin.app.setting.openTabById(this.plugin.pluginId);
+          });
+        });
+
+        // Rendering engine dropdown
+        setting.addDropdown((dropdown) => {
+          dropdown.addOption('typst', 'Typst');
+          dropdown.addOption('mathjax', 'MathJax');
+          dropdown.setValue(processor.renderingEngine);
+          dropdown.selectEl.addClass('typstmate-form-control');
+
+          dropdown.onChange((value) => {
+            this.plugin.settings.processor[type].processors[
+              processorIndex
+            ]!.renderingEngine = value as RenderingEngine;
+            this.plugin.saveSettings();
+          });
+        });
+
+        // Styling dropdown
+        setting.addDropdown((dropdown) => {
+          const options = {
+            inline: [
+              { value: 'inline', label: 'Inline' },
+              { value: 'inline-middle', label: 'Inline Middle' },
+            ],
+            display: [
+              { value: 'block', label: 'Block' },
+              { value: 'block-center', label: 'Block Center' },
+            ],
+            codeblock: [
+              { value: 'block', label: 'Block' },
+              { value: 'block-center', label: 'Block Center' },
+              { value: 'codeblock', label: 'Codeblock' },
+            ],
+          }[type];
+
+          options.forEach(({ value, label }) => {
+            dropdown.addOption(value, label);
+          });
+
+          dropdown.setValue(processor.styling);
+          dropdown.selectEl.addClass('typstmate-form-control');
+
+          dropdown.onChange((value) => {
+            this.plugin.settings.processor[type].processors[
+              processorIndex
+            ]!.styling = value as InlineStyling;
+            this.plugin.saveSettings();
+          });
+        });
+
+        // Processor ID input
+        setting.addText((text) => {
+          text.setValue(processor.id);
+          text.setPlaceholder('id');
+          text.inputEl.addClass('typstmate-form-control');
+
+          text.onChange((value) => {
+            this.plugin.settings.processor[type].processors[
+              processorIndex
+            ]!.id = value;
+            this.plugin.saveSettings();
+          });
+        });
+
+        // Remove button
+        setting.addButton((button) => {
+          button.setTooltip('Remove');
+          button.setIcon('trash');
+          button.buttonEl.addClass('typstmate-button');
+
+          button.onClick(async () => {
+            if (confirm('Remove this processor?')) {
+              this.plugin.settings.processor[type].processors =
+                this.plugin.settings.processor[type].processors.filter(
+                  (p) => p.id !== processor.id,
+                ) as InlineProcessor[];
+
+              await this.plugin.saveSettings();
+              processorEl.remove();
+            }
+          });
+        });
+
+        // Add a subtle border between processors
+        if (
+          processorIndex <
+          this.plugin.settings.processor[type].processors.length - 1
+        ) {
+          const hr = document.createElement('hr');
+          hr.className = 'typstmate-processor-separator';
+          processorsListEl.appendChild(hr);
+        }
 
         const textAreaEl = processorEl.createEl('textarea', {
           text: processor.format,

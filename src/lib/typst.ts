@@ -240,9 +240,11 @@ export default class TypstManager {
         })
         .catch((err) => {
           if (this.plugin.settings.processor.enableMathjaxFallback) {
-            containerEl.innerHTML = this.plugin.originalTex2chtml(code, {
-              display: false,
-            }).innerHTML;
+            containerEl.replaceChildren(
+              this.plugin.originalTex2chtml(code, {
+                display: false,
+              }),
+            );
           } else {
             containerEl.replaceChildren(errorHandler(err as string));
           }
@@ -275,12 +277,12 @@ function errorHandler(err: string): HTMLElement {
     .join('\n\n');
 
   const span = document.createElement('span');
-  span.innerHTML =
+  span.className = 'typstmate-error';
+  span.textContent =
     `${diagnostic.message}` +
     (diagnostic.hints.length !== 0
       ? ` [${diagnostic.hints.length} hints]`
       : '');
-  span.className = 'typstmate-error';
 
   if (diagnostic.hints.length !== 0)
     span.addEventListener('click', () => alert(alertMessage));
