@@ -7,7 +7,7 @@ let main: Main;
 
 const map = new Map<string, Uint8Array | undefined>();
 const xhr = new XMLHttpRequest();
-xhr.responseType = 'arraybuffer';
+xhr.overrideMimeType('text/plain; charset=x-user-defined');
 
 export default class $ {
   wasm: ArrayBuffer;
@@ -67,18 +67,24 @@ export default class $ {
       if (namespace === 'preview') {
         if (vpath === 'typst.toml') main.notice(`Downloading ${name}...`);
 
-        xhr.open(
-          'GET',
-          `https://packages.typst.org/preview/${name}-${version}.tar.gz`,
-          false,
-        );
-        xhr.send(null);
-        if (!xhr.response) throw 20; // PackageError::MalformedArchive
-        if (xhr.status === 0) throw 21; // PackageError::NetworkFailed
-        if (xhr.status === 404) throw 22; // PackageError::NotFound
-
         try {
-          const tarArr = pako.ungzip(xhr.response).buffer;
+          xhr.open(
+            'GET',
+            `https://packages.typst.org/preview/${name}-${version}.tar.gz`,
+            false,
+          );
+          xhr.send(null);
+          if (!xhr.responseText === null) throw 20; // PackageError::MalformedArchive
+          if (xhr.status === 0) throw 21; // PackageError::NetworkFailed
+          if (xhr.status === 404) throw 22; // PackageError::NotFound
+
+          const text = xhr.responseText;
+          const targzArr = new Uint8Array(text.length);
+          for (let i = 0; i < text.length; i++) {
+            targzArr[i] = text.charCodeAt(i) & 0xff;
+          }
+
+          const tarArr = pako.ungzip(targzArr).buffer;
           const files = untar(tarArr) as {
             name: string;
             buffer: ArrayBuffer;
