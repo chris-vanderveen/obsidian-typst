@@ -9,7 +9,7 @@
 
 .typstmate-settings-processor textarea {
   width: 100%;
-  min-height: 2em;
+  min-height: 4em;
   resize: vertical;
   field-sizing: content;
   background: var(--background-primary);
