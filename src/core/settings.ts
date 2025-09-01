@@ -185,7 +185,7 @@ export class SettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName('Enable Background Rendering')
       .setDesc(
-        'The UI will no longer freeze, but it may conflict with plugins related to export or rendering.',
+        'The UI will no longer freeze, but it may conflict with plugins related to export or rendering(plugin reload is required.)',
       )
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.general.enableBackgroundRendering);
