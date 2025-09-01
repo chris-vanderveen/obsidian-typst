@@ -13,8 +13,9 @@ Typst Mate also provides flexible styling options to customize the look of your 
 - Allows easy import of system fonts to your vault (Desktop app only)
 
 
-いくつかの仕様
-datetimeは, プラグイン起動時の値に固定されます
+## Note
+- `datetime` and `fontsize` are fixed to the value at plugin startup.
+- Only the first page is subject to rendering.
 
 ## TODO
 - 不具合修正: 設定の変更後に `onConfigFileChange` が2回呼ばれてしまう.
