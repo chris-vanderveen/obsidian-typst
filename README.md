@@ -12,6 +12,10 @@ Typst Mate also provides flexible styling options to customize the look of your 
 - Additional styling customization for better readability
 - Allows easy import of system fonts to your vault (Desktop app only)
 
+
+いくつかの仕様
+datetimeは, プラグイン起動時の値に固定されます
+
 ## TODO
 - 不具合修正: 設定の変更後に `onConfigFileChange` が2回呼ばれてしまう.
 - 不具合修正: フォントサイズが絶妙に合っていない.
@@ -30,6 +34,5 @@ Typst Mate also provides flexible styling options to customize the look of your 
 Typst Mate leverages the following open-source projects:
 
 - [Typst](https://typst.app/) – a powerful typesetting system
-- [Myriad-Dreamin/typst.ts](https://github.com/Myriad-Dreamin/typst.ts) – the TypeScript bindings for Typst
 
 I am grateful to the developers of these projects for making this plugin possible.

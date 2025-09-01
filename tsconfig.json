@@ -21,7 +21,7 @@
 		"noUnusedParameters": false,
 		"noPropertyAccessFromIndexSignature": false,
 
-		"types": ["obsidian-typings"],
+		"types": ["obsidian-typings", "vite/client"],
 		"paths": {
       "@/*": ["./src/*"]
     },

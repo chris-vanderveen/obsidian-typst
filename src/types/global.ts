@@ -1,4 +1,4 @@
-import type { FontData } from '@/lib/font';
+import type { FontData } from '@/core/settings/font';
 
 declare global {
   interface Window {

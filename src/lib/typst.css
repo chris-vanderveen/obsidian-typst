@@ -5,6 +5,10 @@
 }
 
 /* inline */
+.typstmate-inline {
+  display: inline-block;
+}
+
 .typstmate-inline.typstmate-style-inline {
   vertical-align: baseline;
 }
@@ -45,4 +49,10 @@
   display: block;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+.typstmate-inline,
+.typstmate-display,
+.typstmate-codeblock {
+  overflow: visible;
 }

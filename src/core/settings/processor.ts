@@ -1,4 +1,4 @@
-import { Setting } from 'obsidian';
+import { debounce, Setting } from 'obsidian';
 
 import {
   DefaultNewProcessor,
@@ -122,13 +122,20 @@ export class ProcessorList {
         idText.setValue(processor.id);
         idText.setPlaceholder('id');
 
-        idText.onChange((id) => {
-          this.plugin.settings.processor[this.type].processors[
-            Number(processorEl.id)
-          ]!.id = id;
+        idText.onChange(
+          debounce(
+            (id) => {
+              this.plugin.settings.processor[this.type].processors[
+                Number(processorEl.id)
+              ]!.id = id;
 
-          this.plugin.saveSettings();
-        });
+              this.plugin.saveSettings();
+              this.plugin.init(true);
+            },
+            500,
+            true,
+          ),
+        );
       })
       .addButton((removeButton) => {
         removeButton.buttonEl.style.color = 'red';
@@ -144,13 +151,21 @@ export class ProcessorList {
     formatTextEl.value = processor.format;
     formatTextEl.placeholder = 'format';
 
-    formatTextEl.addEventListener('input', () => {
-      this.plugin.settings.processor[this.type].processors[
-        Number(processorEl.id)
-      ]!.format = formatTextEl.value;
+    formatTextEl.addEventListener(
+      'input',
+      debounce(
+        () => {
+          this.plugin.settings.processor[this.type].processors[
+            Number(processorEl.id)
+          ]!.format = formatTextEl.value;
 
-      this.plugin.saveSettings();
-    });
+          this.plugin.saveSettings();
+          this.plugin.init(true);
+        },
+        500,
+        true,
+      ),
+    );
   }
 
   removeProcessor(index: number) {

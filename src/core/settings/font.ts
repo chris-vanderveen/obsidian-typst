@@ -1,7 +1,6 @@
 import { Notice, Platform, Setting } from 'obsidian';
 
 import { FontModal } from '@/core/modals/font';
-import type { FontData } from '@/lib/font';
 import { hashLike } from '@/lib/util';
 import type ObsidianTypstMate from '@/main';
 
@@ -35,12 +34,12 @@ export class FontList {
           button.onClick(this.displaySystemFontList.bind(this));
         });
 
+      this.fontDataCountEl = containerEl.createDiv();
+      this.fontDataCountEl.textContent = 'Click to get system font list';
+
       this.fontDataTableEl = containerEl.createDiv(
         'typstmate-settings-table typstmate-hidden',
       );
-
-      this.fontDataCountEl = containerEl.createDiv();
-      this.fontDataCountEl.textContent = 'Click to get system font list';
     }
 
     // 読み込み済みフォント
@@ -58,6 +57,7 @@ export class FontList {
   }
 
   async filterSystemFontList(filter: string) {
+    let count = 0;
     Array.from(
       this.fontDataTableEl!.children as HTMLCollectionOf<HTMLElement>,
     ).forEach((child) => {
@@ -65,22 +65,25 @@ export class FontList {
 
       if (name.includes(filter)) {
         child.classList.remove('typstmate-hidden');
+        count++;
       } else {
         child.classList.add('typstmate-hidden');
       }
     });
+
+    this.fontDataCountEl!.textContent = `${count} font(s)`;
+    if (count === 0) this.fontDataTableEl!.classList.add('typstmate-hidden');
+    else this.fontDataTableEl!.classList.remove('typstmate-hidden');
   }
 
   async displaySystemFontList() {
     this.fontDataTableEl!.empty();
 
-    const fontDataList =
-      await this.plugin.typstManager.fontManager.getSystemFontDataList();
-
+    const fontDataList = (await window.queryLocalFonts?.()) ?? [];
     if (fontDataList.length === 0) return;
-
     this.fontDataTableEl!.classList.remove('typstmate-hidden');
 
+    this.fontDataCountEl!.textContent = `${fontDataList.length} font(s)`;
     for (const fontData of fontDataList) {
       const setting = new Setting(this.fontDataTableEl!);
       setting.settingEl.id = fontData.postscriptName.toLowerCase();
@@ -94,10 +97,8 @@ export class FontList {
           button.setTooltip('Get Info');
 
           button.onClick(async () => {
-            const info = this.plugin.typstManager.fontManager.getFontInfo(
-              await this.plugin.typstManager.fontManager.getFontUint8ArrayFromFontData(
-                fontData,
-              ),
+            const info = await this.plugin.typst.parseFont(
+              await (await fontData.blob()).arrayBuffer(),
             );
 
             new FontModal(this.plugin.app, info).open();
@@ -126,10 +127,8 @@ export class FontList {
         button.setTooltip('Get Info');
 
         button.onClick(async () => {
-          const info = this.plugin.typstManager.fontManager.getFontInfo(
-            new Uint8Array(
-              await this.plugin.app.vault.adapter.readBinary(fontPath),
-            ),
+          const info = await this.plugin.typst.parseFont(
+            await this.plugin.app.vault.adapter.readBinary(fontPath),
           );
 
           new FontModal(this.plugin.app, info).open();
@@ -150,13 +149,14 @@ export class FontList {
   async displayImportedFontList() {
     this.importedFontTableEl.empty();
 
-    const fontPaths =
-      await this.plugin.typstManager.fontManager.getImportedFontPaths();
+    const fontPaths = (
+      await this.plugin.app.vault.adapter.list(this.plugin.fontsDirPath)
+    ).files.filter((f) => f.endsWith('.font'));
+
     if (fontPaths.length === 0) {
       this.importedFontTableEl.classList.add('typstmate-hidden');
       return;
     }
-
     this.importedFontTableEl.classList.remove('typstmate-hidden');
 
     for (const fontPath of fontPaths) {
@@ -173,17 +173,16 @@ export class FontList {
       return;
     }
 
-    const fontArrayBuffer =
-      await this.plugin.typstManager.fontManager.getFontArrayBufferFromFontData(
-        fontData,
-      );
+    const fontArrayBuffer = await (await fontData.blob()).arrayBuffer();
 
     // フォントの読み込み
     await this.plugin.app.vault.adapter.writeBinary(
       `${this.plugin.fontsDirPath}/${basename}`,
       fontArrayBuffer,
     );
-    await this.plugin.typstManager.init();
+    await this.plugin.typst.store({
+      fonts: [fontArrayBuffer],
+    });
 
     // 表示
     this.addImportedFontSetting(`${this.plugin.fontsDirPath}/${basename}`);
@@ -196,7 +195,6 @@ export class FontList {
     await this.plugin.app.vault.adapter.remove(
       `${this.plugin.fontsDirPath}/${basename}`,
     );
-    await this.plugin.typstManager.init();
 
     // 表示
     this.importedFontTableEl.children.namedItem(basename)?.remove();
@@ -205,4 +203,12 @@ export class FontList {
 
     new Notice('Removed successfully!');
   }
+}
+
+export interface FontData {
+  family: string;
+  fullName: string;
+  postscriptName: string;
+  style: string;
+  blob: () => Promise<Blob>;
 }

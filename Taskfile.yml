@@ -26,11 +26,21 @@ tasks:
     cmds:
       - touch '{{.PLUGIN_DIR}}/.hotreload'
       - cp manifest.json '{{.PLUGIN_DIR}}'
-      - cp node_modules/@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm '{{.PLUGIN_DIR}}'
-      - mv '{{.PLUGIN_DIR}}/typst_ts_renderer_bg.wasm' '{{.PLUGIN_DIR}}/renderer.wasm'
-      - cp node_modules/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm '{{.PLUGIN_DIR}}'
-      - mv '{{.PLUGIN_DIR}}/typst_ts_web_compiler_bg.wasm' '{{.PLUGIN_DIR}}/compiler.wasm'
+      - cp pkg/typst_wasm_bg.wasm '{{.PLUGIN_DIR}}'
+      - mv '{{.PLUGIN_DIR}}/typst_wasm_bg.wasm' '{{.PLUGIN_DIR}}/typst.wasm'
+  wasm:
+    vars:
+      PLUGIN_DIR: "{{.CONFIG_DIR}}/plugins/{{.PLUGIN_ID}}"
+    cmds:
+      - wasm-pack build wasm --target web --dev --out-dir ../pkg
+      - mv './pkg/typst_wasm_bg.wasm' '{{.PLUGIN_DIR}}/typst.wasm'
   dev: bunx --bun vite build -w -m development --outDir '{{.CONFIG_DIR}}/plugins/{{.PLUGIN_ID}}'
+  build:
+    cmds:
+      - bun run wasm
+      - mv pkg/typst_wasm_bg.wasm typst.wasm
+      - bun run build
+      - rm typst.wasm
 
   commit:
     cmds:

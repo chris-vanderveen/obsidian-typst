@@ -6,13 +6,10 @@ import {
   Setting,
 } from 'obsidian';
 
-import { type FontAssetType, FontAssetTypeTokens } from '@/lib/font';
 import type {
   CodeblockProcessor,
   DisplayProcessor,
   InlineProcessor,
-  InlineStyling,
-  RenderingEngine,
 } from '@/lib/processor';
 import type ObsidianTypstMate from '@/main';
 import { FontList } from './settings/font';
@@ -22,8 +19,13 @@ import { ProcessorList } from './settings/processor';
 import './settings.css';
 
 export interface Settings {
-  processor: {
+  general: {
     enableMathjaxFallback: boolean;
+    enableBackgroundRendering: boolean;
+    failOnWarning: boolean;
+    baseColor: string;
+  };
+  processor: {
     inline: {
       processors: InlineProcessor[];
     };
@@ -34,13 +36,15 @@ export interface Settings {
       processors: CodeblockProcessor[];
     };
   };
-  font: {
-    assetFontTypes: FontAssetType[];
-  };
 }
 export const DEFAULT_SETTINGS: Settings = {
-  processor: {
+  general: {
     enableMathjaxFallback: false,
+    enableBackgroundRendering: true,
+    failOnWarning: false,
+    baseColor: '#000000',
+  },
+  processor: {
     inline: {
       processors: [
         {
@@ -49,7 +53,7 @@ export const DEFAULT_SETTINGS: Settings = {
           format: [
             '#import "@preview/typsium:0.3.0": ce',
             '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
-            '#set text(size: {FONTSIZE}pt)',
+            '#set text(size: fontsize)',
             '#show math.equation: set text(font: ("New Computer Modern Math", "Noto Serif CJK SC"))',
             '#ce("{CODE}")',
           ].join('\n'),
@@ -60,7 +64,7 @@ export const DEFAULT_SETTINGS: Settings = {
           renderingEngine: 'typst',
           format: [
             '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
-            '#set text(size: {FONTSIZE}pt)',
+            '#set text(size: fontsize)',
             '$\n{CODE}\n$',
           ].join('\n'),
           styling: 'inline-middle',
@@ -76,8 +80,7 @@ export const DEFAULT_SETTINGS: Settings = {
           renderingEngine: 'typst',
           format: [
             '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
-            '#set text(size: {FONTSIZE}pt)',
-            '#show math.equation: set text(font: ("New Computer Modern Math", "Noto Serif CJK SC"))',
+            '#set text(size: fontsize)',
             '${CODE}$',
           ].join('\n'),
           styling: 'inline',
@@ -91,7 +94,7 @@ export const DEFAULT_SETTINGS: Settings = {
           renderingEngine: 'typst',
           format: [
             '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
-            '#set text(size: {FONTSIZE}pt)',
+            '#set text(size: fontsize)',
             '$\n{CODE}\n$',
           ].join('\n'),
           styling: 'block',
@@ -101,7 +104,7 @@ export const DEFAULT_SETTINGS: Settings = {
           renderingEngine: 'typst',
           format: [
             '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
-            '#set text(size: {FONTSIZE}pt)',
+            '#set text(size: fontsize)',
             '$\n{CODE}\n$',
           ].join('\n'),
           styling: 'block-center',
@@ -111,11 +114,11 @@ export const DEFAULT_SETTINGS: Settings = {
     codeblock: {
       processors: [
         {
-          id: 'typstdoc',
+          id: 'typ',
           renderingEngine: 'typst',
           format: [
             '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
-            '#set text(size: {FONTSIZE}pt)',
+            '#set text(size: fontsize)',
             '{CODE}',
           ].join('\n'),
           styling: 'block',
@@ -125,16 +128,13 @@ export const DEFAULT_SETTINGS: Settings = {
           renderingEngine: 'typst',
           format: [
             '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
-            '#set text(size: {FONTSIZE}pt)',
+            '#set text(size: fontsize)',
             '```typst\n{CODE}\n```',
           ].join('\n'),
           styling: 'codeblock',
         },
       ],
     },
-  },
-  font: {
-    assetFontTypes: ['text'],
   },
 };
 
@@ -168,15 +168,6 @@ export class SettingTab extends PluginSettingTab {
           new Notice('Reloaded Successfully!');
         });
       });
-  }
-
-  addProcessorSettings(containerEl: HTMLElement) {
-    new Setting(containerEl)
-      .setName('Processor')
-      .setDesc(
-        'In each mode, the first matching Processor ID from the top will be used. An empty Processor ID means the default and should be placed at the bottom. In the format, {CODE} and {FONTSIZE} can be used(only the first occurrence is replaced).',
-      )
-      .setHeading();
 
     new Setting(containerEl)
       .setName('Enable MathJax Fallback')
@@ -184,12 +175,55 @@ export class SettingTab extends PluginSettingTab {
         'Not recommended for performance reasons. When enabled, Typst errors and hints will be unavailable.',
       )
       .addToggle((toggle) => {
-        toggle.setValue(this.plugin.settings.processor.enableMathjaxFallback);
+        toggle.setValue(this.plugin.settings.general.enableMathjaxFallback);
         toggle.onChange((value) => {
-          this.plugin.settings.processor.enableMathjaxFallback = value;
+          this.plugin.settings.general.enableMathjaxFallback = value;
           this.plugin.saveSettings();
         });
       });
+
+    new Setting(containerEl)
+      .setName('Enable Background Rendering')
+      .setDesc(
+        'The UI will no longer freeze, but it may conflict with plugins related to export or rendering.',
+      )
+      .addToggle((toggle) => {
+        toggle.setValue(this.plugin.settings.general.enableBackgroundRendering);
+        toggle.onChange((value) => {
+          this.plugin.settings.general.enableBackgroundRendering = value;
+          this.plugin.saveSettings();
+        });
+      });
+
+    new Setting(containerEl).setName('Fail on Warning').addToggle((toggle) => {
+      toggle.setValue(this.plugin.settings.general.failOnWarning);
+      toggle.onChange((value) => {
+        this.plugin.settings.general.failOnWarning = value;
+        this.plugin.saveSettings();
+      });
+    });
+
+    new Setting(containerEl)
+      .setName('Base Color')
+      .setDesc(
+        'Replace black in SVGs with another color. This is useful when using a dark theme.',
+      )
+      .addColorPicker((colorPicker) => {
+        colorPicker.setValue(this.plugin.settings.general.baseColor);
+        colorPicker.onChange((value) => {
+          this.plugin.settings.general.baseColor = value;
+          this.plugin.saveSettings();
+        });
+      });
+  }
+
+  addProcessorSettings(containerEl: HTMLElement) {
+    new Setting(containerEl)
+      .setName('Processor')
+      .setDesc(
+        'In each mode, the first matching Processor ID from the top will be used. An empty Processor ID means the default and should be placed at the bottom. In the format, {CODE} can be used (only the first occurrence is replaced), and fontsize can be used as an internal length value. IDs should not contain any special characters!',
+      )
+      .setHeading();
 
     new ProcessorList(
       this.plugin,
@@ -250,9 +284,10 @@ export class SettingTab extends PluginSettingTab {
                 const code = codeEl.value;
                 previewEl.empty();
                 if (code) {
-                  this.plugin.typstManager.renderInline(
+                  this.plugin.typstManager.render(
                     `${id ? `${id}:` : ''}${code}`,
                     previewEl,
+                    'inline',
                   );
                 }
               };
@@ -281,9 +316,10 @@ export class SettingTab extends PluginSettingTab {
                 const code = codeEl.value;
                 previewEl.empty();
                 if (code) {
-                  this.plugin.typstManager.renderDisplay(
+                  this.plugin.typstManager.render(
                     `${id ? `${id}\n` : ''}${code}\n`,
                     previewEl,
+                    'display',
                   );
                 }
               };
@@ -312,11 +348,7 @@ export class SettingTab extends PluginSettingTab {
                 const code = codeEl.value;
                 previewEl.empty();
                 if (code) {
-                  this.plugin.typstManager.renderCodeblock(
-                    code,
-                    previewEl,
-                    id || '',
-                  );
+                  this.plugin.typstManager.render(code, previewEl, id || '');
                 }
               };
 
@@ -350,9 +382,10 @@ export class SettingTab extends PluginSettingTab {
       const code = codeEl.value;
       previewEl.empty();
       if (code) {
-        this.plugin.typstManager.renderInline(
+        this.plugin.typstManager.render(
           `${id ? `${id}:` : ''}${code}`,
           previewEl,
+          'inline',
         );
       }
     };
@@ -380,43 +413,6 @@ export class SettingTab extends PluginSettingTab {
           );
         });
       });
-    }
-
-    // フォントアセットの設定
-    new Setting(containerEl)
-      .setName('Download Latest Font Assets')
-      .setDesc(
-        'After installing or updating the plugin, please click. This is required for offline use.',
-      )
-      .addButton((button) => {
-        button.setIcon('sync');
-        button.setTooltip('Download Latest Font Assets');
-
-        button.onClick(async () => {
-          await this.plugin.typstManager.fontManager.downloadFontAssets();
-        });
-      });
-    for (const assetFontType of FontAssetTypeTokens) {
-      new Setting(containerEl)
-        .setName(`Use Font Asset \`${assetFontType}\``)
-        .addToggle((toggle) => {
-          toggle.setValue(
-            this.plugin.settings.font.assetFontTypes.includes(assetFontType),
-          );
-
-          toggle.onChange(async (value) => {
-            if (value) {
-              this.plugin.settings.font.assetFontTypes.push(assetFontType);
-            } else {
-              this.plugin.settings.font.assetFontTypes =
-                this.plugin.settings.font.assetFontTypes.filter(
-                  (fontType) => fontType !== assetFontType,
-                );
-            }
-
-            await this.plugin.saveSettings();
-          });
-        });
     }
 
     // フォント一覧
@@ -447,171 +443,5 @@ export class SettingTab extends PluginSettingTab {
 
     // パッケージ一覧
     new PackagesList(this.plugin, containerEl);
-  }
-
-  generateProcessorSettings(
-    containerEl: HTMLElement,
-    type: 'inline' | 'display' | 'codeblock',
-  ) {
-    const processorsListEl = containerEl.createDiv('typstmate-processor-list');
-
-    this.plugin.settings.processor[type].processors.forEach(
-      (processor, processorIndex) => {
-        const processorEl = processorsListEl.createDiv(
-          'typstmate-settings-processor',
-        );
-        processorEl.id = `processor-${type}-${processorIndex}`;
-
-        const setting = new Setting(processorEl);
-
-        // Move up button
-        setting.addButton((button) => {
-          button.setTooltip('Move up');
-          button.setIcon('chevrons-up');
-          button.buttonEl.addClass('typstmate-button');
-
-          button.onClick(async () => {
-            const processors = this.plugin.settings.processor[type].processors;
-            const index = processors.findIndex((p) => p.id === processor.id);
-            if (index === 0) return;
-
-            // Swap with previous processor
-            [processors[index], processors[index - 1]] = [
-              processors[index - 1]!,
-              processors[index]!,
-            ];
-
-            await this.plugin.saveSettings();
-            this.plugin.app.setting.openTabById(this.plugin.pluginId);
-          });
-        });
-
-        // Move down button
-        setting.addButton((button) => {
-          button.setTooltip('Move down');
-          button.setIcon('chevrons-down');
-          button.buttonEl.addClass('typstmate-button');
-
-          button.onClick(async () => {
-            const processors = this.plugin.settings.processor[type].processors;
-            const index = processors.findIndex((p) => p.id === processor.id);
-            if (index === processors.length - 1) return;
-
-            // Swap with next processor
-            [processors[index], processors[index + 1]] = [
-              processors[index + 1]!,
-              processors[index]!,
-            ];
-
-            await this.plugin.saveSettings();
-            this.plugin.app.setting.openTabById(this.plugin.pluginId);
-          });
-        });
-
-        // Rendering engine dropdown
-        setting.addDropdown((dropdown) => {
-          dropdown.addOption('typst', 'Typst');
-          dropdown.addOption('mathjax', 'MathJax');
-          dropdown.setValue(processor.renderingEngine);
-          dropdown.selectEl.addClass('typstmate-form-control');
-
-          dropdown.onChange((value) => {
-            this.plugin.settings.processor[type].processors[
-              processorIndex
-            ]!.renderingEngine = value as RenderingEngine;
-            this.plugin.saveSettings();
-          });
-        });
-
-        // Styling dropdown
-        setting.addDropdown((dropdown) => {
-          const options = {
-            inline: [
-              { value: 'inline', label: 'Inline' },
-              { value: 'inline-middle', label: 'Inline Middle' },
-            ],
-            display: [
-              { value: 'block', label: 'Block' },
-              { value: 'block-center', label: 'Block Center' },
-            ],
-            codeblock: [
-              { value: 'block', label: 'Block' },
-              { value: 'block-center', label: 'Block Center' },
-              { value: 'codeblock', label: 'Codeblock' },
-            ],
-          }[type];
-
-          options.forEach(({ value, label }) => {
-            dropdown.addOption(value, label);
-          });
-
-          dropdown.setValue(processor.styling);
-          dropdown.selectEl.addClass('typstmate-form-control');
-
-          dropdown.onChange((value) => {
-            this.plugin.settings.processor[type].processors[
-              processorIndex
-            ]!.styling = value as InlineStyling;
-            this.plugin.saveSettings();
-          });
-        });
-
-        // Processor ID input
-        setting.addText((text) => {
-          text.setValue(processor.id);
-          text.setPlaceholder('id');
-          text.inputEl.addClass('typstmate-form-control');
-
-          text.onChange((value) => {
-            this.plugin.settings.processor[type].processors[
-              processorIndex
-            ]!.id = value;
-            this.plugin.saveSettings();
-          });
-        });
-
-        // Remove button
-        setting.addButton((button) => {
-          button.setTooltip('Remove');
-          button.setIcon('trash');
-          button.buttonEl.addClass('typstmate-button');
-
-          button.onClick(async () => {
-            if (confirm('Remove this processor?')) {
-              this.plugin.settings.processor[type].processors =
-                this.plugin.settings.processor[type].processors.filter(
-                  (p) => p.id !== processor.id,
-                ) as InlineProcessor[];
-
-              await this.plugin.saveSettings();
-              processorEl.remove();
-            }
-          });
-        });
-
-        // Add a subtle border between processors
-        if (
-          processorIndex <
-          this.plugin.settings.processor[type].processors.length - 1
-        ) {
-          const hr = document.createElement('hr');
-          hr.className = 'typstmate-processor-separator';
-          processorsListEl.appendChild(hr);
-        }
-
-        const textAreaEl = processorEl.createEl('textarea', {
-          text: processor.format,
-        });
-        textAreaEl.addEventListener('input', () => {
-          this.plugin.settings.processor[type].processors[
-            processorIndex
-          ]!.format = textAreaEl.value;
-
-          this.plugin.saveSettings();
-        });
-      },
-    );
-
-    return processorsListEl;
   }
 }

@@ -13,14 +13,9 @@ export default defineConfig(async ({ mode }) => {
         ? viteStaticCopy({
             targets: [
               {
-                src: 'node_modules/@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm',
+                src: 'typst.wasm',
                 dest: '',
-                rename: 'renderer.wasm',
-              },
-              {
-                src: 'node_modules/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm',
-                dest: '',
-                rename: 'compiler.wasm',
+                rename: 'typst.wasm',
               },
               {
                 src: 'manifest.json',

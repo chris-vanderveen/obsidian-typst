@@ -1,4 +1,4 @@
-name: "Release"
+name: Release
 
 on:
   push:
@@ -7,13 +7,23 @@ on:
 
 jobs:
   release:
+    name: Release
     runs-on: ubuntu-latest
-
     permissions:
       contents: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: Install wasm-pack
+        run: |
+          curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
       - name: Use Bun
         uses: oven-sh/setup-bun@v2
@@ -22,7 +32,9 @@ jobs:
 
       - name: Build Plugin
         run: |
+          bun wasm
           bun install
+          mv ./pkg/typst_wasm_bg.wasm ./typst.wasm
           bun run build
 
       - name: Create Release
@@ -34,5 +46,4 @@ jobs:
             dist/main.js \
             dist/styles.css \
             dist/manifest.json \
-            dist/compiler.wasm \
-            dist/renderer.wasm
+            dist/typst.wasm

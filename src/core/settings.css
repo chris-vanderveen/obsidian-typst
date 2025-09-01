@@ -277,7 +277,7 @@
 }
 
 .typstmate-hidden {
-  display: none !important;
+  display: none;
 }
 
 /* Utility classes */
