@@ -5,6 +5,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig(async ({ mode }) => {
   const prod = mode === 'production';
+  const version = JSON.parse(await Bun.file('manifest.json').text()).version;
 
   return {
     plugins: [
@@ -13,9 +14,9 @@ export default defineConfig(async ({ mode }) => {
         ? viteStaticCopy({
             targets: [
               {
-                src: 'typst.wasm',
+                src: `typst.wasm`,
                 dest: '',
-                rename: 'typst.wasm',
+                rename: `typst-${version}.wasm`,
               },
               {
                 src: 'manifest.json',

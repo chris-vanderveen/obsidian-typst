@@ -16,6 +16,11 @@ const currentVersion = JSON.parse(
   readFileSync('manifest.json', 'utf8'),
 ).version;
 
+if (values.type === 'mock') {
+  await $`echo -n ${currentVersion}`;
+  process.exit(0);
+}
+
 let [major, minor, patch] = currentVersion.split('.').map(Number);
 
 switch (values.type) {

@@ -23,17 +23,21 @@ tasks:
   putstatic:
     vars:
       PLUGIN_DIR: "{{.CONFIG_DIR}}/plugins/{{.PLUGIN_ID}}"
+      version:
+        sh: "bun scripts/version.ts --type mock"
     cmds:
       - touch '{{.PLUGIN_DIR}}/.hotreload'
       - cp manifest.json '{{.PLUGIN_DIR}}'
       - cp pkg/typst_wasm_bg.wasm '{{.PLUGIN_DIR}}'
-      - mv '{{.PLUGIN_DIR}}/typst_wasm_bg.wasm' '{{.PLUGIN_DIR}}/typst.wasm'
+      - mv '{{.PLUGIN_DIR}}/typst_wasm_bg.wasm' '{{.PLUGIN_DIR}}/typst-{{.version}}.wasm'
   wasm:
     vars:
       PLUGIN_DIR: "{{.CONFIG_DIR}}/plugins/{{.PLUGIN_ID}}"
+      version:
+        sh: "bun scripts/version.ts --type mock"
     cmds:
       - wasm-pack build wasm --target web --dev --out-dir ../pkg
-      - mv './pkg/typst_wasm_bg.wasm' '{{.PLUGIN_DIR}}/typst.wasm'
+      - mv './pkg/typst_wasm_bg.wasm' '{{.PLUGIN_DIR}}/typst-{{.version}}.wasm'
   dev: bunx --bun vite build -w -m development --outDir '{{.CONFIG_DIR}}/plugins/{{.PLUGIN_ID}}'
   build:
     cmds:

@@ -188,7 +188,6 @@ export default class TypstManager {
     code: string,
     kind: string,
   ) {
-    console.log(err);
     if (this.plugin.settings.general.enableMathjaxFallback) {
       containerEl.replaceChildren(
         this.plugin.originalTex2chtml(code, {

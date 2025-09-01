@@ -64,11 +64,22 @@ export default class ObsidianTypstMate extends Plugin {
     ]);
 
     // Wasmをダウンロード
-    const wasmPath = `${this.pluginDirPath}/typst.wasm`;
+    const manifest = this.app.plugins.getPlugin(this.pluginId)?.manifest;
+    if (!manifest) throw new Error('Failed to load manifest.');
+
+    const wasmPath = `${this.pluginDirPath}/typst-${manifest.version}.wasm`;
+    console.log(wasmPath);
     if (!(await this.app.vault.adapter.exists(wasmPath))) {
+      const oldWasms = (
+        await this.app.vault.adapter.list(this.pluginDirPath)
+      ).files.filter((file) => file.endsWith('.wasm'));
+      for (const wasm of oldWasms) {
+        await this.app.vault.adapter.remove(wasm);
+      }
+
       new Notice('Downloading wasm...');
 
-      await this.downloadAsset('typst.wasm');
+      await this.downloadAsset(`typst-${manifest.version}.wasm`);
       new Notice('Downloaded successfully!');
     }
 
@@ -124,7 +135,7 @@ export default class ObsidianTypstMate extends Plugin {
       },
     };
 
-    const wasm = await adapter.readBinary(`${this.pluginDirPath}/typst.wasm`);
+    const wasm = await adapter.readBinary(wasmPath);
     if (this.settings.general.enableBackgroundRendering) {
       this.worker = new TypstWorker();
       const api = wrap<typeof $>(this.worker);
