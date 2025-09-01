@@ -36,6 +36,9 @@ export interface Settings {
       processors: CodeblockProcessor[];
     };
   };
+  advanced: {
+    autoBaseColor: boolean;
+  };
 }
 export const DEFAULT_SETTINGS: Settings = {
   general: {
@@ -136,6 +139,9 @@ export const DEFAULT_SETTINGS: Settings = {
       ],
     },
   },
+  advanced: {
+    autoBaseColor: false,
+  },
 };
 
 export class SettingTab extends PluginSettingTab {
@@ -155,6 +161,7 @@ export class SettingTab extends PluginSettingTab {
     this.addPreview(containerEl);
     this.addFontSettings(containerEl);
     this.addTypstPackageSettings(containerEl);
+    this.addAdvancedSettings(containerEl);
   }
 
   addGeneralSettings(containerEl: HTMLElement) {
@@ -443,5 +450,22 @@ export class SettingTab extends PluginSettingTab {
 
     // パッケージ一覧
     new PackagesList(this.plugin, containerEl);
+  }
+
+  addAdvancedSettings(containerEl: HTMLElement) {
+    new Setting(containerEl).setName('Advanced').setHeading();
+
+    new Setting(containerEl)
+      .setName('Auto Base Color')
+      .setDesc("Uses Obsidian's text color as the base color automatically.")
+      .addToggle((toggle) => {
+        toggle.setValue(this.plugin.settings.advanced.autoBaseColor);
+        toggle.onChange((value) => {
+          this.plugin.settings.advanced.autoBaseColor = value;
+          if (value) this.plugin.applyBaseColor();
+
+          this.plugin.saveSettings();
+        });
+      });
   }
 }

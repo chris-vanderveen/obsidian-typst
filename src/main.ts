@@ -8,6 +8,7 @@ import {
   Plugin,
   renderMath,
   requestUrl,
+  type EventRef,
   type WorkspaceLeaf,
 } from 'obsidian';
 
@@ -37,10 +38,11 @@ export default class ObsidianTypstMate extends Plugin {
   settings!: Settings;
 
   typst!: $ | Remote<$>;
-
   worker?: Worker;
-
   typstManager!: TypstManager;
+
+  baseColor = '#000000';
+  listener!: EventRef;
 
   override async onload() {
     // ユーザーの設定(data.json)を読み込む
@@ -68,7 +70,6 @@ export default class ObsidianTypstMate extends Plugin {
     if (!manifest) throw new Error('Failed to load manifest.');
 
     const wasmPath = `${this.pluginDirPath}/typst-${manifest.version}.wasm`;
-    console.log(wasmPath);
     if (!(await this.app.vault.adapter.exists(wasmPath))) {
       const oldWasms = (
         await this.app.vault.adapter.list(this.pluginDirPath)
@@ -152,6 +153,14 @@ export default class ObsidianTypstMate extends Plugin {
 
     this.addSettingTab(new SettingTab(this.app, this));
 
+    // 監視を追加
+    const styles = getComputedStyle(document.body);
+    this.baseColor = styles.getPropertyValue('--color-base-100').trim();
+    this.listener = this.app.workspace.on('css-change', () => {
+      if (!this.settings.advanced.autoBaseColor) return;
+      this.applyBaseColor();
+    });
+
     // Leafを登録
     // ? iframeがモバイルで使えないため無効化
     if (Platform.isMobileApp) return;
@@ -182,7 +191,20 @@ export default class ObsidianTypstMate extends Plugin {
     });
   }
 
+  applyBaseColor() {
+    const styles = getComputedStyle(document.body);
+    const beforeColor = this.baseColor;
+    this.baseColor = styles.getPropertyValue('--color-base-100').trim();
+    const svgs = document.querySelectorAll('svg.typst-doc');
+    svgs.forEach((svg) => {
+      svg.innerHTML = svg.innerHTML.replaceAll(beforeColor, this.baseColor);
+    });
+  }
+
   override async onunload() {
+    // 監視を終了
+    this.app.workspace.offref(this.listener);
+
     // Workerを終了
     this.worker?.terminate();
 

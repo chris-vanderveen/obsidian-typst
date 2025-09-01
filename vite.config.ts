@@ -33,7 +33,6 @@ export default defineConfig(async ({ mode }) => {
         formats: ['cjs'],
       },
       emptyOutDir: prod,
-
       minify: 'esbuild',
       rollupOptions: {
         output: {

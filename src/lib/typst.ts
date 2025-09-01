@@ -178,7 +178,9 @@ export default class TypstManager {
 
     containerEl.innerHTML = result.svg.replaceAll(
       '#000000',
-      this.plugin.settings.general.baseColor,
+      this.plugin.settings.advanced.autoBaseColor
+        ? this.plugin.baseColor
+        : this.plugin.settings.general.baseColor,
     );
   }
 

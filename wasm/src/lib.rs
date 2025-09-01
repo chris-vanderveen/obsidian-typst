@@ -7,6 +7,7 @@ use wasm_bindgen::prelude::*;
 use typst::{
     World,
     diag::Warned,
+    ecow,
     foundations::Bytes,
     layout::PagedDocument,
     syntax::{

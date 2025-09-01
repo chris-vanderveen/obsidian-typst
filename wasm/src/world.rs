@@ -9,6 +9,7 @@ use wasm_bindgen::{JsCast, JsValue};
 use typst::{
     Library, World,
     diag::{FileError, FileResult, PackageError},
+    ecow,
     foundations::{Bytes, Datetime, Value},
     layout::{Abs, Length},
     syntax::{FileId, Source, VirtualPath, package::PackageSpec},

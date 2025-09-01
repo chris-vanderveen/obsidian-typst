@@ -10,22 +10,21 @@ crate-type = ["cdylib"]
 typst = "0.13.1"
 typst-svg = "0.13.1"
 typst-assets = { version = "0.13.1", features = ["fonts"] }
-comemo = "0.5"
+comemo = "^0"
 
-wasm-bindgen = "0.2"
+wasm-bindgen = "^0.2"
 wasm-bindgen-futures = "^0.4"
 js-sys = "^0.3"
 serde = "^1.0"
-serde-wasm-bindgen = "0.6.5"
-tsify = "0.5.5"
-console_error_panic_hook = "0.1.7"
+serde-wasm-bindgen = "^0.6"
+tsify = "^0.5"
+console_error_panic_hook = "^0.1"
 
-rayon = "1.11.0"
-ecow = "0.2.6"
+rayon = "^1"
 rustc-hash = "2.1.1"
 
 chrono = "^0.4"
-send_wrapper = "0.6.0"
+send_wrapper = "^0"
 
 [features]
 default = []
