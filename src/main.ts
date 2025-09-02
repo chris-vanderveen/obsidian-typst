@@ -58,6 +58,7 @@ export default class ObsidianTypstMate extends Plugin {
     const cachesDirPath = this.cachesDirPath;
     const packagesDirPath = this.packagesDirPath;
 
+    // 必要なディレクトリを作成する
     // ? ディレクトリの存在確認の挙動が安定しないので, 作成して例外を無視する
     await this.tryCreateDirs([
       this.fontsDirPath,
@@ -65,7 +66,7 @@ export default class ObsidianTypstMate extends Plugin {
       this.packagesDirPath,
     ]);
 
-    // Wasmをダウンロード
+    // 存在しない場合, 最新のWasmをダウンロードする
     this.version = JSON.parse(
       await this.app.vault.adapter.read(`${this.pluginDirPath}/manifest.json`),
     ).version;
@@ -192,6 +193,7 @@ export default class ObsidianTypstMate extends Plugin {
   async downloadLatestWasm(wasmPath: string) {
     new Notice('Downloading latest wasm...');
 
+    // 古いWasmを削除する
     const oldWasms = (
       await this.app.vault.adapter.list(this.pluginDirPath)
     ).files.filter((file) => file.endsWith('.wasm'));
@@ -199,23 +201,25 @@ export default class ObsidianTypstMate extends Plugin {
       await this.app.vault.adapter.remove(wasm);
     }
 
+    // 最新のWasmがあるURLを取得する
     const releaseUrl = `https://api.github.com/repos/azyarashi/obsidian-typst-mate/releases/tags/${this.version}`;
     const releaseResponse = await requestUrl(releaseUrl);
     const releaseData = (await releaseResponse.json) as {
       assets: GitHubAsset[];
     };
     const asset = releaseData.assets.find(
-      (asset) => asset.name === wasmPath.split('/').pop(),
+      (asset) => asset.name === `typst-${this.version}.wasm`,
     );
     if (!asset) throw new Error(`Could not find ${wasmPath} in release assets`);
 
+    // Wasmをダウンロードする
     const response = await requestUrl({
       url: asset.url,
       headers: { Accept: 'application/octet-stream' },
     });
     const data = response.arrayBuffer;
-
     await this.app.vault.adapter.writeBinary(wasmPath, data);
+
     new Notice('Downloaded successfully!');
   }
 
