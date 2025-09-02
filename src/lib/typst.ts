@@ -173,14 +173,14 @@ export default class TypstManager {
   }
 
   postProcesser(result: SVGResult, containerEl: HTMLElement) {
-    if (this.plugin.settings.general.failOnWarning && result.diags.length !== 0)
+    if (this.plugin.settings.failOnWarning && result.diags.length !== 0)
       throw result.diags;
 
     containerEl.innerHTML = result.svg.replaceAll(
       '#000000',
-      this.plugin.settings.advanced.autoBaseColor
+      this.plugin.settings.autoBaseColor
         ? this.plugin.baseColor
-        : this.plugin.settings.general.baseColor,
+        : this.plugin.settings.baseColor,
     );
   }
 
@@ -190,7 +190,7 @@ export default class TypstManager {
     code: string,
     kind: string,
   ) {
-    if (this.plugin.settings.general.enableMathjaxFallback) {
+    if (this.plugin.settings.enableMathjaxFallback) {
       containerEl.replaceChildren(
         this.plugin.originalTex2chtml(code, {
           display: kind !== 'inline',
@@ -210,42 +210,4 @@ export default class TypstManager {
       containerEl.replaceChildren(span);
     }
   }
-
-  async collectFiles(
-    dirPath: string,
-    map: Map<string, Uint8Array | undefined>,
-  ): Promise<void> {
-    const listedFiles = await this.plugin.app.vault.adapter.list(dirPath);
-    const filePaths = listedFiles.files;
-    const folderPaths = listedFiles.folders;
-
-    await Promise.all(
-      filePaths.map(async (filePath) => {
-        try {
-          const data: Uint8Array = new Uint8Array(
-            await this.plugin.app.vault.adapter.readBinary(filePath),
-          );
-          map.set(filePath, data);
-        } catch {}
-      }),
-    );
-
-    for (const folderPath of folderPaths) {
-      await this.collectFiles(folderPath, map);
-    }
-  }
-
-  async createCacheManually(packageSpec: PackageSpec) {
-    const map = new Map<string, Uint8Array | undefined>();
-    await this.collectFiles(
-      `${this.plugin.packagesDirPath}/${packageSpec.namespace}/${packageSpec.name}/${packageSpec.version}`,
-      map,
-    );
-  }
-}
-
-interface PackageSpec {
-  namespace: string;
-  name: string;
-  version: string;
 }

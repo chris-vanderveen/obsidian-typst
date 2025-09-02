@@ -19,12 +19,11 @@ import { ProcessorList } from './settings/processor';
 import './settings.css';
 
 export interface Settings {
-  general: {
-    enableMathjaxFallback: boolean;
-    enableBackgroundRendering: boolean;
-    failOnWarning: boolean;
-    baseColor: string;
-  };
+  enableBackgroundRendering: boolean;
+  autoBaseColor: boolean;
+  failOnWarning: boolean;
+  baseColor: string;
+  enableMathjaxFallback: boolean;
   processor: {
     inline: {
       processors: InlineProcessor[];
@@ -36,17 +35,13 @@ export interface Settings {
       processors: CodeblockProcessor[];
     };
   };
-  advanced: {
-    autoBaseColor: boolean;
-  };
 }
 export const DEFAULT_SETTINGS: Settings = {
-  general: {
-    enableMathjaxFallback: false,
-    enableBackgroundRendering: true,
-    failOnWarning: false,
-    baseColor: '#000000',
-  },
+  enableBackgroundRendering: true,
+  autoBaseColor: true,
+  failOnWarning: false,
+  baseColor: '#000000',
+  enableMathjaxFallback: false,
   processor: {
     inline: {
       processors: [
@@ -139,9 +134,6 @@ export const DEFAULT_SETTINGS: Settings = {
       ],
     },
   },
-  advanced: {
-    autoBaseColor: false,
-  },
 };
 
 export class SettingTab extends PluginSettingTab {
@@ -177,60 +169,51 @@ export class SettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName('Enable MathJax Fallback')
-      .setDesc(
-        'Not recommended for performance reasons. When enabled, Typst errors and hints will be unavailable.',
-      )
-      .addToggle((toggle) => {
-        toggle.setValue(this.plugin.settings.general.enableMathjaxFallback);
-        toggle.onChange((value) => {
-          this.plugin.settings.general.enableMathjaxFallback = value;
-          this.plugin.saveSettings();
-        });
-      });
-
-    new Setting(containerEl)
       .setName('Enable Background Rendering')
       .setDesc(
         'The UI will no longer freeze, but it may conflict with plugins related to export or rendering(plugin reload is required.)',
       )
       .addToggle((toggle) => {
-        toggle.setValue(this.plugin.settings.general.enableBackgroundRendering);
+        toggle.setValue(this.plugin.settings.enableBackgroundRendering);
         toggle.onChange((value) => {
-          this.plugin.settings.general.enableBackgroundRendering = value;
+          this.plugin.settings.enableBackgroundRendering = value;
           this.plugin.saveSettings();
         });
       });
 
-    new Setting(containerEl).setName('Fail on Warning').addToggle((toggle) => {
-      toggle.setValue(this.plugin.settings.general.failOnWarning);
-      toggle.onChange((value) => {
-        this.plugin.settings.general.failOnWarning = value;
-        this.plugin.saveSettings();
-      });
-    });
-
     new Setting(containerEl)
-      .setName('Base Color')
-      .setDesc(
-        'Replace black in SVGs with another color. This is useful when using a dark theme.',
-      )
-      .addColorPicker((colorPicker) => {
-        colorPicker.setValue(this.plugin.settings.general.baseColor);
-        colorPicker.onChange((value) => {
-          this.plugin.settings.general.baseColor = value;
+      .setName('Auto Base Color')
+      .setDesc("Uses Obsidian's text color as the base color automatically.")
+      .addToggle((toggle) => {
+        toggle.setValue(this.plugin.settings.autoBaseColor);
+        toggle.onChange((value) => {
+          this.plugin.settings.autoBaseColor = value;
+          if (value) this.plugin.applyBaseColor();
+
           this.plugin.saveSettings();
         });
       });
   }
 
   addProcessorSettings(containerEl: HTMLElement) {
-    new Setting(containerEl)
-      .setName('Processor')
-      .setDesc(
-        'In each mode, the first matching Processor ID from the top will be used. An empty Processor ID means the default and should be placed at the bottom. In the format, {CODE} can be used (only the first occurrence is replaced), and fontsize can be used as an internal length value. IDs should not contain any special characters!',
-      )
-      .setHeading();
+    const desc = document.createDocumentFragment();
+    desc.appendText(
+      'In each mode, the first matching Processor ID from the top will be used. An empty Processor ID means the default and should be placed at the bottom. In the format, ',
+    );
+    desc.createEl('b', { text: '{CODE}' });
+    desc.appendText(
+      ' can be used (only the first occurrence is replaced), and ',
+    );
+    desc.createEl('b', { text: 'fontsize' });
+    desc.appendText(' can be used as an internal length value.');
+    desc.appendText(
+      'In inline mode, separate the id and the code with a colon (:).',
+    );
+    desc.createEl('b', {
+      text: ' IDs should not contain any special characters!',
+    });
+
+    new Setting(containerEl).setName('Processor').setDesc(desc).setHeading();
 
     new ProcessorList(
       this.plugin,
@@ -430,7 +413,7 @@ export class SettingTab extends PluginSettingTab {
     const setting = new Setting(containerEl)
       .setName('Package')
       .setDesc(
-        'When a package is imported, the cache is used instead of the actual files for faster performance. If you make changes directly, please click the package icon to refresh the cache.',
+        'When a package is imported, the cache is used instead of the actual files for faster performance. If you make changes directly, please click the package icon to refresh the cache(plugin reload is required.)',
       )
       .setHeading();
 
@@ -455,15 +438,39 @@ export class SettingTab extends PluginSettingTab {
   addAdvancedSettings(containerEl: HTMLElement) {
     new Setting(containerEl).setName('Advanced').setHeading();
 
-    new Setting(containerEl)
-      .setName('Auto Base Color')
-      .setDesc("Uses Obsidian's text color as the base color automatically.")
-      .addToggle((toggle) => {
-        toggle.setValue(this.plugin.settings.advanced.autoBaseColor);
-        toggle.onChange((value) => {
-          this.plugin.settings.advanced.autoBaseColor = value;
-          if (value) this.plugin.applyBaseColor();
+    new Setting(containerEl).setName('Fail on Warning').addToggle((toggle) => {
+      toggle.setValue(this.plugin.settings.failOnWarning);
+      toggle.onChange((value) => {
+        this.plugin.settings.failOnWarning = value;
+        this.plugin.saveSettings();
+      });
+    });
 
+    new Setting(containerEl)
+      .setName('Base Color')
+      .setDesc(
+        'Replace black in SVGs with another color. This is useful when using a dark theme. To enable this, you need to disable the Auto Base Color setting.',
+      )
+      .addColorPicker((colorPicker) => {
+        colorPicker.setValue(this.plugin.settings.baseColor);
+        colorPicker.onChange((value) => {
+          this.plugin.settings.baseColor = value;
+          this.plugin.saveSettings();
+        });
+      });
+
+    const desc = document.createDocumentFragment();
+    desc.appendText('Not recommended for performance reasons. When enabled, ');
+    desc.createEl('b', {
+      text: 'Typst errors, warnings, and hints will be unavailable.',
+    });
+    new Setting(containerEl)
+      .setName('Enable MathJax Fallback')
+      .setDesc(desc)
+      .addToggle((toggle) => {
+        toggle.setValue(this.plugin.settings.enableMathjaxFallback);
+        toggle.onChange((value) => {
+          this.plugin.settings.enableMathjaxFallback = value;
           this.plugin.saveSettings();
         });
       });

@@ -48,8 +48,8 @@ export class TypstToolsView extends ItemView {
           ?.url as string;
       });
     new ButtonComponent(menuEl)
-      .setTooltip('再読み込み')
       .setIcon('refresh-ccw')
+      .setTooltip('再読み込み')
       .onClick(() => {
         iframe.src = ALL_ITEMS.find(
           (item) => item.title === dropdown.getValue(),

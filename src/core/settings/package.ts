@@ -1,7 +1,8 @@
-import type { PackageSpec } from '@myriaddreamin/typst.ts/dist/esm/internal.types.mjs';
 import { Notice, Setting } from 'obsidian';
 
 import type ObsidianTypstMate from '@/main';
+import { zip } from '@/lib/util';
+import type { PackageSpec } from '@/lib/worker';
 
 export class PackagesList {
   plugin: ObsidianTypstMate;
@@ -48,8 +49,7 @@ export class PackagesList {
           cacheButton.setIcon('package');
 
           cacheButton.onClick(async () => {
-            await this.plugin.typstManager
-              .createCacheManually(spec)
+            await this.createCacheManually(spec)
               .then(() => {
                 new Notice('Cached successfully!');
                 this.plugin.init(true);
@@ -94,5 +94,46 @@ export class PackagesList {
       this.packageTableEl.addClass('typstmate-hidden');
 
     await this.plugin.init();
+  }
+
+  async collectFiles(
+    dirPath: string,
+    map: Map<string, Uint8Array | undefined>,
+  ): Promise<void> {
+    const listedFiles = await this.plugin.app.vault.adapter.list(dirPath);
+    const filePaths = listedFiles.files;
+    const folderPaths = listedFiles.folders;
+
+    await Promise.all(
+      filePaths.map(async (filePath) => {
+        try {
+          const data: Uint8Array = new Uint8Array(
+            await this.plugin.app.vault.adapter.readBinary(filePath),
+          );
+          map.set(
+            filePath.replace(`${this.plugin.packagesDirPath}/`, ''),
+            data,
+          );
+        } catch {}
+      }),
+    );
+
+    for (const folderPath of folderPaths) {
+      await this.collectFiles(folderPath, map);
+    }
+  }
+
+  async createCacheManually(packageSpec: PackageSpec) {
+    const map = new Map<string, Uint8Array | undefined>();
+
+    await this.collectFiles(
+      `${this.plugin.packagesDirPath}/${packageSpec.namespace}/${packageSpec.name}/${packageSpec.version}`,
+      map,
+    );
+
+    await this.plugin.app.vault.adapter.writeBinary(
+      `${this.plugin.cachesDirPath}/${packageSpec.namespace}_${packageSpec.name}_${packageSpec.version}.cache`,
+      zip(map).slice().buffer,
+    );
   }
 }

@@ -1,6 +1,7 @@
 import { proxy, type Remote, wrap } from 'comlink';
 import {
   debounce,
+  type EventRef,
   loadMathJax,
   MarkdownView,
   Notice,
@@ -8,15 +9,14 @@ import {
   Plugin,
   renderMath,
   requestUrl,
-  type EventRef,
   type WorkspaceLeaf,
 } from 'obsidian';
 
-import { TypstToolsView } from '@/core/leaf';
-import { DEFAULT_SETTINGS, type Settings, SettingTab } from '@/core/settings';
-import TypstManager from '@/lib/typst';
-import type $ from '@/lib/worker';
+import { TypstToolsView } from './core/leaf';
+import { DEFAULT_SETTINGS, type Settings, SettingTab } from './core/settings';
+import TypstManager from './lib/typst';
 import { zip } from './lib/util';
+import type $ from './lib/worker';
 import Typst from './lib/worker';
 import TypstWorker from './lib/worker?worker&inline';
 
@@ -28,6 +28,7 @@ interface GitHubAsset {
 export default class ObsidianTypstMate extends Plugin {
   pluginId = 'typst-mate';
   pluginDirPath!: string;
+  settings!: Settings;
 
   baseDirPath!: string;
   fontsDirPath!: string;
@@ -35,14 +36,12 @@ export default class ObsidianTypstMate extends Plugin {
   packagesDirPath!: string;
   originalTex2chtml: any;
 
-  settings!: Settings;
-
   typst!: $ | Remote<$>;
   worker?: Worker;
   typstManager!: TypstManager;
 
   baseColor = '#000000';
-  listener!: EventRef;
+  listeners: EventRef[] = [];
 
   override async onload() {
     // ユーザーの設定(data.json)を読み込む
@@ -66,10 +65,11 @@ export default class ObsidianTypstMate extends Plugin {
     ]);
 
     // Wasmをダウンロード
-    const manifest = this.app.plugins.getPlugin(this.pluginId)?.manifest;
-    if (!manifest) throw new Error('Failed to load manifest.');
+    const version = JSON.parse(
+      await this.app.vault.adapter.read(`${this.pluginDirPath}/manifest.json`),
+    ).version;
 
-    const wasmPath = `${this.pluginDirPath}/typst-${manifest.version}.wasm`;
+    const wasmPath = `${this.pluginDirPath}/typst-${version}.wasm`;
     if (!(await this.app.vault.adapter.exists(wasmPath))) {
       const oldWasms = (
         await this.app.vault.adapter.list(this.pluginDirPath)
@@ -80,25 +80,36 @@ export default class ObsidianTypstMate extends Plugin {
 
       new Notice('Downloading wasm...');
 
-      await this.downloadAsset(`typst-${manifest.version}.wasm`);
+      await this.downloadAsset(`typst-${version}.wasm`);
       new Notice('Downloaded successfully!');
     }
 
     // MathJaxを読み込む
-    await loadMathJax(); // MathJaxが読み込まれると解決する
+    await loadMathJax();
     if (window.MathJax === undefined)
       throw new Error('Failed to load MathJax.');
     renderMath('', false); // ? 副作用(スタイル)のため
     this.originalTex2chtml = window.MathJax.tex2chtml; // ? Pluginをunloadしたときに戻すため. Fallback処理のため.
+
+    // 監視を追加
+    const styles = getComputedStyle(document.body);
+    this.baseColor = styles.getPropertyValue('--color-base-100').trim();
+    this.listeners.push(
+      this.app.workspace.on('css-change', () => {
+        if (this.settings.autoBaseColor) this.applyBaseColor();
+      }),
+    );
 
     // TypstManagerを設定する
     const main = {
       notice(message: string) {
         new Notice(message);
       },
+
       readBinary(path: string) {
         return adapter.readBinary(path);
       },
+
       writePackage(path: string, files: tarFile[]) {
         const map = new Map<string, Uint8Array>();
 
@@ -123,7 +134,6 @@ export default class ObsidianTypstMate extends Plugin {
         }
 
         const [namespace, name, version] = path.split('/');
-
         adapter
           .writeBinary(
             // ? .DS_STORE などが紛れ込まないようにするため
@@ -135,9 +145,8 @@ export default class ObsidianTypstMate extends Plugin {
           });
       },
     };
-
     const wasm = await adapter.readBinary(wasmPath);
-    if (this.settings.general.enableBackgroundRendering) {
+    if (this.settings.enableBackgroundRendering) {
       this.worker = new TypstWorker();
       const api = wrap<typeof $>(this.worker);
       this.typst = await new api(wasm, packagesDirPath);
@@ -148,18 +157,10 @@ export default class ObsidianTypstMate extends Plugin {
     }
 
     this.typstManager = new TypstManager(this);
-    await this.typstManager.init();
+    await this.init(true);
     await this.typstManager.registerOnce();
 
     this.addSettingTab(new SettingTab(this.app, this));
-
-    // 監視を追加
-    const styles = getComputedStyle(document.body);
-    this.baseColor = styles.getPropertyValue('--color-base-100').trim();
-    this.listener = this.app.workspace.on('css-change', () => {
-      if (!this.settings.advanced.autoBaseColor) return;
-      this.applyBaseColor();
-    });
 
     // Leafを登録
     // ? iframeがモバイルで使えないため無効化
@@ -183,16 +184,23 @@ export default class ObsidianTypstMate extends Plugin {
       id: 'typst-switch-rendering-engine',
       name: 'Switch Rendering Engine',
       callback: async () => {
-        this.settings.general.enableBackgroundRendering =
-          !this.settings.general.enableBackgroundRendering;
+        this.settings.enableBackgroundRendering =
+          !this.settings.enableBackgroundRendering;
         await this.saveSettings();
         await this.reload(false);
       },
     });
   }
 
+  async tryCreateDirs(dirPaths: string[]) {
+    await Promise.allSettled(
+      dirPaths.map((dirPath) => this.app.vault.adapter.mkdir(dirPath)),
+    ).catch(() => {});
+  }
+
   applyBaseColor() {
     const styles = getComputedStyle(document.body);
+
     const beforeColor = this.baseColor;
     this.baseColor = styles.getPropertyValue('--color-base-100').trim();
     const svgs = document.querySelectorAll('svg.typst-doc');
@@ -203,7 +211,9 @@ export default class ObsidianTypstMate extends Plugin {
 
   override async onunload() {
     // 監視を終了
-    this.app.workspace.offref(this.listener);
+    for (const listener of this.listeners) {
+      this.app.workspace.offref(listener);
+    }
 
     // Workerを終了
     this.worker?.terminate();
@@ -219,12 +229,6 @@ export default class ObsidianTypstMate extends Plugin {
     for (const leaf of leafs) {
       leaf.detach();
     }
-  }
-
-  async tryCreateDirs(dirPaths: string[]) {
-    await Promise.allSettled(
-      dirPaths.map((dirPath) => this.app.vault.adapter.mkdir(dirPath)),
-    ).catch(() => {});
   }
 
   async downloadAsset(name: string) {
@@ -281,6 +285,7 @@ export default class ObsidianTypstMate extends Plugin {
   override onConfigFileChange = debounce(
     async () => {
       await this.loadSettings();
+      await this.init();
     },
     500,
     true,
@@ -294,14 +299,9 @@ export default class ObsidianTypstMate extends Plugin {
       ?.previewMode.rerender(true);
   }
 
-  async initTypst() {
-    await this.typstManager.init();
-  }
-
-  // ? MarkdownCodeBlockProcessorのunregistが行われる
   async reload(openSettingsTab = true) {
     await this.app.plugins.disablePlugin(this.pluginId); // ? onunloadも呼ばれる
-    await this.app.plugins.enablePlugin(this.pluginId);
+    await this.app.plugins.enablePlugin(this.pluginId); // ? onloadも呼ばれる
     if (openSettingsTab) this.app.setting.openTabById(this.pluginId);
   }
 }

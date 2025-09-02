@@ -106,7 +106,7 @@ impl Typst {
         // プロセッサー
         for p in procs_serde {
             self.world
-                .add_file_text(&format!("{}-{}.typ", p.kind, p.id), p.format);
+                .add_file_text(&format!("{}--{}.typ", p.kind, p.id), p.format);
         }
 
         Ok(())
@@ -148,7 +148,7 @@ impl Typst {
 
             let result = self.world.source(FileId::new(
                 None,
-                VirtualPath::new(&format!("{}-{}.typ", kind, id)),
+                VirtualPath::new(&format!("{}--{}.typ", kind, id)),
             ));
 
             match result {

@@ -8,6 +8,7 @@ export class DiagnosticModal extends Modal {
 
     diagnosticArray.forEach((diagnostic) => {
       new Setting(this.contentEl).setName(diagnostic.message).setHeading();
+
       diagnostic.hints.forEach((hint) => {
         new Setting(this.contentEl).setName(`hint: ${hint}`);
       });
