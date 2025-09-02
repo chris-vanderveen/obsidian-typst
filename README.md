@@ -3,6 +3,12 @@
 Render math expressions in [Obsidian](https://obsidian.md) using [Typst](https://typst.app/) instead of MathJax.
 Typst Mate also provides flexible styling options to customize the look of your formulas.
 
+---
+
+Currently, the processor description is insufficient.
+For better understanding, please refer to this:
+https://github.com/azyarashi/obsidian-typst-mate/issues/2
+
 ## Features
 
 - Replaces MathJax with Typst for rendering math in Obsidian
@@ -23,6 +29,8 @@ Depending on the three modes (inline, display, codeblock), the styling method (s
 ## Note
 - `time` and `fontsize` are fixed to the value at plugin startup.
 - Only the first page is subject to rendering.
+
+
 
 ## TODO
 - 不具合修正: 設定の変更後に `onConfigFileChange` が2回呼ばれてしまう.
