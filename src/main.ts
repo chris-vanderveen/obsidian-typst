@@ -204,7 +204,9 @@ export default class ObsidianTypstMate extends Plugin {
     const releaseData = (await releaseResponse.json) as {
       assets: GitHubAsset[];
     };
-    const asset = releaseData.assets.find((asset) => asset.name === wasmPath);
+    const asset = releaseData.assets.find(
+      (asset) => asset.name === wasmPath.split('/').pop(),
+    );
     if (!asset) throw new Error(`Could not find ${wasmPath} in release assets`);
 
     const response = await requestUrl({
