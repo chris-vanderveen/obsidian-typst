@@ -28,6 +28,7 @@ interface GitHubAsset {
 export default class ObsidianTypstMate extends Plugin {
   pluginId = 'typst-mate';
   pluginDirPath!: string;
+  version!: string;
   settings!: Settings;
 
   baseDirPath!: string;
@@ -65,23 +66,13 @@ export default class ObsidianTypstMate extends Plugin {
     ]);
 
     // Wasmをダウンロード
-    const version = JSON.parse(
+    this.version = JSON.parse(
       await this.app.vault.adapter.read(`${this.pluginDirPath}/manifest.json`),
     ).version;
 
-    const wasmPath = `${this.pluginDirPath}/typst-${version}.wasm`;
+    const wasmPath = `${this.pluginDirPath}/typst-${this.version}.wasm`;
     if (!(await this.app.vault.adapter.exists(wasmPath))) {
-      const oldWasms = (
-        await this.app.vault.adapter.list(this.pluginDirPath)
-      ).files.filter((file) => file.endsWith('.wasm'));
-      for (const wasm of oldWasms) {
-        await this.app.vault.adapter.remove(wasm);
-      }
-
-      new Notice('Downloading latest wasm...');
-
-      await this.downloadAsset(`typst-${version}.wasm`);
-      new Notice('Downloaded successfully!');
+      await this.downloadLatestWasm(wasmPath);
     }
 
     // MathJaxを読み込む
@@ -198,6 +189,34 @@ export default class ObsidianTypstMate extends Plugin {
     ).catch(() => {});
   }
 
+  async downloadLatestWasm(wasmPath: string) {
+    new Notice('Downloading latest wasm...');
+
+    const oldWasms = (
+      await this.app.vault.adapter.list(this.pluginDirPath)
+    ).files.filter((file) => file.endsWith('.wasm'));
+    for (const wasm of oldWasms) {
+      await this.app.vault.adapter.remove(wasm);
+    }
+
+    const releaseUrl = `https://api.github.com/repos/azyarashi/obsidian-typst-mate/releases/tags/${this.version}`;
+    const releaseResponse = await requestUrl(releaseUrl);
+    const releaseData = (await releaseResponse.json) as {
+      assets: GitHubAsset[];
+    };
+    const asset = releaseData.assets.find((asset) => asset.name === wasmPath);
+    if (!asset) throw new Error(`Could not find ${wasmPath} in release assets`);
+
+    const response = await requestUrl({
+      url: asset.url,
+      headers: { Accept: 'application/octet-stream' },
+    });
+    const data = response.arrayBuffer;
+
+    await this.app.vault.adapter.writeBinary(wasmPath, data);
+    new Notice('Downloaded successfully!');
+  }
+
   applyBaseColor() {
     const styles = getComputedStyle(document.body);
 
@@ -229,35 +248,6 @@ export default class ObsidianTypstMate extends Plugin {
     for (const leaf of leafs) {
       leaf.detach();
     }
-  }
-
-  async downloadAsset(name: string) {
-    // バージョンを取得
-    const manifestPath = `${this.pluginDirPath}/manifest.json`;
-    const manifestContent = await this.app.vault.adapter.read(manifestPath);
-    const version = JSON.parse(manifestContent)?.version;
-    if (!version) throw new Error('Version not found in manifest.json');
-
-    const releaseUrl = `https://api.github.com/repos/azyarashi/obsidian-typst-mate/releases/tags/${version}`;
-    const releaseResponse = await requestUrl(releaseUrl);
-    const releaseData = (await releaseResponse.json) as {
-      assets: GitHubAsset[];
-    };
-
-    const asset = releaseData.assets.find((asset) => asset.name === name);
-    if (!asset) throw new Error(`Could not find ${name} in release assets`);
-
-    await this.download(asset.url, `${this.pluginDirPath}/${name}`);
-  }
-
-  async download(url: string, filePath: string) {
-    const response = await requestUrl({
-      url,
-      headers: { Accept: 'application/octet-stream' },
-    });
-    const data = response.arrayBuffer;
-
-    await this.app.vault.adapter.writeBinary(filePath, data);
   }
 
   async activateLeaf() {
