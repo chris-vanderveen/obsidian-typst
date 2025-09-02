@@ -83,7 +83,7 @@ export default class ObsidianTypstMate extends Plugin {
     renderMath('', false); // ? 副作用(スタイル)のため
     this.originalTex2chtml = window.MathJax.tex2chtml; // ? Pluginをunloadしたときに戻すため. Fallback処理のため.
 
-    // 監視を追加
+    // 監視を追加する
     const styles = getComputedStyle(document.body);
     this.baseColor = styles.getPropertyValue('--color-base-100').trim();
     this.listeners.push(
@@ -234,6 +234,18 @@ export default class ObsidianTypstMate extends Plugin {
     });
   }
 
+  async activateLeaf() {
+    let leaf: WorkspaceLeaf | null | undefined;
+    [leaf] = this.app.workspace.getLeavesOfType(TypstToolsView.viewtype);
+
+    if (!leaf) {
+      leaf = this.app.workspace.getLeftLeaf(false);
+      await leaf?.setViewState({ type: TypstToolsView.viewtype });
+    }
+
+    return leaf;
+  }
+
   override async onunload() {
     // 監視を終了
     for (const listener of this.listeners) {
@@ -254,18 +266,6 @@ export default class ObsidianTypstMate extends Plugin {
     for (const leaf of leafs) {
       leaf.detach();
     }
-  }
-
-  async activateLeaf() {
-    let leaf: WorkspaceLeaf | null | undefined;
-    [leaf] = this.app.workspace.getLeavesOfType(TypstToolsView.viewtype);
-
-    if (!leaf) {
-      leaf = this.app.workspace.getLeftLeaf(false);
-      await leaf?.setViewState({ type: TypstToolsView.viewtype });
-    }
-
-    return leaf;
   }
 
   async loadSettings() {
