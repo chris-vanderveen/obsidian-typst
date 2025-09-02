@@ -78,7 +78,7 @@ export default class ObsidianTypstMate extends Plugin {
         await this.app.vault.adapter.remove(wasm);
       }
 
-      new Notice('Downloading wasm...');
+      new Notice('Downloading latest wasm...');
 
       await this.downloadAsset(`typst-${version}.wasm`);
       new Notice('Downloaded successfully!');
