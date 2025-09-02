@@ -154,19 +154,19 @@ export default class TypstManager {
 
     const formattedCode = processor.format.replace('{CODE}', code);
 
-    const result = this.plugin.typst.svg(formattedCode, kind, processor.id);
-    if (result instanceof Promise) {
-      result
-        .then((result: SVGResult) => this.postProcesser(result, containerEl))
-        .catch((err: Diagnostic[]) =>
-          this.errorHandler(err, containerEl, code, kind),
-        );
-    } else {
-      try {
-        this.postProcesser(result, containerEl);
-      } catch (err) {
-        this.errorHandler(err as Diagnostic[], containerEl, code, kind);
-      }
+    let result: SVGResult | Promise<SVGResult>;
+    try {
+      result = this.plugin.typst.svg(formattedCode, kind, processor.id);
+      if (result instanceof Promise) {
+        result
+          .then((result: SVGResult) => this.postProcesser(result, containerEl))
+          .catch((err: Diagnostic[]) =>
+            this.errorHandler(err, containerEl, code, kind),
+          );
+      } else this.postProcesser(result, containerEl);
+    } catch (err) {
+      this.errorHandler(err as Diagnostic[], containerEl, code, kind);
+      return containerEl;
     }
 
     return containerEl;
