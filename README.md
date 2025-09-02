@@ -12,6 +12,14 @@ Typst Mate also provides flexible styling options to customize the look of your 
 - Additional styling customization for better readability
 - Allows easy import of system fonts to your vault (Desktop app only)
 
+## Custom Styling
+
+You can apply your own custom CSS, not just the styling included in the plugin.
+Depending on the three modes (inline, display, codeblock), the styling method (style), and the identifier (id), the following CSS classes will be added:
+- `typstmate-(mode)`
+- `typstmate-style-(style)`
+- `typstmate-id-(id)`
+
 ## Note
 - `time` and `fontsize` are fixed to the value at plugin startup.
 - Only the first page is subject to rendering.
