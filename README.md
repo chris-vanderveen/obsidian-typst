@@ -8,7 +8,7 @@ Typst Mate also provides flexible styling options to customize the look of your 
 - Replaces MathJax with Typst for rendering math in Obsidian
 - Supports inline math (`$...$`)
 - Supports display math (`$$...$$`)
-- Supports code blocks (\`\`\`...\`\`\`)
+- Supports code blocks (\`\`\`...\`\`\`) (***reload required to take effect***)
 - Additional styling customization for better readability
 - Allows easy import of system fonts to your vault (Desktop app only)
 
