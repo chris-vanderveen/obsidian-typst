@@ -1,5 +1,6 @@
 import {
   type App,
+  debounce,
   Notice,
   Platform,
   PluginSettingTab,
@@ -24,6 +25,7 @@ export interface Settings {
   failOnWarning: boolean;
   baseColor: string;
   enableMathjaxFallback: boolean;
+  preamble: string;
   processor: {
     inline: {
       processors: InlineProcessor[];
@@ -42,6 +44,8 @@ export const DEFAULT_SETTINGS: Settings = {
   failOnWarning: false,
   baseColor: '#000000',
   enableMathjaxFallback: false,
+  preamble:
+    '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)\n#set text(size: fontsize)',
   processor: {
     inline: {
       processors: [
@@ -50,38 +54,32 @@ export const DEFAULT_SETTINGS: Settings = {
           renderingEngine: 'typst',
           format: [
             '#import "@preview/typsium:0.3.0": ce',
-            '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
-            '#set text(size: fontsize)',
             '#show math.equation: set text(font: ("New Computer Modern Math", "Noto Serif CJK SC"))',
             '#ce("{CODE}")',
           ].join('\n'),
           styling: 'inline-middle',
+          noPreamble: false,
         },
         {
           id: 'mid',
           renderingEngine: 'typst',
-          format: [
-            '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
-            '#set text(size: fontsize)',
-            '$\n{CODE}\n$',
-          ].join('\n'),
+          format: '$\n{CODE}\n$',
           styling: 'inline-middle',
+          noPreamble: true,
         },
         {
           id: 'tex',
           renderingEngine: 'mathjax',
           format: '',
           styling: 'inline',
+          noPreamble: false,
         },
         {
           id: '',
           renderingEngine: 'typst',
-          format: [
-            '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
-            '#set text(size: fontsize)',
-            '${CODE}$',
-          ].join('\n'),
+          format: '${CODE}$',
           styling: 'inline',
+          noPreamble: false,
         },
       ],
     },
@@ -90,22 +88,16 @@ export const DEFAULT_SETTINGS: Settings = {
         {
           id: 'block',
           renderingEngine: 'typst',
-          format: [
-            '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
-            '#set text(size: fontsize)',
-            '$\n{CODE}\n$',
-          ].join('\n'),
+          format: '$\n{CODE}\n$',
           styling: 'block',
+          noPreamble: false,
         },
         {
           id: '',
           renderingEngine: 'typst',
-          format: [
-            '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
-            '#set text(size: fontsize)',
-            '$\n{CODE}\n$',
-          ].join('\n'),
+          format: '$\n{CODE}\n$',
           styling: 'block-center',
+          noPreamble: false,
         },
       ],
     },
@@ -114,22 +106,16 @@ export const DEFAULT_SETTINGS: Settings = {
         {
           id: 'typ',
           renderingEngine: 'typst',
-          format: [
-            '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
-            '#set text(size: fontsize)',
-            '{CODE}',
-          ].join('\n'),
+          format: '{CODE}',
           styling: 'block',
+          noPreamble: false,
         },
         {
           id: 'typst',
           renderingEngine: 'typst',
-          format: [
-            '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
-            '#set text(size: fontsize)',
-            '```typst\n{CODE}\n```',
-          ].join('\n'),
+          format: '```typst\n{CODE}\n```',
           styling: 'codeblock',
+          noPreamble: true,
         },
       ],
     },
@@ -214,6 +200,28 @@ export class SettingTab extends PluginSettingTab {
     });
 
     new Setting(containerEl).setName('Processor').setDesc(desc).setHeading();
+
+    new Setting(containerEl)
+      .setName('Preamble')
+      .setDesc('Preamble can be turned on or off by toggling each processor.');
+    const preambleTextEl = containerEl.createEl('textarea');
+    preambleTextEl.addClass('typstmate-form-control');
+    preambleTextEl.value = this.plugin.settings.preamble;
+    preambleTextEl.placeholder = 'preamble';
+
+    preambleTextEl.addEventListener(
+      'input',
+      debounce(
+        () => {
+          this.plugin.settings.preamble = preambleTextEl.value;
+
+          this.plugin.saveSettings();
+          this.plugin.init(true);
+        },
+        500,
+        true,
+      ),
+    );
 
     new ProcessorList(
       this.plugin,

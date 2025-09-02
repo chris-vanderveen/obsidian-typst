@@ -152,7 +152,12 @@ export default class TypstManager {
         display: kind !== 'inline',
       });
 
-    const formattedCode = processor.format.replace('{CODE}', code);
+    const formattedCode = processor.noPreamble
+      ? processor.format.replace('{CODE}', code)
+      : `${this.plugin.settings.preamble}\n${processor.format.replace(
+          '{CODE}',
+          code,
+        )}`;
 
     let result: SVGResult | Promise<SVGResult>;
     try {

@@ -79,6 +79,17 @@ export class ProcessorList {
           this.moveProcessor(Number(processorEl.id), 'down'),
         );
       })
+      .addToggle((noPreambleToggle) => {
+        noPreambleToggle.setValue(!processor.noPreamble);
+        noPreambleToggle.setTooltip('Use preamble');
+        noPreambleToggle.onChange((noPreamble) => {
+          this.plugin.settings.processor[this.type].processors[
+            Number(processorEl.id)
+          ]!.noPreamble = !noPreamble;
+
+          this.plugin.saveSettings();
+        });
+      })
       .addDropdown((renderingEngineDropdown) => {
         renderingEngineDropdown.addOption('typst', 'Typst');
         renderingEngineDropdown.addOption('mathjax', 'MathJax');

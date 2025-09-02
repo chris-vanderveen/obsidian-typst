@@ -21,18 +21,21 @@ export interface InlineProcessor {
   renderingEngine: RenderingEngine;
   format: string;
   styling: InlineStyling;
+  noPreamble: boolean;
 }
 export interface DisplayProcessor {
   id: string;
   renderingEngine: RenderingEngine;
   format: string;
   styling: DisplayStyling;
+  noPreamble: boolean;
 }
 export interface CodeblockProcessor {
   id: string;
   renderingEngine: RenderingEngine;
   format: string;
   styling: CodeblockStyling;
+  noPreamble: boolean;
 }
 
 export type Processor = InlineProcessor | DisplayProcessor | CodeblockProcessor;
@@ -49,6 +52,7 @@ export const DefaultNewInlineProcessor: InlineProcessor = {
   renderingEngine: 'typst',
   format: '',
   styling: 'inline-middle',
+  noPreamble: false,
 };
 
 export const DefaultNewDisplayProcessor: DisplayProcessor = {
@@ -56,6 +60,7 @@ export const DefaultNewDisplayProcessor: DisplayProcessor = {
   renderingEngine: 'typst',
   format: '',
   styling: 'block-center',
+  noPreamble: false,
 };
 
 export const DefaultNewCodeblockProcessor: CodeblockProcessor = {
@@ -63,6 +68,7 @@ export const DefaultNewCodeblockProcessor: CodeblockProcessor = {
   renderingEngine: 'typst',
   format: '',
   styling: 'block',
+  noPreamble: false,
 };
 
 export const DefaultNewProcessor: Record<ProcessorType, Processor> = {
