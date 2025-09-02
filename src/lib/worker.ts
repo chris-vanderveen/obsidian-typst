@@ -74,9 +74,9 @@ export default class $ {
             false,
           );
           xhr.send(null);
-          if (!xhr.responseText === null) throw 20; // PackageError::MalformedArchive
           if (xhr.status === 0) throw 21; // PackageError::NetworkFailed
           if (xhr.status === 404) throw 22; // PackageError::NotFound
+          if (!xhr.responseText === null) throw 20; // PackageError::MalformedArchive
 
           const text = xhr.responseText;
           const targzArr = new Uint8Array(text.length);
