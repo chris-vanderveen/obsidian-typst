@@ -1,5 +1,9 @@
 # Typst Mate
 
+<a href="https://typst.app/docs/changelog/">
+  <img alt="Typst Version" src="https://img.shields.io/badge/typst-0.13.1-orange" />
+</a>
+
 Render math expressions in [Obsidian](https://obsidian.md) using [Typst](https://typst.app/) instead of MathJax.
 Typst Mate also provides flexible styling options to customize the look of your formulas.
 
