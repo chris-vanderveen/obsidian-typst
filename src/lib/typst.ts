@@ -37,7 +37,14 @@ export default class TypstManager {
       ].processors.map((p) => ({
         kind,
         id: p.id,
-        format: p.format.replace('{CODE}', ''),
+        format: p.noPreamble
+          ? p.format.replace('{CODE}', '')
+          : `${this.plugin.settings.preamble}\n${p.format.replace(
+              '{CODE}',
+              '',
+            )}`,
+        styling: p.styling,
+        renderingEngine: p.renderingEngine,
       })),
     );
 
@@ -96,8 +103,8 @@ export default class TypstManager {
     switch (kind) {
       case 'inline':
         processor =
-          this.plugin.settings.processor.inline.processors.find((processor) =>
-            code.startsWith(`${processor.id}`),
+          this.plugin.settings.processor.inline.processors.find((p) =>
+            code.startsWith(`${p.id}`),
           ) ?? DEFAULT_SETTINGS.processor.inline.processors.at(-1)!;
         if (processor.id.length !== 0)
           code = code.slice(processor.id.length + 1);
@@ -110,8 +117,8 @@ export default class TypstManager {
         break;
       case 'display':
         processor =
-          this.plugin.settings.processor.display.processors.find((processor) =>
-            code.startsWith(`${processor.id}`),
+          this.plugin.settings.processor.display.processors.find((p) =>
+            code.startsWith(`${p.id}`),
           ) ?? DEFAULT_SETTINGS.processor.display.processors.at(-1)!;
         if (processor.id.length !== 0) code = code.slice(processor.id.length);
 
@@ -124,7 +131,7 @@ export default class TypstManager {
       default:
         processor =
           this.plugin.settings.processor.codeblock.processors.find(
-            (processor) => processor.id === kind,
+            (p) => p.id === kind,
           ) ?? DEFAULT_SETTINGS.processor.codeblock.processors.at(-1)!;
 
         containerEl.addClass(
