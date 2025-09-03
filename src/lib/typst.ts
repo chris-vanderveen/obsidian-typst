@@ -105,11 +105,6 @@ export default class TypstManager {
         if (processor.id.length !== 0)
           code = code.slice(processor.id.length + 1);
 
-        containerEl.addClass(
-          'typstmate-inline',
-          `typstmate-style-${processor.styling}`,
-          `typstmate-id-${processor.id}`,
-        );
         break;
       case 'display':
         processor =
@@ -118,11 +113,6 @@ export default class TypstManager {
           ) ?? DEFAULT_SETTINGS.processor.display.processors.at(-1)!;
         if (processor.id.length !== 0) code = code.slice(processor.id.length);
 
-        containerEl.addClass(
-          'typstmate-display',
-          `typstmate-style-${processor.styling}`,
-          `typstmate-id-${processor.id}`,
-        );
         break;
       default:
         processor =
@@ -130,22 +120,12 @@ export default class TypstManager {
             (p) => p.id === kind,
           ) ?? DEFAULT_SETTINGS.processor.codeblock.processors.at(-1)!;
 
-        containerEl.addClass(
-          'typstmate-codeblock',
-          `typstmate-style-${processor.styling}`,
-          `typstmate-id-${processor.id}`,
-        );
-
-        switch (processor.styling) {
-          case 'codeblock': {
-            containerEl.addClass(
-              'HyperMD-codeblock',
-              'HyperMD-codeblock-bg',
-              'cm-line',
-            );
-            break;
-          }
-        }
+        if (processor.styling === 'codeblock')
+          containerEl.addClass(
+            'HyperMD-codeblock',
+            'HyperMD-codeblock-bg',
+            'cm-line',
+          );
 
         kind = 'codeblock';
     }
@@ -155,6 +135,11 @@ export default class TypstManager {
         display: kind !== 'inline',
       });
 
+    containerEl.addClass(
+      `typstmate-${kind}`,
+      `typstmate-style-${processor.styling}`,
+      `typstmate-id-${processor.id}`,
+    );
     const formattedCode = this.format(processor, code);
 
     let result: SVGResult | Promise<SVGResult>;
