@@ -3,7 +3,6 @@
 	"scripts": {
 		"wasm": "wasm-pack build wasm --target web --release --out-dir ../pkg",
 		"build": "bunx --bun vite build",
-		"version": "bun version.mjs bump",
 		"check": "bunx biome check --write"
 	},
 	"dependencies": {

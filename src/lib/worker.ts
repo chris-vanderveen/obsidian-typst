@@ -1,6 +1,7 @@
 import { expose } from 'comlink';
 import pako from 'pako';
 import untar from 'untar-sync';
+
 import init, { type InitOutput, Typst } from '../../pkg/typst_wasm.js';
 
 let main: Main;

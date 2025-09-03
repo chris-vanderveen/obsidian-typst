@@ -1,8 +1,7 @@
 import { Notice, Setting } from 'obsidian';
-
-import type ObsidianTypstMate from '@/main';
 import { zip } from '@/lib/util';
 import type { PackageSpec } from '@/lib/worker';
+import type ObsidianTypstMate from '@/main';
 
 export class PackagesList {
   plugin: ObsidianTypstMate;
@@ -50,9 +49,9 @@ export class PackagesList {
 
           cacheButton.onClick(async () => {
             await this.createCacheManually(spec)
-              .then(() => {
+              .then(async (map) => {
+                await this.plugin.typst.store({ sources: map });
                 new Notice('Cached successfully!');
-                this.plugin.init(true);
               })
               .catch(() => {
                 new Notice('Failed to cache');
@@ -93,10 +92,10 @@ export class PackagesList {
     if (this.packageTableEl.children.length === 0)
       this.packageTableEl.addClass('typstmate-hidden');
 
-    await this.plugin.init();
+    // init?
   }
 
-  async collectFiles(
+  private async collectFiles(
     dirPath: string,
     map: Map<string, Uint8Array | undefined>,
   ): Promise<void> {
@@ -123,8 +122,8 @@ export class PackagesList {
     }
   }
 
-  async createCacheManually(packageSpec: PackageSpec) {
-    const map = new Map<string, Uint8Array | undefined>();
+  private async createCacheManually(packageSpec: PackageSpec) {
+    const map = new Map<string, Uint8Array>();
 
     await this.collectFiles(
       `${this.plugin.packagesDirPath}/${packageSpec.namespace}/${packageSpec.name}/${packageSpec.version}`,
@@ -135,5 +134,7 @@ export class PackagesList {
       `${this.plugin.cachesDirPath}/${packageSpec.namespace}_${packageSpec.name}_${packageSpec.version}.cache`,
       zip(map).slice().buffer,
     );
+
+    return map;
   }
 }

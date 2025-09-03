@@ -6,7 +6,7 @@ const { values } = parseArgs({
   args: Bun.argv,
   options: {
     type: {
-      type: 'string',
+      type: 'string', // 'mock', 'major', 'minor', 'patch'.
     },
   },
   allowPositionals: true,

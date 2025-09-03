@@ -216,7 +216,6 @@ export class SettingTab extends PluginSettingTab {
           this.plugin.settings.preamble = preambleTextEl.value;
 
           this.plugin.saveSettings();
-          this.plugin.init(true);
         },
         500,
         true,

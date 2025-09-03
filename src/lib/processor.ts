@@ -44,8 +44,8 @@ export type Processors =
   | DisplayProcessor[]
   | CodeblockProcessor[];
 
-export const ProcessorTypeTokens = ['inline', 'display', 'codeblock'] as const;
-export type ProcessorType = (typeof ProcessorTypeTokens)[number];
+export const ProcessorKindTokens = ['inline', 'display', 'codeblock'] as const;
+export type ProcessorKind = (typeof ProcessorKindTokens)[number];
 
 export const DefaultNewInlineProcessor: InlineProcessor = {
   id: '',
@@ -71,7 +71,7 @@ export const DefaultNewCodeblockProcessor: CodeblockProcessor = {
   noPreamble: false,
 };
 
-export const DefaultNewProcessor: Record<ProcessorType, Processor> = {
+export const DefaultNewProcessor: Record<ProcessorKind, Processor> = {
   inline: DefaultNewInlineProcessor,
   display: DefaultNewDisplayProcessor,
   codeblock: DefaultNewCodeblockProcessor,

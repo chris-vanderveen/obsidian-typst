@@ -3,7 +3,7 @@ import { debounce, Setting } from 'obsidian';
 import {
   DefaultNewProcessor,
   type Processor,
-  type ProcessorType,
+  type ProcessorKind,
   type RenderingEngine,
   type Styling,
 } from '@/lib/processor';
@@ -11,18 +11,18 @@ import type ObsidianTypstMate from '@/main';
 
 export class ProcessorList {
   plugin: ObsidianTypstMate;
-  type: ProcessorType;
+  kind: ProcessorKind;
 
   processorsEl: HTMLElement;
 
   constructor(
     plugin: ObsidianTypstMate,
-    type: ProcessorType,
+    kind: ProcessorKind,
     containerEl: HTMLElement,
     summaryText: string,
   ) {
     this.plugin = plugin;
-    this.type = type;
+    this.kind = kind;
 
     const detailEl = containerEl.createEl('details');
     new Setting(detailEl).addButton((button) => {
@@ -35,19 +35,19 @@ export class ProcessorList {
     summaryEl.textContent = summaryText;
 
     this.processorsEl = detailEl.createEl('div');
-    this.plugin.settings.processor[type].processors.forEach(
+    this.plugin.settings.processor[this.kind].processors.forEach(
       this.addProcessor.bind(this),
     );
     this.numbering();
   }
 
   newProcessor() {
-    this.plugin.settings.processor[this.type].processors.unshift(
-      DefaultNewProcessor[this.type] as any,
+    this.plugin.settings.processor[this.kind].processors.unshift(
+      DefaultNewProcessor[this.kind] as any,
     );
     this.plugin.saveSettings();
 
-    this.addProcessor(DefaultNewProcessor[this.type]);
+    this.addProcessor(DefaultNewProcessor[this.kind]);
 
     this.processorsEl.insertBefore(
       this.processorsEl.lastChild!,
@@ -83,7 +83,7 @@ export class ProcessorList {
         noPreambleToggle.setValue(!processor.noPreamble);
         noPreambleToggle.setTooltip('Use preamble');
         noPreambleToggle.onChange((noPreamble) => {
-          this.plugin.settings.processor[this.type].processors[
+          this.plugin.settings.processor[this.kind].processors[
             Number(processorEl.id)
           ]!.noPreamble = !noPreamble;
 
@@ -96,7 +96,7 @@ export class ProcessorList {
         renderingEngineDropdown.setValue(processor.renderingEngine);
 
         renderingEngineDropdown.onChange((renderingEngine) => {
-          this.plugin.settings.processor[this.type].processors[
+          this.plugin.settings.processor[this.kind].processors[
             Number(processorEl.id)
           ]!.renderingEngine = renderingEngine as RenderingEngine;
 
@@ -104,7 +104,7 @@ export class ProcessorList {
         });
       })
       .addDropdown((stylingDropdown) => {
-        switch (this.type) {
+        switch (this.kind) {
           case 'inline':
             stylingDropdown.addOption('inline', 'inline');
             stylingDropdown.addOption('inline-middle', 'inline-middle');
@@ -122,7 +122,7 @@ export class ProcessorList {
         stylingDropdown.setValue(processor.styling);
 
         stylingDropdown.onChange((styling) => {
-          this.plugin.settings.processor[this.type].processors[
+          this.plugin.settings.processor[this.kind].processors[
             Number(processorEl.id)
           ]!.styling = styling as Styling;
 
@@ -136,12 +136,12 @@ export class ProcessorList {
         idText.onChange(
           debounce(
             (id) => {
-              this.plugin.settings.processor[this.type].processors[
+              this.plugin.settings.processor[this.kind].processors[
                 Number(processorEl.id)
               ]!.id = id;
 
               this.plugin.saveSettings();
-              this.plugin.init(true);
+              // TODO:
             },
             500,
             true,
@@ -166,12 +166,12 @@ export class ProcessorList {
       'input',
       debounce(
         () => {
-          this.plugin.settings.processor[this.type].processors[
+          this.plugin.settings.processor[this.kind].processors[
             Number(processorEl.id)
           ]!.format = formatTextEl.value;
 
           this.plugin.saveSettings();
-          this.plugin.init(true);
+          // TODO:
         },
         500,
         true,
@@ -180,7 +180,7 @@ export class ProcessorList {
   }
 
   removeProcessor(index: number) {
-    this.plugin.settings.processor[this.type].processors.splice(index, 1);
+    this.plugin.settings.processor[this.kind].processors.splice(index, 1);
     this.plugin.saveSettings();
 
     this.processorsEl.children.namedItem(index.toString())?.remove();
@@ -199,12 +199,12 @@ export class ProcessorList {
       return;
     }
 
-    const processors = this.plugin.settings.processor[this.type].processors;
+    const processors = this.plugin.settings.processor[this.kind].processors;
     const processor1 = processors[index1]!;
     const processor2 = processors[index2]!;
 
-    this.plugin.settings.processor[this.type].processors[index1] = processor2;
-    this.plugin.settings.processor[this.type].processors[index2] = processor1;
+    this.plugin.settings.processor[this.kind].processors[index1] = processor2;
+    this.plugin.settings.processor[this.kind].processors[index2] = processor1;
 
     this.plugin.saveSettings();
 

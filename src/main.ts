@@ -3,7 +3,6 @@ import {
   debounce,
   type EventRef,
   loadMathJax,
-  MarkdownView,
   Notice,
   Platform,
   Plugin,
@@ -31,6 +30,7 @@ export default class ObsidianTypstMate extends Plugin {
   version!: string;
   settings!: Settings;
 
+  wasmPath!: string;
   baseDirPath!: string;
   fontsDirPath!: string;
   cachesDirPath!: string;
@@ -55,8 +55,6 @@ export default class ObsidianTypstMate extends Plugin {
     this.fontsDirPath = `${this.pluginDirPath}/fonts`;
     this.cachesDirPath = `${this.pluginDirPath}/caches`;
     this.packagesDirPath = `${this.pluginDirPath}/packages`;
-    const cachesDirPath = this.cachesDirPath;
-    const packagesDirPath = this.packagesDirPath;
 
     // 必要なディレクトリを作成する
     // ? ディレクトリの存在確認の挙動が安定しないので, 作成して例外を無視する
@@ -71,9 +69,9 @@ export default class ObsidianTypstMate extends Plugin {
       await this.app.vault.adapter.read(`${this.pluginDirPath}/manifest.json`),
     ).version;
 
-    const wasmPath = `${this.pluginDirPath}/typst-${this.version}.wasm`;
-    if (!(await this.app.vault.adapter.exists(wasmPath))) {
-      await this.downloadLatestWasm(wasmPath);
+    this.wasmPath = `${this.pluginDirPath}/typst-${this.version}.wasm`;
+    if (!(await this.app.vault.adapter.exists(this.wasmPath))) {
+      await this.downloadLatestWasm(this.wasmPath);
     }
 
     // MathJaxを読み込む
@@ -93,6 +91,94 @@ export default class ObsidianTypstMate extends Plugin {
     );
 
     // TypstManagerを設定する
+    this.typstManager = new TypstManager(this);
+    try {
+      await this.init();
+    } catch {
+      new Notice(
+        'Failed to initialize Typst. Please check that the processor ID does not contain any symbols, try clearing the package cache, and ensure that there are no invalid fonts installed.',
+      );
+    }
+    await this.typstManager.registerOnce();
+
+    // 設定タブを登録
+    this.addSettingTab(new SettingTab(this.app, this));
+
+    // Leafを登録
+    // ? iframeがモバイルで使えないため無効化
+    if (Platform.isMobileApp) return;
+    this.registerView(
+      TypstToolsView.viewtype,
+      (leaf) => new TypstToolsView(leaf),
+    );
+    this.activateLeaf();
+    this.addCommand({
+      id: 'typst-tools-open',
+      name: 'Typst Tools',
+      callback: async () => {
+        const leaf = await this.activateLeaf();
+        if (leaf) {
+          this.app.workspace.revealLeaf(leaf);
+        }
+      },
+    });
+    this.addCommand({
+      id: 'typst-switch-rendering-engine',
+      name: 'Switch Rendering Engine',
+      callback: async () => {
+        this.settings.enableBackgroundRendering =
+          !this.settings.enableBackgroundRendering;
+        await this.saveSettings();
+        await this.reload(false);
+      },
+    });
+  }
+
+  private async tryCreateDirs(dirPaths: string[]) {
+    await Promise.allSettled(
+      dirPaths.map((dirPath) => this.app.vault.adapter.mkdir(dirPath)),
+    ).catch(() => {});
+  }
+
+  private async downloadLatestWasm(wasmPath: string) {
+    new Notice('Downloading latest wasm...');
+
+    // 古いWasmを削除する
+    const oldWasms = (
+      await this.app.vault.adapter.list(this.pluginDirPath)
+    ).files.filter((file) => file.endsWith('.wasm'));
+    for (const wasm of oldWasms) {
+      await this.app.vault.adapter.remove(wasm);
+    }
+
+    // 最新のWasmがあるURLを取得する
+    const releaseUrl = `https://api.github.com/repos/azyarashi/obsidian-typst-mate/releases/tags/${this.version}`;
+    const releaseResponse = await requestUrl(releaseUrl);
+    const releaseData = (await releaseResponse.json) as {
+      assets: GitHubAsset[];
+    };
+    const asset = releaseData.assets.find(
+      (asset) => asset.name === `typst-${this.version}.wasm`,
+    );
+    if (!asset) throw new Error(`Could not find ${wasmPath} in release assets`);
+
+    // Wasmをダウンロードする
+    const response = await requestUrl({
+      url: asset.url,
+      headers: { Accept: 'application/octet-stream' },
+    });
+    const data = response.arrayBuffer;
+    await this.app.vault.adapter.writeBinary(wasmPath, data);
+
+    new Notice('Downloaded successfully!');
+  }
+
+  async init() {
+    this.worker?.terminate();
+
+    const adapter = this.app.vault.adapter;
+    const packagesDirPath = this.packagesDirPath;
+    const cachesDirPath = this.cachesDirPath;
     const main = {
       notice(message: string) {
         new Notice(message);
@@ -137,7 +223,8 @@ export default class ObsidianTypstMate extends Plugin {
           });
       },
     };
-    const wasm = await adapter.readBinary(wasmPath);
+    const wasm = await adapter.readBinary(this.wasmPath);
+
     if (this.settings.enableBackgroundRendering) {
       this.worker = new TypstWorker();
       const api = wrap<typeof $>(this.worker);
@@ -148,79 +235,7 @@ export default class ObsidianTypstMate extends Plugin {
       this.typst.setMain(main);
     }
 
-    this.typstManager = new TypstManager(this);
-    await this.init(true);
-    await this.typstManager.registerOnce();
-
-    this.addSettingTab(new SettingTab(this.app, this));
-
-    // Leafを登録
-    // ? iframeがモバイルで使えないため無効化
-    if (Platform.isMobileApp) return;
-    this.registerView(
-      TypstToolsView.viewtype,
-      (leaf) => new TypstToolsView(leaf),
-    );
-    this.activateLeaf();
-    this.addCommand({
-      id: 'typst-tools-open',
-      name: 'Typst Tools',
-      callback: async () => {
-        const leaf = await this.activateLeaf();
-        if (leaf) {
-          this.app.workspace.revealLeaf(leaf);
-        }
-      },
-    });
-    this.addCommand({
-      id: 'typst-switch-rendering-engine',
-      name: 'Switch Rendering Engine',
-      callback: async () => {
-        this.settings.enableBackgroundRendering =
-          !this.settings.enableBackgroundRendering;
-        await this.saveSettings();
-        await this.reload(false);
-      },
-    });
-  }
-
-  async tryCreateDirs(dirPaths: string[]) {
-    await Promise.allSettled(
-      dirPaths.map((dirPath) => this.app.vault.adapter.mkdir(dirPath)),
-    ).catch(() => {});
-  }
-
-  async downloadLatestWasm(wasmPath: string) {
-    new Notice('Downloading latest wasm...');
-
-    // 古いWasmを削除する
-    const oldWasms = (
-      await this.app.vault.adapter.list(this.pluginDirPath)
-    ).files.filter((file) => file.endsWith('.wasm'));
-    for (const wasm of oldWasms) {
-      await this.app.vault.adapter.remove(wasm);
-    }
-
-    // 最新のWasmがあるURLを取得する
-    const releaseUrl = `https://api.github.com/repos/azyarashi/obsidian-typst-mate/releases/tags/${this.version}`;
-    const releaseResponse = await requestUrl(releaseUrl);
-    const releaseData = (await releaseResponse.json) as {
-      assets: GitHubAsset[];
-    };
-    const asset = releaseData.assets.find(
-      (asset) => asset.name === `typst-${this.version}.wasm`,
-    );
-    if (!asset) throw new Error(`Could not find ${wasmPath} in release assets`);
-
-    // Wasmをダウンロードする
-    const response = await requestUrl({
-      url: asset.url,
-      headers: { Accept: 'application/octet-stream' },
-    });
-    const data = response.arrayBuffer;
-    await this.app.vault.adapter.writeBinary(wasmPath, data);
-
-    new Notice('Downloaded successfully!');
+    await this.typstManager.init();
   }
 
   applyBaseColor() {
@@ -234,7 +249,7 @@ export default class ObsidianTypstMate extends Plugin {
     });
   }
 
-  async activateLeaf() {
+  private async activateLeaf() {
     let leaf: WorkspaceLeaf | null | undefined;
     [leaf] = this.app.workspace.getLeavesOfType(TypstToolsView.viewtype);
 
@@ -281,19 +296,10 @@ export default class ObsidianTypstMate extends Plugin {
   override onConfigFileChange = debounce(
     async () => {
       await this.loadSettings();
-      await this.init();
     },
     500,
     true,
   );
-
-  async init(initTypst = false) {
-    if (initTypst) await this.typstManager.init();
-
-    this.app.workspace
-      .getActiveViewOfType(MarkdownView)
-      ?.previewMode.rerender(true);
-  }
 
   async reload(openSettingsTab = true) {
     await this.app.plugins.disablePlugin(this.pluginId); // ? onunloadも呼ばれる

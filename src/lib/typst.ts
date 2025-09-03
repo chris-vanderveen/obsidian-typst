@@ -1,9 +1,9 @@
 import { Notice } from 'obsidian';
 
 import { DEFAULT_SETTINGS } from '@/core/settings';
-import { unzip } from '@/lib/util';
 import type ObsidianTypstMate from '@/main';
 import type { Processor } from './processor';
+import { unzip } from './util';
 import './typst.css';
 import { DiagnosticModal } from '@/core/modals/diagnostic';
 import type { Diagnostic, SVGResult } from './worker';
@@ -174,7 +174,7 @@ export default class TypstManager {
     return containerEl;
   }
 
-  format(processer: Processor, code: string) {
+  private format(processer: Processor, code: string) {
     return processer.noPreamble
       ? processer.format.replace('{CODE}', code)
       : `${this.plugin.settings.preamble}\n${processer.format.replace(
@@ -183,7 +183,7 @@ export default class TypstManager {
         )}`;
   }
 
-  postProcess(result: SVGResult, containerEl: HTMLElement) {
+  private postProcess(result: SVGResult, containerEl: HTMLElement) {
     if (this.plugin.settings.failOnWarning && result.diags.length !== 0)
       throw result.diags;
 
@@ -195,7 +195,7 @@ export default class TypstManager {
     );
   }
 
-  handleError(
+  private handleError(
     err: Diagnostic[],
     containerEl: HTMLElement,
     code: string,
