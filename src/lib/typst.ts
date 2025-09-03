@@ -37,12 +37,7 @@ export default class TypstManager {
       ].processors.map((p) => ({
         kind,
         id: p.id,
-        format: p.noPreamble
-          ? p.format.replace('{CODE}', '')
-          : `${this.plugin.settings.preamble}\n${p.format.replace(
-              '{CODE}',
-              '',
-            )}`,
+        format: this.format(p, ''),
         styling: p.styling,
         renderingEngine: p.renderingEngine,
       })),
@@ -159,32 +154,36 @@ export default class TypstManager {
         display: kind !== 'inline',
       });
 
-    const formattedCode = processor.noPreamble
-      ? processor.format.replace('{CODE}', code)
-      : `${this.plugin.settings.preamble}\n${processor.format.replace(
-          '{CODE}',
-          code,
-        )}`;
+    const formattedCode = this.format(processor, code);
 
     let result: SVGResult | Promise<SVGResult>;
     try {
       result = this.plugin.typst.svg(formattedCode, kind, processor.id);
       if (result instanceof Promise) {
         result
-          .then((result: SVGResult) => this.postProcesser(result, containerEl))
+          .then((result: SVGResult) => this.postProcess(result, containerEl))
           .catch((err: Diagnostic[]) =>
-            this.errorHandler(err, containerEl, code, kind),
+            this.handleError(err, containerEl, code, kind),
           );
-      } else this.postProcesser(result, containerEl);
+      } else this.postProcess(result, containerEl);
     } catch (err) {
-      this.errorHandler(err as Diagnostic[], containerEl, code, kind);
+      this.handleError(err as Diagnostic[], containerEl, code, kind);
       return containerEl;
     }
 
     return containerEl;
   }
 
-  postProcesser(result: SVGResult, containerEl: HTMLElement) {
+  format(processer: Processor, code: string) {
+    return processer.noPreamble
+      ? processer.format.replace('{CODE}', code)
+      : `${this.plugin.settings.preamble}\n${processer.format.replace(
+          '{CODE}',
+          code,
+        )}`;
+  }
+
+  postProcess(result: SVGResult, containerEl: HTMLElement) {
     if (this.plugin.settings.failOnWarning && result.diags.length !== 0)
       throw result.diags;
 
@@ -196,7 +195,7 @@ export default class TypstManager {
     );
   }
 
-  errorHandler(
+  handleError(
     err: Diagnostic[],
     containerEl: HTMLElement,
     code: string,
