@@ -61,7 +61,8 @@ export default class TypstManager {
       }
     }
 
-    await this.plugin.typst.store({ fonts, processors, sources });
+    // ? シングルスレッドなのでawaitを無くしても問題ない. 起動を高速化する
+    this.plugin.typst.store({ fonts, processors, sources });
   }
 
   async registerOnce() {
