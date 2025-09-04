@@ -10,12 +10,14 @@ import type { Diagnostic, SVGResult } from './worker';
 
 export default class TypstManager {
   plugin: ObsidianTypstMate;
+  ready = false;
 
   constructor(plugin: ObsidianTypstMate) {
     this.plugin = plugin;
   }
 
   async init() {
+    this.ready = false;
     await this.plugin.typst.init(this.plugin.app.vault.config.baseFontSize);
 
     const fontPaths = (
@@ -61,8 +63,21 @@ export default class TypstManager {
       }
     }
 
-    // ? シングルスレッドなのでawaitを無くしても問題ない. 起動を高速化する
-    this.plugin.typst.store({ fonts, processors, sources });
+    if (this.plugin.settings.skipPreparationWaiting) {
+      const result = this.plugin.typst.store({ fonts, processors, sources });
+      if (result instanceof Promise) {
+        result.then(() => {
+          this.ready = true;
+
+          document.querySelectorAll('.typstmate-waiting').forEach((el) => {
+            this.render(el.textContent!, el, el.getAttribute('kind')!);
+          });
+        });
+      } else this.ready = true;
+    } else {
+      await this.plugin.typst.store({ fonts, processors, sources });
+      this.ready = true;
+    }
   }
 
   async registerOnce() {
@@ -73,6 +88,13 @@ export default class TypstManager {
         this.plugin.registerMarkdownCodeBlockProcessor(
           processor.id,
           (source, el, _ctx) => {
+            if (!this.ready) {
+              el.textContent = source;
+              el.addClass('typstmate-waiting');
+              el.setAttribute('kind', processor.id);
+              return el;
+            }
+
             return this.render(source, el, processor.id);
           },
         );
@@ -88,13 +110,22 @@ export default class TypstManager {
       container.className = 'Mathjax';
       container.setAttribute('jax', 'CHTML');
 
+      if (!this.ready) {
+        container.textContent = e;
+        container.addClass('typstmate-waiting');
+        container.setAttribute('kind', r.display ? 'display' : 'inline');
+
+        return container;
+      }
+
       return r.display
         ? this.render(e, container, 'display')
         : this.render(e, container, 'inline');
     };
   }
 
-  render(code: string, containerEl: HTMLElement, kind: string) {
+  render(code: string, containerEl: Element, kind: string) {
+    // プロセッサーを決定
     let processor: Processor;
     switch (kind) {
       case 'inline':
@@ -129,19 +160,18 @@ export default class TypstManager {
 
         kind = 'codeblock';
     }
-
     if (processor.renderingEngine === 'mathjax')
       return this.plugin.originalTex2chtml(code, {
         display: kind !== 'inline',
       });
-
     containerEl.addClass(
       `typstmate-${kind}`,
       `typstmate-style-${processor.styling}`,
       `typstmate-id-${processor.id}`,
     );
-    const formattedCode = this.format(processor, code).replaceAll('<br>', '\n');
 
+    // レンダリング
+    const formattedCode = this.format(processor, code).replaceAll('<br>', '\n');
     let result: SVGResult | Promise<SVGResult>;
     try {
       result = this.plugin.typst.svg(formattedCode, kind, processor.id);
@@ -169,7 +199,7 @@ export default class TypstManager {
         )}`;
   }
 
-  private postProcess(result: SVGResult, containerEl: HTMLElement) {
+  private postProcess(result: SVGResult, containerEl: Element) {
     if (this.plugin.settings.failOnWarning && result.diags.length !== 0)
       throw result.diags;
 
@@ -183,7 +213,7 @@ export default class TypstManager {
 
   private handleError(
     err: Diagnostic[],
-    containerEl: HTMLElement,
+    containerEl: Element,
     code: string,
     kind: string,
   ) {

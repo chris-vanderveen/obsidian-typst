@@ -25,6 +25,7 @@ export interface Settings {
   failOnWarning: boolean;
   baseColor: string;
   enableMathjaxFallback: boolean;
+  skipPreparationWaiting: boolean;
   preamble: string;
   processor: {
     inline: {
@@ -44,6 +45,7 @@ export const DEFAULT_SETTINGS: Settings = {
   failOnWarning: false,
   baseColor: '#000000',
   enableMathjaxFallback: false,
+  skipPreparationWaiting: false,
   preamble:
     '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)\n#set text(size: fontsize)',
   processor: {
@@ -478,6 +480,19 @@ export class SettingTab extends PluginSettingTab {
         toggle.setValue(this.plugin.settings.enableMathjaxFallback);
         toggle.onChange((value) => {
           this.plugin.settings.enableMathjaxFallback = value;
+          this.plugin.saveSettings();
+        });
+      });
+
+    new Setting(containerEl)
+      .setName('Skip Preparation Waiting')
+      .setDesc(
+        "Defers initialization of font and package loading and processor compilation at plugin startup, which greatly reduces Obsidian's startup time. However, the time until the first rendering does not change; the original text will be shown until then.",
+      )
+      .addToggle((toggle) => {
+        toggle.setValue(this.plugin.settings.skipPreparationWaiting);
+        toggle.onChange((value) => {
+          this.plugin.settings.skipPreparationWaiting = value;
           this.plugin.saveSettings();
         });
       });
