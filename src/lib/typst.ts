@@ -140,7 +140,7 @@ export default class TypstManager {
       `typstmate-style-${processor.styling}`,
       `typstmate-id-${processor.id}`,
     );
-    const formattedCode = this.format(processor, code);
+    const formattedCode = this.format(processor, code).replaceAll('<br>', '\n');
 
     let result: SVGResult | Promise<SVGResult>;
     try {
