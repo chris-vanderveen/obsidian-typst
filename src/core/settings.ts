@@ -487,7 +487,7 @@ export class SettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName('Skip Preparation Waiting')
       .setDesc(
-        "Defers initialization of font and package loading and processor compilation at plugin startup, which greatly reduces Obsidian's startup time. However, the time until the first rendering does not change; the original text will be shown until then.",
+        "This feature is unstable on mobile! Defers initialization of font and package loading and processor compilation at plugin startup, which greatly reduces Obsidian's startup time. However, the time until the first rendering does not change; the original text will be shown until then.",
       )
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.skipPreparationWaiting);

@@ -48,25 +48,25 @@ export const ProcessorKindTokens = ['inline', 'display', 'codeblock'] as const;
 export type ProcessorKind = (typeof ProcessorKindTokens)[number];
 
 export const DefaultNewInlineProcessor: InlineProcessor = {
-  id: '',
+  id: 'new',
   renderingEngine: 'typst',
-  format: '',
-  styling: 'inline-middle',
+  format: '${CODE}$',
+  styling: 'inline',
   noPreamble: false,
 };
 
 export const DefaultNewDisplayProcessor: DisplayProcessor = {
-  id: '',
+  id: 'new',
   renderingEngine: 'typst',
-  format: '',
+  format: '$\n{CODE}\n$',
   styling: 'block-center',
   noPreamble: false,
 };
 
 export const DefaultNewCodeblockProcessor: CodeblockProcessor = {
-  id: '',
+  id: 'new',
   renderingEngine: 'typst',
-  format: '',
+  format: '{CODE}',
   styling: 'block',
   noPreamble: false,
 };

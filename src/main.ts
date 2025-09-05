@@ -170,7 +170,7 @@ export default class ObsidianTypstMate extends Plugin {
     const data = response.arrayBuffer;
     await this.app.vault.adapter.writeBinary(wasmPath, data);
 
-    new Notice('Downloaded successfully!');
+    new Notice('Wasm downloaded!');
   }
 
   async init() {
