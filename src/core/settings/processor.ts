@@ -135,13 +135,21 @@ export class ProcessorList {
 
         idText.onChange(
           debounce(
-            (id) => {
+            async (id) => {
               this.plugin.settings.processor[this.kind].processors[
                 Number(processorEl.id)
               ]!.id = id;
 
               this.plugin.saveSettings();
-              // TODO:
+              await this.plugin.typst.store({
+                processors: [
+                  {
+                    kind: this.kind,
+                    id: processor.id,
+                    format: formatTextEl.value,
+                  },
+                ],
+              });
             },
             500,
             true,
@@ -165,13 +173,21 @@ export class ProcessorList {
     formatTextEl.addEventListener(
       'input',
       debounce(
-        () => {
+        async () => {
           this.plugin.settings.processor[this.kind].processors[
             Number(processorEl.id)
           ]!.format = formatTextEl.value;
 
           this.plugin.saveSettings();
-          // TODO:
+          await this.plugin.typst.store({
+            processors: [
+              {
+                kind: this.kind,
+                id: processor.id,
+                format: formatTextEl.value,
+              },
+            ],
+          });
         },
         500,
         true,
