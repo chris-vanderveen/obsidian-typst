@@ -1,4 +1,4 @@
-import { debounce, Setting } from 'obsidian';
+import { debounce, Setting, ButtonComponent } from 'obsidian';
 
 import {
   DefaultNewProcessor,
@@ -63,22 +63,6 @@ export class ProcessorList {
     );
 
     new Setting(processorEl)
-      .addButton((moveUpButton) => {
-        moveUpButton.setIcon('chevrons-up');
-        moveUpButton.setTooltip('Move up');
-
-        moveUpButton.onClick(() =>
-          this.moveProcessor(Number(processorEl.id), 'up'),
-        );
-      })
-      .addButton((moveDownButton) => {
-        moveDownButton.setIcon('chevrons-down');
-        moveDownButton.setTooltip('Move down');
-
-        moveDownButton.onClick(() =>
-          this.moveProcessor(Number(processorEl.id), 'down'),
-        );
-      })
       .addToggle((noPreambleToggle) => {
         noPreambleToggle.setValue(!processor.noPreamble);
         noPreambleToggle.setTooltip('Use preamble');
@@ -155,18 +139,24 @@ export class ProcessorList {
             true,
           ),
         );
-      })
-      .addButton((removeButton) => {
-        removeButton.buttonEl.style.color = 'red';
-        removeButton.setTooltip('Remove');
-        removeButton.setIcon('trash');
-
-        removeButton.onClick(() =>
-          this.removeProcessor(Number(processorEl.id)),
-        );
       });
 
-    const formatTextEl = processorEl.createEl('textarea');
+    const processorBottomEl = processorEl.createEl('div');
+    processorBottomEl.addClass('typstmate-settings-processor-bottom');
+
+    const moveButtonsEl = processorBottomEl.createEl('div');
+    moveButtonsEl.addClass('typstmate-settings-processor-move-buttons');
+
+    new ButtonComponent(moveButtonsEl)
+      .setButtonText('Move up')
+      .setIcon('chevrons-up')
+      .onClick(() => this.moveProcessor(Number(processorEl.id), 'up'));
+    new ButtonComponent(moveButtonsEl)
+      .setButtonText('Move down')
+      .setIcon('chevrons-down')
+      .onClick(() => this.moveProcessor(Number(processorEl.id), 'down'));
+
+    const formatTextEl = processorBottomEl.createEl('textarea');
     formatTextEl.value = processor.format;
     formatTextEl.placeholder = 'format';
 
@@ -193,6 +183,12 @@ export class ProcessorList {
         true,
       ),
     );
+
+    new ButtonComponent(processorBottomEl)
+      .setButtonText('Remove')
+      .setIcon('trash')
+      .onClick(() => this.removeProcessor(Number(processorEl.id)))
+      .buttonEl.addClasses(['typstmate-button', 'typstmate-button-danger']);
   }
 
   removeProcessor(index: number) {

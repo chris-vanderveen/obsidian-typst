@@ -5,9 +5,29 @@
   border: 1px solid var(--background-modifier-border);
   border-radius: 4px;
   background-color: var(--background-primary);
+  display: flex;
+  flex-direction: column;
 }
 
-.typstmate-settings-processor textarea {
+.typstmate-settings-processor > .typstmate-settings-processor-bottom {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.typstmate-settings-processor-bottom
+  > .typstmate-settings-processor-move-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.typstmate-settings-processor-bottom .typstmate-button-danger {
+  height: auto;
+}
+
+.typstmate-settings-processor-bottom textarea {
   width: 100%;
   min-height: 4em;
   resize: vertical;
