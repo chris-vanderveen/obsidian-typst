@@ -47,7 +47,7 @@ impl WasmWorld {
         }
 
         let mut library = Library::default();
-        let fontsize_val = Value::Length(Length::from(Abs::pt(fontsize / 1.25)));
+        let fontsize_val = Value::Length(Length::from(Abs::pt(fontsize * 3.0 / 4.0)));
         library.global.scope_mut().define("fontsize", fontsize_val);
 
         Self {
