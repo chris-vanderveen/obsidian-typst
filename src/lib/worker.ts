@@ -68,17 +68,17 @@ export default class $ {
       if (namespace === 'preview') {
         if (vpath === 'typst.toml') main.notice(`Downloading ${name}...`);
 
-        try {
-          xhr.open(
-            'GET',
-            `https://packages.typst.org/preview/${name}-${version}.tar.gz`,
-            false,
-          );
-          xhr.send(null);
-          if (xhr.status === 0) throw 21; // PackageError::NetworkFailed
-          if (xhr.status === 404) throw 22; // PackageError::NotFound
-          if (!xhr.responseText === null) throw 20; // PackageError::MalformedArchive
+        xhr.open(
+          'GET',
+          `https://packages.typst.org/preview/${name}-${version}.tar.gz`,
+          false,
+        );
+        xhr.send(null);
+        if (xhr.status === 0) throw 21; // PackageError::NetworkFailed
+        if (xhr.status === 404) throw 22; // PackageError::NotFound
+        if (!xhr.responseText === null) throw 20; // PackageError::MalformedArchive
 
+        try {
           const text = xhr.responseText;
           const targzArr = new Uint8Array(text.length);
           for (let i = 0; i < text.length; i++) {

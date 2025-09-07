@@ -47,7 +47,7 @@ impl WasmWorld {
         }
 
         let mut library = Library::default();
-        let fontsize_val = Value::Length(Length::from(Abs::pt(fontsize * 3.0 / 4.0)));
+        let fontsize_val = Value::Length(Length::from(Abs::pt(fontsize * 0.75)));
         library.global.scope_mut().define("fontsize", fontsize_val);
 
         Self {
@@ -217,7 +217,7 @@ impl World for WasmWorld {
         self.read(id, |f| f.bytes())
     }
 
-    /// ? 登録されていないフォントにアクセスを試みると, Warningが発生する
+    /// ? 登録されていないフォントにアクセスを試みると, Warning(severity: 2) が発生する
     fn font(&self, index: usize) -> Option<Font> {
         Some(self.fonts[index].clone())
     }
@@ -231,7 +231,7 @@ impl World for WasmWorld {
             }
         };
 
-        // ? Datetime は起動時の値に固定するので, hmsは不要.
+        // ? 起動時の値に固定するので, hmsは不要.
         Datetime::from_ymd(
             with_offset.year(),
             with_offset.month().try_into().ok()?,

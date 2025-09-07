@@ -105,7 +105,8 @@ export default class ObsidianTypstMate extends Plugin {
     this.typstManager = new TypstManager(this);
     try {
       await this.init();
-    } catch {
+    } catch (err) {
+      console.error(err);
       new Notice(
         'Failed to initialize Typst. Please check that the processor ID does not contain any symbols, try clearing the package cache, and ensure that there are no invalid fonts installed.',
       );
