@@ -1,3 +1,5 @@
+import type fsModule from 'node:fs';
+
 import { proxy, type Remote, wrap } from 'comlink';
 import {
   debounce,
@@ -13,6 +15,7 @@ import {
 
 import { TypstToolsView } from './core/leaf';
 import { DEFAULT_SETTINGS, type Settings, SettingTab } from './core/settings';
+import { ParentResizeService } from './lib/observer';
 import TypstManager from './lib/typst';
 import { zip } from './lib/util';
 import type $ from './lib/worker';
@@ -40,14 +43,21 @@ export default class ObsidianTypstMate extends Plugin {
   typst!: $ | Remote<$>;
   worker?: Worker;
   typstManager!: TypstManager;
+  observer!: ParentResizeService;
 
   baseColor = '#000000';
   listeners: EventRef[] = [];
+
+  fs?: typeof fsModule;
 
   override async onload() {
     // ユーザーの設定(data.json)を読み込む
     await this.loadSettings();
     const adapter = this.app.vault.adapter;
+
+    if (Platform.isDesktopApp) {
+      this.fs = require('node:fs');
+    }
 
     // よく用いるパスを設定する
     this.baseDirPath = adapter.basePath;
@@ -91,6 +101,7 @@ export default class ObsidianTypstMate extends Plugin {
     );
 
     // TypstManagerを設定する
+    this.observer = new ParentResizeService();
     this.typstManager = new TypstManager(this);
     try {
       await this.init();
@@ -123,8 +134,8 @@ export default class ObsidianTypstMate extends Plugin {
       },
     });
     this.addCommand({
-      id: 'typst-switch-rendering-engine',
-      name: 'Switch Rendering Engine',
+      id: 'typst-toggle-rendering-engine',
+      name: 'Toggle Rendering Engine',
       callback: async () => {
         this.settings.enableBackgroundRendering =
           !this.settings.enableBackgroundRendering;
@@ -176,15 +187,17 @@ export default class ObsidianTypstMate extends Plugin {
   async init() {
     this.worker?.terminate();
 
+    const { fs, baseDirPath, packagesDirPath, cachesDirPath } = this;
     const adapter = this.app.vault.adapter;
-    const packagesDirPath = this.packagesDirPath;
-    const cachesDirPath = this.cachesDirPath;
+
     const main = {
       notice(message: string) {
         new Notice(message);
       },
 
       readBinary(path: string) {
+        if (fs)
+          return Uint8Array.from(fs.readFileSync(`${baseDirPath}/${path}`));
         return adapter.readBinary(path);
       },
 
@@ -263,6 +276,7 @@ export default class ObsidianTypstMate extends Plugin {
 
   override async onunload() {
     // 監視を終了
+    this.observer.stopAll();
     for (const listener of this.listeners) {
       this.app.workspace.offref(listener);
     }
@@ -291,8 +305,6 @@ export default class ObsidianTypstMate extends Plugin {
     await this.saveData(this.settings);
   }
 
-  // ? 同期に対応
-  // ! 2回呼ばれるのを修正
   override onConfigFileChange = debounce(
     async () => {
       await this.loadSettings();

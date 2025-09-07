@@ -1,12 +1,9 @@
 export const RenderingEngineTokens = ['typst', 'mathjax'] as const;
 export type RenderingEngine = (typeof RenderingEngineTokens)[number];
-
 export const InlineStylingTokens = ['inline', 'inline-middle'] as const;
 export type InlineStyling = (typeof InlineStylingTokens)[number];
-
 export const DisplayStylingTokens = ['block', 'block-center'] as const;
 export type DisplayStyling = (typeof DisplayStylingTokens)[number];
-
 export type Styling = InlineStyling | DisplayStyling | CodeblockStyling;
 
 export const CodeblockStylingTokens = [
@@ -21,23 +18,25 @@ export interface InlineProcessor {
   renderingEngine: RenderingEngine;
   format: string;
   styling: InlineStyling;
-  noPreamble: boolean;
+  noPreamble?: boolean;
+  fitToParentWidth?: boolean;
 }
 export interface DisplayProcessor {
   id: string;
   renderingEngine: RenderingEngine;
   format: string;
   styling: DisplayStyling;
-  noPreamble: boolean;
+  noPreamble?: boolean;
+  fitToParentWidth?: boolean;
 }
 export interface CodeblockProcessor {
   id: string;
   renderingEngine: RenderingEngine;
   format: string;
   styling: CodeblockStyling;
-  noPreamble: boolean;
+  noPreamble?: boolean;
+  fitToParentWidth?: boolean;
 }
-
 export type Processor = InlineProcessor | DisplayProcessor | CodeblockProcessor;
 export type Processors =
   | InlineProcessor[]
@@ -53,22 +52,23 @@ export const DefaultNewInlineProcessor: InlineProcessor = {
   format: '${CODE}$',
   styling: 'inline',
   noPreamble: false,
+  fitToParentWidth: false,
 };
-
 export const DefaultNewDisplayProcessor: DisplayProcessor = {
   id: 'new',
   renderingEngine: 'typst',
   format: '$\n{CODE}\n$',
   styling: 'block-center',
   noPreamble: false,
+  fitToParentWidth: false,
 };
-
 export const DefaultNewCodeblockProcessor: CodeblockProcessor = {
   id: 'new',
   renderingEngine: 'typst',
   format: '{CODE}',
   styling: 'block',
   noPreamble: false,
+  fitToParentWidth: false,
 };
 
 export const DefaultNewProcessor: Record<ProcessorKind, Processor> = {

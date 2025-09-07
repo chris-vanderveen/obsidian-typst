@@ -12,6 +12,7 @@ import type {
   DisplayProcessor,
   InlineProcessor,
 } from '@/lib/processor';
+import { buildDocumentFragment } from '@/lib/util';
 import type ObsidianTypstMate from '@/main';
 import { FontList } from './settings/font';
 import { PackagesList } from './settings/package';
@@ -61,6 +62,7 @@ export const DEFAULT_SETTINGS: Settings = {
           ].join('\n'),
           styling: 'inline-middle',
           noPreamble: false,
+          fitToParentWidth: false,
         },
         {
           id: 'mid',
@@ -68,6 +70,7 @@ export const DEFAULT_SETTINGS: Settings = {
           format: '$\n{CODE}\n$',
           styling: 'inline-middle',
           noPreamble: true,
+          fitToParentWidth: false,
         },
         {
           id: 'tex',
@@ -75,6 +78,7 @@ export const DEFAULT_SETTINGS: Settings = {
           format: '',
           styling: 'inline',
           noPreamble: false,
+          fitToParentWidth: false,
         },
         {
           id: '',
@@ -82,6 +86,7 @@ export const DEFAULT_SETTINGS: Settings = {
           format: '${CODE}$',
           styling: 'inline',
           noPreamble: false,
+          fitToParentWidth: false,
         },
       ],
     },
@@ -93,6 +98,7 @@ export const DEFAULT_SETTINGS: Settings = {
           format: '$\n{CODE}\n$',
           styling: 'block',
           noPreamble: false,
+          fitToParentWidth: false,
         },
         {
           id: '',
@@ -100,6 +106,7 @@ export const DEFAULT_SETTINGS: Settings = {
           format: '$\n{CODE}\n$',
           styling: 'block-center',
           noPreamble: false,
+          fitToParentWidth: false,
         },
       ],
     },
@@ -111,6 +118,7 @@ export const DEFAULT_SETTINGS: Settings = {
           format: '{CODE}',
           styling: 'block',
           noPreamble: false,
+          fitToParentWidth: false,
         },
         {
           id: 'typst',
@@ -118,6 +126,7 @@ export const DEFAULT_SETTINGS: Settings = {
           format: '```typst\n{CODE}\n```',
           styling: 'codeblock',
           noPreamble: true,
+          fitToParentWidth: true,
         },
       ],
     },
@@ -152,25 +161,28 @@ export class SettingTab extends PluginSettingTab {
         button.setButtonText('Reload Plugin');
         button.onClick(async () => {
           await this.plugin.reload();
-          new Notice('Reloaded Successfully!');
+          new Notice('Plugin reloaded.');
         });
       });
 
     new Setting(containerEl)
       .setName('Enable Background Rendering')
       .setDesc(
-        'The UI will no longer freeze, but it may conflict with plugins related to export or rendering(plugin reload is required.)',
+        buildDocumentFragment(
+          'The UI will no longer freeze, but *it may conflict with plugins related to export or rendering*.',
+        ),
       )
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.enableBackgroundRendering);
         toggle.onChange((value) => {
           this.plugin.settings.enableBackgroundRendering = value;
           this.plugin.saveSettings();
+          this.plugin.reload(true);
         });
       });
 
     new Setting(containerEl)
-      .setName('Auto Base Color')
+      .setName('Use Theme Text Color')
       .setDesc("Uses Obsidian's text color as the base color automatically.")
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.autoBaseColor);
@@ -184,24 +196,14 @@ export class SettingTab extends PluginSettingTab {
   }
 
   addProcessorSettings(containerEl: HTMLElement) {
-    const desc = document.createDocumentFragment();
-    desc.appendText(
-      'In each mode, the first matching Processor ID from the top will be used. An empty Processor ID means the default and should be placed at the bottom. In the format, ',
-    );
-    desc.createEl('b', { text: '{CODE}' });
-    desc.appendText(
-      ' can be used (only the first occurrence is replaced), and ',
-    );
-    desc.createEl('b', { text: 'fontsize' });
-    desc.appendText(' can be used as an internal length value.');
-    desc.appendText(
-      'In inline mode, separate the id and the code with a colon (:).',
-    );
-    desc.createEl('b', {
-      text: ' IDs should not contain any special characters!',
-    });
-
-    new Setting(containerEl).setName('Processor').setDesc(desc).setHeading();
+    new Setting(containerEl)
+      .setName('Processor')
+      .setDesc(
+        buildDocumentFragment(
+          'In each mode, the first matching Processor ID from the top will be used. An empty Processor ID means the default and should be placed at the bottom. In the format, `{CODE}` can be used (only the first occurrence is replaced), and `fontsize` can be used as an internal length value. In inline mode, separate the id and the code with a colon `:`. When adding or removing processors for codeblock mode, reload the plugin to apply changes. *IDs should not contain any special characters!*',
+        ),
+      )
+      .setHeading();
 
     new Setting(containerEl)
       .setName('Preamble')
@@ -458,7 +460,9 @@ export class SettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName('Base Color')
       .setDesc(
-        'Replace black in SVGs with another color. This is useful when using a dark theme. To enable this, you need to disable the Auto Base Color setting.',
+        buildDocumentFragment(
+          'Replace black in SVGs with another color. This is useful when using a dark theme. To enable this, you need to disable the `Use Theme Text Color` setting.',
+        ),
       )
       .addColorPicker((colorPicker) => {
         colorPicker.setValue(this.plugin.settings.baseColor);
@@ -468,14 +472,13 @@ export class SettingTab extends PluginSettingTab {
         });
       });
 
-    const desc = document.createDocumentFragment();
-    desc.appendText('Not recommended for performance reasons. When enabled, ');
-    desc.createEl('b', {
-      text: 'Typst errors, warnings, and hints will be unavailable.',
-    });
     new Setting(containerEl)
       .setName('Enable MathJax Fallback')
-      .setDesc(desc)
+      .setDesc(
+        buildDocumentFragment(
+          'Not recommended for performance reasons. When enabled, *Typst errors, warnings, and hints will be unavailable.*',
+        ),
+      )
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.enableMathjaxFallback);
         toggle.onChange((value) => {

@@ -1,4 +1,4 @@
-import { debounce, Setting, ButtonComponent } from 'obsidian';
+import { ButtonComponent, debounce, Setting } from 'obsidian';
 
 import {
   DefaultNewProcessor,
@@ -8,6 +8,7 @@ import {
   type Styling,
 } from '@/lib/processor';
 import type ObsidianTypstMate from '@/main';
+import { ProcessorModal } from '../modals/processorExt';
 
 export class ProcessorList {
   plugin: ObsidianTypstMate;
@@ -63,15 +64,16 @@ export class ProcessorList {
     );
 
     new Setting(processorEl)
-      .addToggle((noPreambleToggle) => {
-        noPreambleToggle.setValue(!processor.noPreamble);
-        noPreambleToggle.setTooltip('Use preamble');
-        noPreambleToggle.onChange((noPreamble) => {
-          this.plugin.settings.processor[this.kind].processors[
-            Number(processorEl.id)
-          ]!.noPreamble = !noPreamble;
-
-          this.plugin.saveSettings();
+      .addButton((button) => {
+        button.setButtonText('ext');
+        button.setTooltip('Open more settings');
+        button.onClick(() => {
+          new ProcessorModal(
+            this.plugin.app,
+            this.plugin,
+            this.kind,
+            processor.id,
+          ).open();
         });
       })
       .addDropdown((renderingEngineDropdown) => {

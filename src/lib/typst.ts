@@ -2,11 +2,23 @@ import { Notice } from 'obsidian';
 
 import { DEFAULT_SETTINGS } from '@/core/settings';
 import type ObsidianTypstMate from '@/main';
-import type { Processor } from './processor';
+import type { Processor, ProcessorKind } from './processor';
 import { unzip } from './util';
+
 import './typst.css';
-import { DiagnosticModal } from '@/core/modals/diagnostic';
-import type { Diagnostic, SVGResult } from './worker';
+import TypstSVGElement from '@/components/SVG';
+
+function customElementsRedefine(name: string, ctor: typeof HTMLElement) {
+  const registry = window.customElements;
+  const existing = registry.get(name);
+
+  if (existing && existing !== ctor) {
+    Object.setPrototypeOf(existing.prototype, ctor.prototype);
+    Object.setPrototypeOf(existing, ctor);
+  } else if (!existing) {
+    registry.define(name, ctor);
+  }
+}
 
 export default class TypstManager {
   plugin: ObsidianTypstMate;
@@ -81,6 +93,8 @@ export default class TypstManager {
   }
 
   async registerOnce() {
+    customElementsRedefine('typstmate-svg', TypstSVGElement);
+
     // コードブロックプロセッサーをオーバライド
     for (const processor of this.plugin.settings.processor.codeblock
       .processors) {
@@ -171,21 +185,13 @@ export default class TypstManager {
     );
 
     // レンダリング
-    const formattedCode = this.format(processor, code).replaceAll('<br>', '\n');
-    let result: SVGResult | Promise<SVGResult>;
-    try {
-      result = this.plugin.typst.svg(formattedCode, kind, processor.id);
-      if (result instanceof Promise) {
-        result
-          .then((result: SVGResult) => this.postProcess(result, containerEl))
-          .catch((err: Diagnostic[]) =>
-            this.handleError(err, containerEl, code, kind),
-          );
-      } else this.postProcess(result, containerEl);
-    } catch (err) {
-      this.handleError(err as Diagnostic[], containerEl, code, kind);
-      return containerEl;
-    }
+    const t = document.createElement('typstmate-svg') as TypstSVGElement;
+    t.plugin = this.plugin;
+    t.kind = kind as ProcessorKind;
+    t.source = code;
+    t.processor = processor;
+    containerEl.appendChild(t);
+    t.render();
 
     return containerEl;
   }
@@ -197,44 +203,5 @@ export default class TypstManager {
           '{CODE}',
           code,
         )}`;
-  }
-
-  private postProcess(result: SVGResult, containerEl: Element) {
-    if (this.plugin.settings.failOnWarning && result.diags.length !== 0)
-      throw result.diags;
-
-    containerEl.innerHTML = result.svg.replaceAll(
-      '#000000',
-      this.plugin.settings.autoBaseColor
-        ? this.plugin.baseColor
-        : this.plugin.settings.baseColor,
-    );
-  }
-
-  private handleError(
-    err: Diagnostic[],
-    containerEl: Element,
-    code: string,
-    kind: string,
-  ) {
-    if (this.plugin.settings.enableMathjaxFallback) {
-      containerEl.replaceChildren(
-        this.plugin.originalTex2chtml(code, {
-          display: kind !== 'inline',
-        }),
-      );
-    } else {
-      const span = document.createElement('span');
-      span.className = 'typstmate-error';
-      span.textContent =
-        `${err[0]?.message}` +
-        (err[0]?.hints.length !== 0 ? ` [${err[0]?.hints.length} hints]` : '');
-
-      if (err[0]?.hints.length !== 0)
-        span.addEventListener('click', () =>
-          new DiagnosticModal(this.plugin.app, err).open(),
-        );
-      containerEl.replaceChildren(span);
-    }
   }
 }

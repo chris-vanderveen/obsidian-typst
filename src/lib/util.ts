@@ -99,3 +99,118 @@ export function unzip(
 
   return result;
 }
+
+type TokenMode = 'plain' | 'bold' | 'code' | 'link';
+
+interface Token {
+  mode: TokenMode;
+  text: string;
+  option: { href?: string };
+}
+
+function tokenize(text: string): Token[] {
+  const re = /\[([^\]]+)\]\(([^)]+)\)|`([^`]+)`|\*([^*]+)\*/g;
+  const parts: Token[] = [];
+  let lastIndex = 0;
+  let m: RegExpExecArray | null;
+
+  m = re.exec(text);
+  while (m !== null) {
+    if (m.index > lastIndex) {
+      parts.push({
+        mode: 'plain',
+        text: text.slice(lastIndex, m.index),
+        option: {},
+      });
+    }
+
+    lastIndex = re.lastIndex;
+
+    if (m[1] && m[2]) {
+      // [text](url)
+      parts.push({
+        mode: 'link',
+        text: m[1],
+        option: { href: m[2] },
+      });
+    } else if (m[3]) {
+      // `code`
+      parts.push({
+        mode: 'code',
+        text: m[3],
+        option: {},
+      });
+    } else if (m[4]) {
+      // *bold*
+      parts.push({
+        mode: 'bold',
+        text: m[4],
+        option: {},
+      });
+    }
+    m = re.exec(text);
+  }
+
+  if (lastIndex < text.length) {
+    parts.push({ mode: 'plain', text: text.slice(lastIndex), option: {} });
+  }
+
+  return parts;
+}
+
+function documentFragmentHelper(): DocumentFragment & {
+  appendText: (txt: string) => void;
+  createEl: (
+    tag: string,
+    opts?: { text?: string; href?: string },
+  ) => HTMLElement;
+} {
+  const frag = document.createDocumentFragment() as DocumentFragment & {
+    appendText?: (txt: string) => void;
+    createEl?: (
+      tag: string,
+      opts?: { text?: string; href?: string },
+    ) => HTMLElement;
+  };
+
+  frag.appendText = (txt: string) => {
+    frag.appendChild(document.createTextNode(String(txt)));
+  };
+
+  frag.createEl = (
+    tag: string,
+    opts: { text?: string; href?: string } = {},
+  ) => {
+    const el = document.createElement(tag);
+    if (opts.text !== undefined) el.textContent = String(opts.text);
+    if (opts.href !== undefined) el.setAttribute('href', String(opts.href));
+    frag.appendChild(el);
+    return el;
+  };
+
+  return frag as typeof frag;
+}
+
+export function buildDocumentFragment(text: string): DocumentFragment {
+  const tokens = tokenize(text);
+  const frag = documentFragmentHelper();
+
+  for (const seg of tokens) {
+    switch (seg.mode) {
+      case 'plain':
+        frag.appendText(seg.text);
+        break;
+      case 'bold':
+        frag.createEl('b', { text: seg.text });
+        break;
+      case 'code':
+        frag.createEl('code', { text: seg.text });
+        break;
+      case 'link':
+        frag.createEl('a', { text: seg.text, href: seg.option.href });
+        break;
+    }
+  }
+
+  return frag;
+}

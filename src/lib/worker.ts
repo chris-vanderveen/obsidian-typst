@@ -37,8 +37,8 @@ export default class $ {
     );
   }
 
-  svg(code: string, kind: string, id: string): SVGResult {
-    return this.typst!.svg(code, kind, id);
+  render(code: string, kind: string, id: string, format: 'svg'): SVGResult {
+    return this.typst![format](code, kind, id);
   }
 
   listFonts(): FontInfo[] {
@@ -119,15 +119,20 @@ export default class $ {
       }
     }
 
-    main
-      .readBinary(path)
-      .then((r) => {
-        map.set(path, new Uint8Array(r));
-      })
-      .catch(() => {
-        // TODO: IsDirectoryを判断する
-        map.set(path, undefined);
-      });
+    const result = main.readBinary(path);
+    if (result instanceof Promise) {
+      result
+        .then((r) => {
+          map.set(path, new Uint8Array(r));
+        })
+        .catch(() => {
+          // TODO: IsDirectoryを判断する
+          map.set(path, undefined);
+        });
+    } else {
+      map.set(path, result);
+      return result;
+    }
 
     throw 0; // FileError::Other(implementation constraints)
   }
@@ -194,6 +199,6 @@ export interface SVGResult {
 
 export interface Main {
   notice(message: string): void;
-  readBinary(path: string): Promise<ArrayBuffer>;
+  readBinary(path: string): Uint8Array | Promise<ArrayBuffer>;
   writePackage(path: string, files: tarFile[]): void;
 }
