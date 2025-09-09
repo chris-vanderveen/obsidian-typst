@@ -48,7 +48,11 @@ export const DEFAULT_SETTINGS: Settings = {
   enableMathjaxFallback: false,
   skipPreparationWaiting: false,
   preamble:
-    '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)\n#set text(size: fontsize)',
+    ['#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
+      '#show raw: set text(size: 1.25em)',
+      '#set text(size: fontsize)'].join(
+      '\n',
+    ),
   processor: {
     inline: {
       processors: [
