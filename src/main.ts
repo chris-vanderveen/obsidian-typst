@@ -338,6 +338,7 @@ export default class ObsidianTypstMate extends Plugin {
 
   updatePreview(editor: Editor) {
     this.removePreview();
+    if (isCursorInCodeBlock(editor)) return;
 
     const cursor = editor.getCursor();
     const lineText = editor.getLine(cursor.line);
@@ -387,4 +388,16 @@ export default class ObsidianTypstMate extends Plugin {
     this.previewEl?.parentElement?.removeChild(this.previewEl);
     this.previewEl = null;
   }
+}
+
+function isCursorInCodeBlock(editor: Editor): boolean {
+  const cursor = editor.getCursor();
+  let inCodeBlock = false;
+  for (let i = 0; i <= cursor.line; i++) {
+    const line = editor.getLine(i).trim();
+    if (line.startsWith("```")) {
+      inCodeBlock = !inCodeBlock;
+    }
+  }
+  return inCodeBlock;
 }
