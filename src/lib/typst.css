@@ -4,7 +4,7 @@
   cursor: pointer;
 }
 
-.typstmate-inlinemath-preview {
+.typstmate-inline-preview {
   position: fixed;
   left: var(--preview-left, 0);
   top: var(--preview-top, 0);

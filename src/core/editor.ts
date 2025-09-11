@@ -188,7 +188,7 @@ export class EditorHelper {
     coordinates: { left: number; bottom: number },
   ): void {
     const preview = document.createElement('div');
-    preview.className = 'typstmate-inlinemath-preview';
+    preview.className = 'typstmate-inline-preview';
     preview.style.setProperty('--preview-left', `${coordinates.left}px`);
     preview.style.setProperty(
       '--preview-top',
