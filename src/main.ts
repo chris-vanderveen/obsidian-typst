@@ -3,8 +3,10 @@ import type fsModule from 'node:fs';
 import { proxy, type Remote, wrap } from 'comlink';
 import {
   debounce,
+  Editor,
   type EventRef,
   loadMathJax,
+  MarkdownView,
   Notice,
   Platform,
   Plugin,
@@ -47,6 +49,8 @@ export default class ObsidianTypstMate extends Plugin {
 
   baseColor = '#000000';
   listeners: EventRef[] = [];
+
+  private previewEl: HTMLElement | null = null;
 
   fs?: typeof fsModule;
 
@@ -144,6 +148,13 @@ export default class ObsidianTypstMate extends Plugin {
         await this.reload(false);
       },
     });
+
+    // @ts-expect-error
+    const editorChangeRef = this.app.workspace.on('editor-change', this.onEditorChange);
+    const activeLeafChangeRef = this.app.workspace.on('active-leaf-change', this.removePreview.bind(this));
+    this.registerEvent(editorChangeRef);
+    this.registerEvent(activeLeafChangeRef);
+    this.listeners.push(editorChangeRef, activeLeafChangeRef);
   }
 
   private async tryCreateDirs(dirPaths: string[]) {
@@ -318,5 +329,61 @@ export default class ObsidianTypstMate extends Plugin {
     await this.app.plugins.disablePlugin(this.pluginId); // ? onunloadも呼ばれる
     await this.app.plugins.enablePlugin(this.pluginId); // ? onloadも呼ばれる
     if (openSettingsTab) this.app.setting.openTabById(this.pluginId);
+  }
+
+  onEditorChange = (editor: Editor, markdownView: MarkdownView) => {
+    this.updatePreview(editor)
+  };
+
+  updatePreview(editor: Editor) {
+    this.removePreview();
+
+    const cursor = editor.getCursor();
+    const lineText = editor.getLine(cursor.line);
+
+    const before = lineText.slice(0, cursor.ch);
+    const after = lineText.slice(cursor.ch);
+    const beforeDollar = before.lastIndexOf("$");
+    const afterDollar = after.indexOf("$");
+
+    let mathContent: string | null = null;
+    let startIndex = -1;
+
+    if (
+      beforeDollar !== -1 &&
+      afterDollar !== -1 &&
+      beforeDollar < before.length &&
+      !before.slice(beforeDollar + 1).includes("$")
+    ) {
+      mathContent = before.slice(beforeDollar + 1) + after.slice(0, afterDollar);
+      startIndex = beforeDollar + 1;
+    }
+
+    if (!mathContent) {
+      this.removePreview();
+      return;
+    }
+
+    const cm = editor.cm;
+    if (!cm) return;
+
+    const fromPos = cm.coordsAtPos(editor.posToOffset({ line: cursor.line, ch: startIndex }));
+    if (!fromPos) return;
+
+    let mathHtml = window.MathJax!.tex2chtml(`${mathContent}`, { display: false });
+
+    const preview = document.createElement("div");
+    preview.className = "typstmate-inlinemath-preview";
+    preview.style.setProperty('--preview-left', `${fromPos.left}px`);
+    preview.style.setProperty('--preview-top', `${fromPos.bottom + 6}px`);
+    preview.appendChild(mathHtml);
+
+    this.app.workspace.containerEl.appendChild(preview);
+    this.previewEl = preview;
+  }
+
+  removePreview() {
+    this.previewEl?.parentElement?.removeChild(this.previewEl);
+    this.previewEl = null;
   }
 }

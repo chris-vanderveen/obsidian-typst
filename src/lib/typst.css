@@ -4,6 +4,24 @@
   cursor: pointer;
 }
 
+.typstmate-inlinemath-preview {
+  position: fixed;
+  left: var(--preview-left, 0);
+  top: var(--preview-top, 0);
+  z-index: 200;
+  background: var(--background-modifier-hover);
+  padding: 6px 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  font-size: 1.1em;
+  max-width: 60vw;
+  user-select: none;
+  pointer-events: none;
+  transition: opacity 0.13s;
+  opacity: 0.97;
+  border: 1px solid var(--background-modifier-border);
+}
+
 /* inline */
 .typstmate-inline {
   display: inline-block;

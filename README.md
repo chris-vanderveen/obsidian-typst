@@ -34,7 +34,13 @@ Depending on the three modes (inline, display, codeblock), the styling method (s
 - `time` and `fontsize` are fixed to the value at plugin startup.
 - Only the first page is subject to rendering.
 
+### Default Preamble
 
+```typst
+#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)
+#show raw: set text(1.25em)
+#set text(size: fontsize)
+```
 
 ## TODO
 - 不具合修正: 設定の変更後に `onConfigFileChange` が2回呼ばれてしまう.
