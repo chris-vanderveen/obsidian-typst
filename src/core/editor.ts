@@ -1,19 +1,19 @@
 import type { App, Editor } from 'obsidian';
 
-export function isCursorInCodeBlock(editor: Editor): boolean {
+export function isCursorInBlock(editor: Editor): boolean {
   const cursor = editor.getCursor();
-  let inCodeBlock = false;
+  let inBlock = false;
 
   for (let i = cursor.line; i >= 0; i--) {
     const line = editor.getLine(i);
     const trimmedLine = line.trim();
 
-    if (trimmedLine.startsWith('```')) {
-      inCodeBlock = !inCodeBlock;
-      if (!inCodeBlock) break;
+    if (trimmedLine.startsWith('```') || trimmedLine.startsWith('$$')) {
+      inBlock = !inBlock;
+      if (!inBlock) break;
     }
   }
-  return inCodeBlock;
+  return inBlock;
 }
 
 export function isCursorInInlineCode(editor: Editor): boolean {
@@ -53,7 +53,7 @@ export class EditorHelper {
   }
 
   private shouldSkipPreview(editor: Editor): boolean {
-    return isCursorInCodeBlock(editor) || isCursorInInlineCode(editor);
+    return isCursorInBlock(editor) || isCursorInInlineCode(editor);
   }
 
   private extractMathContent(editor: Editor): MathContentResult | null {
