@@ -1,5 +1,11 @@
 module.exports = {
   plugins: {
-    autoprefixer: {},
+    autoprefixer: {
+      overrideBrowserslist: [
+        "Electron >= 29",
+        "iOS >= 14.5",
+        "Android >= 6"
+      ]
+    },
   },
 };
