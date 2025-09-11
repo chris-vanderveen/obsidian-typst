@@ -338,8 +338,7 @@ export default class ObsidianTypstMate extends Plugin {
 
   updatePreview(editor: Editor) {
     this.removePreview();
-    if (isCursorInCodeBlock(editor)) return;
-    if (isCursorInInlineCode(editor)) return;
+    if (isCursorInCodeBlock(editor) || isCursorInInlineCode(editor)) return;
 
     const cursor = editor.getCursor();
     const lineText = editor.getLine(cursor.line);
