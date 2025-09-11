@@ -27,6 +27,7 @@ export interface Settings {
   baseColor: string;
   enableMathjaxFallback: boolean;
   skipPreparationWaiting: boolean;
+  enableInlinePreview: boolean;
   preamble: string;
   processor: {
     inline: {
@@ -47,12 +48,12 @@ export const DEFAULT_SETTINGS: Settings = {
   baseColor: '#000000',
   enableMathjaxFallback: false,
   skipPreparationWaiting: false,
-  preamble:
-    ['#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
-      '#show raw: set text(size: 1.25em)',
-      '#set text(size: fontsize)'].join(
-      '\n',
-    ),
+  enableInlinePreview: true,
+  preamble: [
+    '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
+    '#show raw: set text(size: 1.25em)',
+    '#set text(size: fontsize)',
+  ].join('\n'),
   processor: {
     inline: {
       processors: [
@@ -500,6 +501,16 @@ export class SettingTab extends PluginSettingTab {
         toggle.setValue(this.plugin.settings.skipPreparationWaiting);
         toggle.onChange((value) => {
           this.plugin.settings.skipPreparationWaiting = value;
+          this.plugin.saveSettings();
+        });
+      });
+
+    new Setting(containerEl)
+      .setName('Enable Inline Preview')
+      .addToggle((toggle) => {
+        toggle.setValue(this.plugin.settings.enableInlinePreview);
+        toggle.onChange((value) => {
+          this.plugin.settings.enableInlinePreview = value;
           this.plugin.saveSettings();
         });
       });

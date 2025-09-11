@@ -332,6 +332,7 @@ export default class ObsidianTypstMate extends Plugin {
   }
 
   onEditorChange = (editor: Editor, markdownView: MarkdownView) => {
+    if (!this.settings.enableInlinePreview) return;
     this.updatePreview(editor)
   };
 
