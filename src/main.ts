@@ -339,6 +339,7 @@ export default class ObsidianTypstMate extends Plugin {
   updatePreview(editor: Editor) {
     this.removePreview();
     if (isCursorInCodeBlock(editor)) return;
+    if (isCursorInInlineCode(editor)) return;
 
     const cursor = editor.getCursor();
     const lineText = editor.getLine(cursor.line);
@@ -400,4 +401,12 @@ function isCursorInCodeBlock(editor: Editor): boolean {
     }
   }
   return inCodeBlock;
+}
+
+function isCursorInInlineCode(editor: Editor): boolean {
+  const cursor = editor.getCursor();
+  const line = editor.getLine(cursor.line);
+  const before = line.slice(0, cursor.ch);
+  const count = (before.match(/`/g) || []).length;
+  return count % 2 === 1;
 }
