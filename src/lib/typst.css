@@ -36,7 +36,8 @@
 /* display */
 
 /* biome-ignore lint/suspicious/noEmptyBlock: readability */
-.typstmate-display.typstmate-style-block {}
+.typstmate-display.typstmate-style-block {
+}
 
 .typstmate-display.typstmate-style-block-center {
   text-align: center;
@@ -49,7 +50,8 @@
 }
 
 /* biome-ignore lint/suspicious/noEmptyBlock: readability */
-.typstmate-codeblock.typstmate-style-block {}
+.typstmate-codeblock.typstmate-style-block {
+}
 
 .typstmate-codeblock.typstmate-style-block-center {
   text-align: center;

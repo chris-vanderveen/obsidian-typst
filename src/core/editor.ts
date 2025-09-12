@@ -1,6 +1,6 @@
 import type { App, Editor } from 'obsidian';
 
-export function isCursorInBlock(editor: Editor): boolean {
+function isCursorInBlock(editor: Editor): boolean {
   const cursor = editor.getCursor();
   let inBlock = false;
 
@@ -14,13 +14,13 @@ export function isCursorInBlock(editor: Editor): boolean {
       trimmedLine.startsWith('$$')
     ) {
       inBlock = !inBlock;
-      if (!inBlock) break;
     }
   }
+
   return inBlock;
 }
 
-export function isCursorInInlineCode(editor: Editor): boolean {
+function isCursorInInlineCode(editor: Editor): boolean {
   const cursor = editor.getCursor();
   const line = editor.getLine(cursor.line);
   const textBeforeCursor = line.slice(0, cursor.ch);
@@ -43,7 +43,7 @@ export class EditorHelper {
   private previewElement: HTMLElement | null = null;
   private readonly PREVIEW_OFFSET = 6; // px
 
-  constructor(private app: App) {}
+  constructor(private app: App) { }
 
   updatePreview(editor: Editor): void {
     this.removePreview();
