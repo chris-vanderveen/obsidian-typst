@@ -12,9 +12,8 @@ function isCursorInBlock(editor: Editor): boolean {
       trimmedLine.startsWith('```') ||
       trimmedLine.startsWith('~~~') ||
       trimmedLine.startsWith('$$')
-    ) {
+    )
       inBlock = !inBlock;
-    }
   }
 
   return inBlock;
@@ -43,7 +42,7 @@ export class EditorHelper {
   private previewElement: HTMLElement | null = null;
   private readonly PREVIEW_OFFSET = 6; // px
 
-  constructor(private app: App) { }
+  constructor(private app: App) {}
 
   updatePreview(editor: Editor): void {
     this.removePreview();

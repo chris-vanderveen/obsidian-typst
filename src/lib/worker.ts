@@ -126,7 +126,7 @@ export default class $ {
           map.set(path, new Uint8Array(r));
         })
         .catch(() => {
-          // TODO: IsDirectoryを判断する
+          // TODO: IsDirectory を判断する
           map.set(path, undefined);
         });
     } else {

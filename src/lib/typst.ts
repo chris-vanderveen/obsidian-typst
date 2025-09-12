@@ -76,7 +76,11 @@ export default class TypstManager {
     }
 
     if (this.plugin.settings.skipPreparationWaiting) {
-      const result = this.plugin.typst.store({ fonts, processors, sources });
+      const result = this.plugin.typst.store({
+        fonts,
+        processors,
+        sources,
+      });
       if (result instanceof Promise) {
         result.then(() => {
           this.ready = true;
@@ -117,9 +121,9 @@ export default class TypstManager {
       }
     }
 
-    // MathJaxをオーバライド
+    // MathJax をオーバライド
     window.MathJax!.tex2chtml = (e: string, r: { display?: boolean }) => {
-      // タグ名, クラス名, 属性がこれ以外だと認識されない
+      // タグ名，クラス名，属性がこれ以外だと認識されないない
       const container = document.createElement('mjx-container');
       container.className = 'Mathjax';
       container.setAttribute('jax', 'CHTML');

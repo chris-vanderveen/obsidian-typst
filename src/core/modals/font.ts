@@ -125,5 +125,3 @@ export const fontFlagsToArray = (bits: number): string[] => {
 function clamp(ratio: number, arg1: number, arg2: number) {
   return Math.max(arg1, Math.min(ratio, arg2));
 }
-
-// 参照: https://github.com/typst/typst/blob/main/crates/typst-kit/src/fonts.rs

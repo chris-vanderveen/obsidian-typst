@@ -56,10 +56,10 @@ export default class ObsidianTypstMate extends Plugin {
   fs?: typeof fsModule;
 
   override async onload() {
-    // EditorHelperを初期化
+    // EditorHelper を初期化
     this.editorHelper = new EditorHelper(this.app);
 
-    // ユーザーの設定(data.json)を読み込む
+    // ユーザーの設定 (data.json) を読み込む
     await this.loadSettings();
     const adapter = this.app.vault.adapter;
 
@@ -75,14 +75,14 @@ export default class ObsidianTypstMate extends Plugin {
     this.packagesDirPath = `${this.pluginDirPath}/packages`;
 
     // 必要なディレクトリを作成する
-    // ? ディレクトリの存在確認の挙動が安定しないので, 作成して例外を無視する
+    // ? ディレクトリの存在確認の挙動が安定しないので，作成して例外を無視するる
     await this.tryCreateDirs([
       this.fontsDirPath,
       this.cachesDirPath,
       this.packagesDirPath,
     ]);
 
-    // 存在しない場合, 最新のWasmをダウンロードする
+    // 存在しない場合，最新の Wasm をダウンロードする
     this.version = JSON.parse(
       await this.app.vault.adapter.read(`${this.pluginDirPath}/manifest.json`),
     ).version;
@@ -92,12 +92,12 @@ export default class ObsidianTypstMate extends Plugin {
       await this.downloadLatestWasm(this.wasmPath);
     }
 
-    // MathJaxを読み込む
+    // MathJax を読み込む
     await loadMathJax();
     if (window.MathJax === undefined)
       throw new Error('Failed to load MathJax.');
-    renderMath('', false); // ? 副作用(スタイル)のため
-    this.originalTex2chtml = window.MathJax.tex2chtml; // ? Pluginをunloadしたときに戻すため. Fallback処理のため.
+    renderMath('', false); // ? 副作用 (スタイル) のため
+    this.originalTex2chtml = window.MathJax.tex2chtml; // ? Plugin を unload したときに戻すため。Fallback 処理のため。
 
     // 監視を追加する
     const styles = getComputedStyle(document.body);
@@ -108,7 +108,7 @@ export default class ObsidianTypstMate extends Plugin {
       }),
     );
 
-    // TypstManagerを設定する
+    // TypstManager を設定する
     this.observer = new ParentResizeService();
     this.typstManager = new TypstManager(this);
     try {
@@ -124,8 +124,8 @@ export default class ObsidianTypstMate extends Plugin {
     // 設定タブを登録
     this.addSettingTab(new SettingTab(this.app, this));
 
-    // Leafを登録
-    // ? iframeがモバイルで使えないため無効化
+    // Leaf を登録
+    // ? iframe がモバイルで使えないため無効化
     if (Platform.isMobileApp) return;
     this.registerView(
       TypstToolsView.viewtype,
@@ -176,7 +176,7 @@ export default class ObsidianTypstMate extends Plugin {
   private async downloadLatestWasm(wasmPath: string) {
     new Notice('Downloading latest wasm...');
 
-    // 古いWasmを削除する
+    // 古い Wasm を削除する
     const oldWasms = (
       await this.app.vault.adapter.list(this.pluginDirPath)
     ).files.filter((file) => file.endsWith('.wasm'));
@@ -184,7 +184,7 @@ export default class ObsidianTypstMate extends Plugin {
       await this.app.vault.adapter.remove(wasm);
     }
 
-    // 最新のWasmがあるURLを取得する
+    // 最新の Wasm がある URL を取得する
     const releaseUrl = `https://api.github.com/repos/azyarashi/obsidian-typst-mate/releases/tags/${this.version}`;
     const releaseResponse = await requestUrl(releaseUrl);
     const releaseData = (await releaseResponse.json) as {
@@ -195,7 +195,7 @@ export default class ObsidianTypstMate extends Plugin {
     );
     if (!asset) throw new Error(`Could not find ${wasmPath} in release assets`);
 
-    // Wasmをダウンロードする
+    // Wasm をダウンロードする
     const response = await requestUrl({
       url: asset.url,
       headers: { Accept: 'application/octet-stream' },
@@ -303,16 +303,16 @@ export default class ObsidianTypstMate extends Plugin {
       this.app.workspace.offref(listener);
     }
 
-    // Workerを終了
+    // Worker を終了
     this.worker?.terminate();
 
-    // MathJaxのオーバーライドを解除
+    // MathJax のオーバーライドを解除
     if (window.MathJax !== undefined)
       window.MathJax.tex2chtml = this.originalTex2chtml;
 
-    // MarkdownCodeBlockProcessorのオーバーライドは自動で解除
+    // MarkdownCodeBlockProcessor のオーバーライドは自動で解除
 
-    // 登録したLeafを閉じる
+    // 登録した Leaf を閉じる
     const leafs = this.app.workspace.getLeavesOfType(TypstToolsView.viewtype);
     for (const leaf of leafs) {
       leaf.detach();
@@ -336,8 +336,8 @@ export default class ObsidianTypstMate extends Plugin {
   );
 
   async reload(openSettingsTab = true) {
-    await this.app.plugins.disablePlugin(this.pluginId); // ? onunloadも呼ばれる
-    await this.app.plugins.enablePlugin(this.pluginId); // ? onloadも呼ばれる
+    await this.app.plugins.disablePlugin(this.pluginId); // ? onunload も呼ばれる
+    await this.app.plugins.enablePlugin(this.pluginId); // ? onload も呼ばれる
     if (openSettingsTab) this.app.setting.openTabById(this.pluginId);
   }
 

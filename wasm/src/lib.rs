@@ -73,7 +73,7 @@ impl Typst {
         // ソース
         for (rpath, bytes) in sources_serde {
             if rpath.starts_with('@') {
-                // unwrapはTS側で保証
+                // unwrap は TS 側で保証
                 let p = rpath.strip_prefix('@').unwrap();
 
                 let mut p_parts = p.splitn(4, '/');

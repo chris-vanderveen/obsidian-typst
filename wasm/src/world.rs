@@ -192,7 +192,7 @@ impl WasmWorld {
 
 #[comemo::track]
 impl World for WasmWorld {
-    // Symbolなど
+    // Symbol など
     fn library(&self) -> &LazyHash<Library> {
         &self.library
     }
@@ -202,22 +202,22 @@ impl World for WasmWorld {
         &self.book
     }
 
-    /// コンパイル対象の FileId を返す
+    // コンパイル対象の FileId を返す
     fn main(&self) -> FileId {
         self.main
     }
 
-    /// ? .typ ファイル
+    // ? .typ ファイル
     fn source(&self, id: FileId) -> FileResult<Source> {
         self.read(id, |f| f.source())
     }
 
-    /// ? アセットファイル(画像やwasmなど)
+    // ? アセットファイル (画像や wasm など)
     fn file(&self, id: FileId) -> FileResult<Bytes> {
         self.read(id, |f| f.bytes())
     }
 
-    /// ? 登録されていないフォントにアクセスを試みると, Warning(severity: 2) が発生する
+    // ? 登録されていないフォントにアクセスを試みると，Warning(severity: 2) が発生するる
     fn font(&self, index: usize) -> Option<Font> {
         Some(self.fonts[index].clone())
     }
@@ -231,7 +231,7 @@ impl World for WasmWorld {
             }
         };
 
-        // ? 起動時の値に固定するので, hmsは不要.
+        // ? 起動時の値に固定するので，hms は不要。
         Datetime::from_ymd(
             with_offset.year(),
             with_offset.month().try_into().ok()?,
