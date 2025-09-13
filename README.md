@@ -27,8 +27,9 @@ Render math expressions in [Obsidian](https://obsidian.md) using [Typst](https:/
 
 ### Other Plugins
 
+- [Excalidraw](https://github.com/azyarashi/obsidian-excalidraw) (use the `typst-render-to-excalidraw` command)
 - [Markmind](https://github.com/MarkMindCkm/obsidian-markmind) (requires background rendering to be disabled)
-- [Webpage HTML Export](https://github.com/KosmosisDire/obsidian-webpage-export) (Don't forget to include CSS from Style Options)
+- [Webpage HTML Export](https://github.com/KosmosisDire/obsidian-webpage-export) (don't forget to include CSS from Style Options)
 
 ## Note
 
