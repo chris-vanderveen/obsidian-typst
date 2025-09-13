@@ -10,7 +10,7 @@ Render math expressions in [Obsidian](https://obsidian.md) using [Typst](https:/
 
 ## Features
 
-- Supports *inline math*, *display math*, and *code blocks*
+- Support *inline math*, *display math*, and *code blocks*
 - Additional styling customization
   - e.g., an option `inline-middle` to vertically center *inline math* so it lines up naturally with the surrounding text
 - Inline math preview
