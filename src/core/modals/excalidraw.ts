@@ -16,6 +16,8 @@ export class ExcalidrawModal extends Modal {
       processors.forEach((processor) => {
         dropdown.addOption(processor.id, processor.id);
       });
+      dropdown.setValue(processors.at(-1)!.id);
+      id = processors.at(-1)!.id;
 
       dropdown.onChange((value) => {
         id = value;
@@ -25,6 +27,10 @@ export class ExcalidrawModal extends Modal {
     new Setting(this.contentEl).setName('code').addText((text) => {
       text.onChange((value) => {
         code = value;
+        previewEl.empty();
+        if (code) {
+          plugin.typstManager.render(`${id}\n${code}`, previewEl, 'excalidraw');
+        }
       });
     });
 
@@ -39,5 +45,8 @@ export class ExcalidrawModal extends Modal {
         plugin.excalidraw?.addTypst(code, processor);
       });
     });
+
+    const previewEl = this.contentEl.createDiv('typstmate-settings-preview-preview');
+    previewEl.setText('Type in the input above to see the preview');
   }
 }

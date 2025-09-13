@@ -156,6 +156,13 @@ export default class TypstManager {
         if (processor.id.length !== 0) code = code.slice(processor.id.length);
 
         break;
+      case 'excalidraw':
+        processor =
+          this.plugin.settings.processor.excalidraw?.processors.find((p) => code.startsWith(`${p.id}`)) ??
+          DEFAULT_SETTINGS.processor.excalidraw?.processors.at(-1)!;
+        if (processor.id.length !== 0) code = code.slice(processor.id.length);
+
+        break;
       default:
         processor =
           this.plugin.settings.processor.codeblock?.processors.find((p) => p.id === kind) ??

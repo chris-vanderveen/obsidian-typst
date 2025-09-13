@@ -44,7 +44,7 @@ export default class ExcalidrawPlugin {
       this.ea.elementsDict[id].fileId = id;
       this.ea.elementsDict[id].scale = [1, 1];
 
-      this.ea.addElementsToView(true, true, true, true);
+      this.ea.addElementsToView(false, true, true, true);
 
       return id;
     } catch (error) {

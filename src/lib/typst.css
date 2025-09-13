@@ -59,7 +59,8 @@
 
 /* share */
 .typstmate-display,
-.typstmate-codeblock {
+.typstmate-codeblock,
+.typstmate-excalidraw {
   margin-left: 0px;
   margin-right: 0px;
   display: block;
@@ -69,6 +70,7 @@
 
 .typstmate-inline,
 .typstmate-display,
-.typstmate-codeblock {
+.typstmate-codeblock,
+.typstmate-excalidraw {
   overflow: visible;
 }
