@@ -12,9 +12,7 @@ const { values } = parseArgs({
   allowPositionals: true,
 });
 
-const currentVersion = JSON.parse(
-  readFileSync('manifest.json', 'utf8'),
-).version;
+const currentVersion = JSON.parse(readFileSync('manifest.json', 'utf8')).version;
 
 if (values.type === 'mock') {
   await $`echo -n ${currentVersion}`;

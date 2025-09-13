@@ -30,11 +30,7 @@ export default class $ {
   }
 
   store(args: Args): void {
-    this.typst!.store(
-      args.fonts ?? [],
-      args.sources ?? [],
-      args.processors ?? [],
-    );
+    this.typst!.store(args.fonts ?? [], args.sources ?? [], args.processors ?? []);
   }
 
   render(code: string, kind: string, id: string, format: 'svg'): SVGResult {
@@ -68,11 +64,7 @@ export default class $ {
       if (namespace === 'preview') {
         if (vpath === 'typst.toml') main.notice(`Downloading ${name}...`);
 
-        xhr.open(
-          'GET',
-          `https://packages.typst.org/preview/${name}-${version}.tar.gz`,
-          false,
-        );
+        xhr.open('GET', `https://packages.typst.org/preview/${name}-${version}.tar.gz`, false);
         xhr.send(null);
         if (xhr.status === 0) throw 21; // PackageError::NetworkFailed
         if (xhr.status === 404) throw 22; // PackageError::NotFound
@@ -99,12 +91,7 @@ export default class $ {
           }
 
           for (const f of files.filter((f) => f.type === '2')) {
-            map.set(
-              `@${p}/${f.name}`,
-              new Uint8Array(
-                map.get(f.linkname!)?.buffer || new ArrayBuffer(0),
-              ),
-            );
+            map.set(`@${p}/${f.name}`, new Uint8Array(map.get(f.linkname!)?.buffer || new ArrayBuffer(0)));
           }
 
           if (vpath === 'typst.toml') main.notice(`Downloaded successfully!`);

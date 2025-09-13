@@ -4,14 +4,11 @@ export const InlineStylingTokens = ['inline', 'inline-middle'] as const;
 export type InlineStyling = (typeof InlineStylingTokens)[number];
 export const DisplayStylingTokens = ['block', 'block-center'] as const;
 export type DisplayStyling = (typeof DisplayStylingTokens)[number];
-export type Styling = InlineStyling | DisplayStyling | CodeblockStyling;
-
-export const CodeblockStylingTokens = [
-  'block',
-  'block-center',
-  'codeblock',
-] as const;
+export const CodeblockStylingTokens = ['block', 'block-center', 'codeblock'] as const;
 export type CodeblockStyling = (typeof CodeblockStylingTokens)[number];
+export const ExcalidrawStylingTokens = ['default'] as const;
+export type ExcalidrawStyling = (typeof ExcalidrawStylingTokens)[number];
+export type Styling = InlineStyling | DisplayStyling | CodeblockStyling | ExcalidrawStyling;
 
 export interface InlineProcessor {
   id: string;
@@ -37,13 +34,18 @@ export interface CodeblockProcessor {
   noPreamble?: boolean;
   fitToParentWidth?: boolean;
 }
-export type Processor = InlineProcessor | DisplayProcessor | CodeblockProcessor;
-export type Processors =
-  | InlineProcessor[]
-  | DisplayProcessor[]
-  | CodeblockProcessor[];
+export interface ExcalidrawProcessor {
+  id: string;
+  renderingEngine: RenderingEngine;
+  format: string;
+  styling: ExcalidrawStyling;
+  noPreamble?: boolean;
+  fitToParentWidth?: boolean;
+}
+export type Processor = InlineProcessor | DisplayProcessor | CodeblockProcessor | ExcalidrawProcessor;
+export type Processors = InlineProcessor[] | DisplayProcessor[] | CodeblockProcessor[] | ExcalidrawProcessor[];
 
-export const ProcessorKindTokens = ['inline', 'display', 'codeblock'] as const;
+export const ProcessorKindTokens = ['inline', 'display', 'codeblock', 'excalidraw'] as const;
 export type ProcessorKind = (typeof ProcessorKindTokens)[number];
 
 export const DefaultNewInlineProcessor: InlineProcessor = {
@@ -70,9 +72,18 @@ export const DefaultNewCodeblockProcessor: CodeblockProcessor = {
   noPreamble: false,
   fitToParentWidth: false,
 };
+export const DefaultNewExcalidrawProcessor: ExcalidrawProcessor = {
+  id: 'new',
+  renderingEngine: 'typst',
+  format: '#set page(margin: 0.25em)\n${CODE}$',
+  styling: 'default',
+  noPreamble: false,
+  fitToParentWidth: false,
+};
 
 export const DefaultNewProcessor: Record<ProcessorKind, Processor> = {
   inline: DefaultNewInlineProcessor,
   display: DefaultNewDisplayProcessor,
   codeblock: DefaultNewCodeblockProcessor,
+  excalidraw: DefaultNewExcalidrawProcessor,
 } as const;

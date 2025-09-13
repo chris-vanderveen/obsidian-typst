@@ -44,16 +44,13 @@ export class TypstToolsView extends ItemView {
       .addOption('symbols', 'Symbols')
       .addOption('packages', 'Packages')
       .onChange((value) => {
-        iframe.src = ALL_ITEMS.find((item) => item.title === value)
-          ?.url as string;
+        iframe.src = ALL_ITEMS.find((item) => item.title === value)?.url as string;
       });
     new ButtonComponent(menuEl)
       .setIcon('refresh-ccw')
       .setTooltip('再読み込み')
       .onClick(() => {
-        iframe.src = ALL_ITEMS.find(
-          (item) => item.title === dropdown.getValue(),
-        )?.url as string;
+        iframe.src = ALL_ITEMS.find((item) => item.title === dropdown.getValue())?.url as string;
       });
 
     // iframe

@@ -53,43 +53,35 @@ export function zip(map: Map<string, Uint8Array | undefined>): Uint8Array {
   return out;
 }
 
-export function unzip(
-  input: ArrayBuffer | Uint8Array,
-): Map<string, Uint8Array | undefined> {
+export function unzip(input: ArrayBuffer | Uint8Array): Map<string, Uint8Array | undefined> {
   const buf = input instanceof Uint8Array ? input : new Uint8Array(input);
   const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
   let offset = 0;
   const result = new Map<string, Uint8Array | undefined>();
 
-  if (buf.byteLength < 4)
-    throw new Error('internal error: buffer too small for count');
+  if (buf.byteLength < 4) throw new Error('internal error: buffer too small for count');
   const count = dv.getUint32(offset, true);
   offset += 4;
 
   for (let i = 0; i < count; i++) {
-    if (offset + 4 > buf.byteLength)
-      throw new Error('internal error: unexpected end (keyLen)');
+    if (offset + 4 > buf.byteLength) throw new Error('internal error: unexpected end (keyLen)');
     const keyLen = dv.getUint32(offset, true);
     offset += 4;
-    if (offset + keyLen > buf.byteLength)
-      throw new Error('internal error: unexpected end (keyBytes)');
+    if (offset + keyLen > buf.byteLength) throw new Error('internal error: unexpected end (keyBytes)');
     const keyBytes = buf.subarray(offset, offset + keyLen);
     const key = textDecoder.decode(keyBytes);
     offset += keyLen;
 
-    if (offset + 1 > buf.byteLength)
-      throw new Error('internal error: unexpected end (hasValue)');
+    if (offset + 1 > buf.byteLength) throw new Error('internal error: unexpected end (hasValue)');
     const hasValue = buf[offset++] !== 0;
 
     if (!hasValue) {
       result.set(key, undefined);
     } else {
-      if (offset + 4 > buf.byteLength)
-        throw new Error('internal error: unexpected end (valueLen)');
+      if (offset + 4 > buf.byteLength) throw new Error('internal error: unexpected end (valueLen)');
       const valueLen = dv.getUint32(offset, true);
       offset += 4;
-      if (offset + valueLen > buf.byteLength)
-        throw new Error('internal error: unexpected end (valueBytes)');
+      if (offset + valueLen > buf.byteLength) throw new Error('internal error: unexpected end (valueBytes)');
       const valueBytes = buf.subarray(offset, offset + valueLen);
       const value = new Uint8Array(valueBytes);
       offset += valueLen;
@@ -160,27 +152,18 @@ function tokenize(text: string): Token[] {
 
 function documentFragmentHelper(): DocumentFragment & {
   appendText: (txt: string) => void;
-  createEl: (
-    tag: string,
-    opts?: { text?: string; href?: string },
-  ) => HTMLElement;
+  createEl: (tag: string, opts?: { text?: string; href?: string }) => HTMLElement;
 } {
   const frag = document.createDocumentFragment() as DocumentFragment & {
     appendText?: (txt: string) => void;
-    createEl?: (
-      tag: string,
-      opts?: { text?: string; href?: string },
-    ) => HTMLElement;
+    createEl?: (tag: string, opts?: { text?: string; href?: string }) => HTMLElement;
   };
 
   frag.appendText = (txt: string) => {
     frag.appendChild(document.createTextNode(String(txt)));
   };
 
-  frag.createEl = (
-    tag: string,
-    opts: { text?: string; href?: string } = {},
-  ) => {
+  frag.createEl = (tag: string, opts: { text?: string; href?: string } = {}) => {
     const el = document.createElement(tag);
     if (opts.text !== undefined) el.textContent = String(opts.text);
     if (opts.href !== undefined) el.setAttribute('href', String(opts.href));

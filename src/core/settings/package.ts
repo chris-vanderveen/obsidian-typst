@@ -10,9 +10,7 @@ export class PackagesList {
   constructor(plugin: ObsidianTypstMate, containerEl: HTMLElement) {
     this.plugin = plugin;
 
-    this.packageTableEl = containerEl.createDiv(
-      'typstmate-settings-table typstmate-hidden',
-    );
+    this.packageTableEl = containerEl.createDiv('typstmate-settings-table typstmate-hidden');
 
     this.displayPackageList();
   }
@@ -20,16 +18,10 @@ export class PackagesList {
   async displayPackageList() {
     this.packageTableEl.empty();
 
-    const specs = (
-      await this.plugin.app.vault.adapter.list(this.plugin.cachesDirPath)
-    ).files
+    const specs = (await this.plugin.app.vault.adapter.list(this.plugin.cachesDirPath)).files
       .filter((f) => f.endsWith('.cache'))
       .map((f) => {
-        const [namespace, name, version] = f
-          .replace('.cache', '')
-          .split('/')
-          .pop()!
-          .split('_');
+        const [namespace, name, version] = f.replace('.cache', '').split('/').pop()!.split('_');
         return {
           namespace: namespace!,
           name: name!,
@@ -59,10 +51,7 @@ export class PackagesList {
           });
         })
         .addButton((delButton) => {
-          delButton.buttonEl.addClass(
-            'typstmate-button',
-            'typstmate-button-danger',
-          );
+          delButton.buttonEl.addClass('typstmate-button', 'typstmate-button-danger');
           delButton.setTooltip('Remove');
           delButton.setIcon('trash');
 
@@ -85,20 +74,14 @@ export class PackagesList {
       `${this.plugin.cachesDirPath}/${spec.namespace}_${spec.name}_${spec.version}.cache`,
     );
 
-    this.packageTableEl.children
-      .namedItem(`${spec.namespace}/${spec.name}:${spec.version}`)
-      ?.remove();
+    this.packageTableEl.children.namedItem(`${spec.namespace}/${spec.name}:${spec.version}`)?.remove();
 
-    if (this.packageTableEl.children.length === 0)
-      this.packageTableEl.addClass('typstmate-hidden');
+    if (this.packageTableEl.children.length === 0) this.packageTableEl.addClass('typstmate-hidden');
 
     // init?
   }
 
-  private async collectFiles(
-    dirPath: string,
-    map: Map<string, Uint8Array | undefined>,
-  ): Promise<void> {
+  private async collectFiles(dirPath: string, map: Map<string, Uint8Array | undefined>): Promise<void> {
     const listedFiles = await this.plugin.app.vault.adapter.list(dirPath);
     const filePaths = listedFiles.files;
     const folderPaths = listedFiles.folders;
@@ -106,13 +89,8 @@ export class PackagesList {
     await Promise.all(
       filePaths.map(async (filePath) => {
         try {
-          const data: Uint8Array = new Uint8Array(
-            await this.plugin.app.vault.adapter.readBinary(filePath),
-          );
-          map.set(
-            filePath.replace(`${this.plugin.packagesDirPath}/`, ''),
-            data,
-          );
+          const data: Uint8Array = new Uint8Array(await this.plugin.app.vault.adapter.readBinary(filePath));
+          map.set(filePath.replace(`${this.plugin.packagesDirPath}/`, ''), data);
         } catch {}
       }),
     );

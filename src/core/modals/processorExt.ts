@@ -5,17 +5,10 @@ import { buildDocumentFragment } from '@/lib/util';
 import type ObsidianTypstMate from '@/main';
 
 export class ProcessorModal extends Modal {
-  constructor(
-    app: App,
-    plugin: ObsidianTypstMate,
-    kind: ProcessorKind,
-    id: string,
-  ) {
+  constructor(app: App, plugin: ObsidianTypstMate, kind: ProcessorKind, id: string) {
     super(app);
 
-    const processor = plugin.settings.processor[kind].processors.find(
-      (processor) => processor.id === id,
-    );
+    const processor = plugin.settings.processor[kind]?.processors.find((processor) => processor.id === id);
 
     if (!processor) return;
 

@@ -1,17 +1,6 @@
-import {
-  type App,
-  debounce,
-  Notice,
-  Platform,
-  PluginSettingTab,
-  Setting,
-} from 'obsidian';
+import { type App, debounce, Notice, Platform, PluginSettingTab, Setting } from 'obsidian';
 
-import type {
-  CodeblockProcessor,
-  DisplayProcessor,
-  InlineProcessor,
-} from '@/lib/processor';
+import type { CodeblockProcessor, DisplayProcessor, ExcalidrawProcessor, InlineProcessor } from '@/lib/processor';
 import { buildDocumentFragment } from '@/lib/util';
 import type ObsidianTypstMate from '@/main';
 import { FontList } from './settings/font';
@@ -30,14 +19,17 @@ export interface Settings {
   enableInlinePreview: boolean;
   preamble: string;
   processor: {
-    inline: {
+    inline?: {
       processors: InlineProcessor[];
     };
-    display: {
+    display?: {
       processors: DisplayProcessor[];
     };
-    codeblock: {
+    codeblock?: {
       processors: CodeblockProcessor[];
+    };
+    excalidraw?: {
+      processors: ExcalidrawProcessor[];
     };
   };
 }
@@ -50,7 +42,7 @@ export const DEFAULT_SETTINGS: Settings = {
   skipPreparationWaiting: false,
   enableInlinePreview: true,
   preamble: [
-    '#set page(margin: (x: 0pt, y: 0pt), width: auto, height: auto)',
+    '#set page(margin: 0pt, width: auto, height: auto)',
     '#show raw: set text(size: 1.25em)',
     '#set text(size: fontsize)',
   ].join('\n'),
@@ -135,6 +127,18 @@ export const DEFAULT_SETTINGS: Settings = {
         },
       ],
     },
+    excalidraw: {
+      processors: [
+        {
+          id: 'default',
+          renderingEngine: 'typst',
+          format: '#set page(margin: 0.25em)\n{CODE}$',
+          styling: 'default',
+          noPreamble: false,
+          fitToParentWidth: false,
+        },
+      ],
+    },
   },
 };
 
@@ -165,7 +169,7 @@ export class SettingTab extends PluginSettingTab {
       .addButton((button) => {
         button.setButtonText('Reload Plugin');
         button.onClick(async () => {
-          await this.plugin.reload();
+          await this.plugin.reload(true);
           new Notice('Plugin reloaded.');
         });
       });
@@ -231,30 +235,16 @@ export class SettingTab extends PluginSettingTab {
       ),
     );
 
-    new ProcessorList(
-      this.plugin,
-      'inline',
-      containerEl,
-      'Inline($...$) Processors',
-    );
-    new ProcessorList(
-      this.plugin,
-      'display',
-      containerEl,
-      'Display($$...$$) Processors',
-    );
-    new ProcessorList(
-      this.plugin,
-      'codeblock',
-      containerEl,
-      'CodeBlock(```...```) Processors',
-    );
+    new ProcessorList(this.plugin, 'inline', containerEl, 'Inline($...$) Processors');
+    new ProcessorList(this.plugin, 'display', containerEl, 'Display($$...$$) Processors');
+    new ProcessorList(this.plugin, 'codeblock', containerEl, 'CodeBlock(```...```) Processors');
+    if (this.plugin.excalidrawPluginInstalled) {
+      new ProcessorList(this.plugin, 'excalidraw', containerEl, 'Excalidraw Processors');
+    }
   }
 
   addPreview(containerEl: HTMLElement) {
-    const previewContainer = containerEl.createDiv(
-      'typstmate-settings-preview',
-    );
+    const previewContainer = containerEl.createDiv('typstmate-settings-preview');
 
     new Setting(previewContainer)
       .setName('Preview')
@@ -290,11 +280,7 @@ export class SettingTab extends PluginSettingTab {
                 const code = codeEl.value;
                 previewEl.empty();
                 if (code) {
-                  this.plugin.typstManager.render(
-                    `${id ? `${id}:` : ''}${code}`,
-                    previewEl,
-                    'inline',
-                  );
+                  this.plugin.typstManager.render(`${id ? `${id}:` : ''}${code}`, previewEl, 'inline');
                 }
               };
 
@@ -322,11 +308,7 @@ export class SettingTab extends PluginSettingTab {
                 const code = codeEl.value;
                 previewEl.empty();
                 if (code) {
-                  this.plugin.typstManager.render(
-                    `${id ? `${id}\n` : ''}${code}\n`,
-                    previewEl,
-                    'display',
-                  );
+                  this.plugin.typstManager.render(`${id ? `${id}\n` : ''}${code}\n`, previewEl, 'display');
                 }
               };
 
@@ -366,9 +348,7 @@ export class SettingTab extends PluginSettingTab {
         });
       });
 
-    const inputEl = previewContainer.createDiv(
-      'typstmate-settings-preview-input',
-    );
+    const inputEl = previewContainer.createDiv('typstmate-settings-preview-input');
     inputEl.createEl('span', { text: '$' });
     const idEl = inputEl.createEl('input', {
       type: 'text',
@@ -388,20 +368,14 @@ export class SettingTab extends PluginSettingTab {
       const code = codeEl.value;
       previewEl.empty();
       if (code) {
-        this.plugin.typstManager.render(
-          `${id ? `${id}:` : ''}${code}`,
-          previewEl,
-          'inline',
-        );
+        this.plugin.typstManager.render(`${id ? `${id}:` : ''}${code}`, previewEl, 'inline');
       }
     };
 
     idEl.addEventListener('input', updatePreview);
     codeEl.addEventListener('input', updatePreview);
 
-    const previewEl = previewContainer.createDiv(
-      'typstmate-settings-preview-preview',
-    );
+    const previewEl = previewContainer.createDiv('typstmate-settings-preview-preview');
     previewEl.setText('Type in the input above to see the preview');
   }
 
@@ -414,9 +388,7 @@ export class SettingTab extends PluginSettingTab {
 
         button.setTooltip('Open Fonts Directory');
         button.onClick(() => {
-          window.open(
-            `file://${this.plugin.app.vault.adapter.basePath}/${this.plugin.fontsDirPath}`,
-          );
+          window.open(`file://${this.plugin.app.vault.adapter.basePath}/${this.plugin.fontsDirPath}`);
         });
       });
     }
@@ -440,9 +412,7 @@ export class SettingTab extends PluginSettingTab {
         button.setTooltip('Open Packages Directory');
 
         button.onClick(() => {
-          window.open(
-            `file://${this.plugin.baseDirPath}/${this.plugin.packagesDirPath}`,
-          );
+          window.open(`file://${this.plugin.baseDirPath}/${this.plugin.packagesDirPath}`);
         });
       });
     }
@@ -505,14 +475,12 @@ export class SettingTab extends PluginSettingTab {
         });
       });
 
-    new Setting(containerEl)
-      .setName('Enable Inline Preview')
-      .addToggle((toggle) => {
-        toggle.setValue(this.plugin.settings.enableInlinePreview);
-        toggle.onChange((value) => {
-          this.plugin.settings.enableInlinePreview = value;
-          this.plugin.saveSettings();
-        });
+    new Setting(containerEl).setName('Enable Inline Preview').addToggle((toggle) => {
+      toggle.setValue(this.plugin.settings.enableInlinePreview);
+      toggle.onChange((value) => {
+        this.plugin.settings.enableInlinePreview = value;
+        this.plugin.saveSettings();
       });
+    });
   }
 }

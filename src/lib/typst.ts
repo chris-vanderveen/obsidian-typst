@@ -7,6 +7,7 @@ import { unzip } from './util';
 
 import './typst.css';
 import TypstSVGElement from '@/components/SVG';
+import ExcalidrawPlugin from '@/core/ea';
 
 function customElementsRedefine(name: string, ctor: typeof HTMLElement) {
   const registry = window.customElements;
@@ -32,9 +33,9 @@ export default class TypstManager {
     this.ready = false;
     await this.plugin.typst.init(this.plugin.app.vault.config.baseFontSize);
 
-    const fontPaths = (
-      await this.plugin.app.vault.adapter.list(this.plugin.fontsDirPath)
-    ).files.filter((file) => file.endsWith('.font'));
+    const fontPaths = (await this.plugin.app.vault.adapter.list(this.plugin.fontsDirPath)).files.filter((file) =>
+      file.endsWith('.font'),
+    );
     const fonts = (
       await Promise.all(
         fontPaths.map((fontPath) =>
@@ -45,28 +46,30 @@ export default class TypstManager {
       )
     ).filter((font) => font !== undefined);
 
-    const processors = ['inline', 'display', 'codeblock'].flatMap((kind) =>
-      this.plugin.settings.processor[
-        kind as 'inline' | 'display' | 'codeblock'
-      ].processors.map((p) => ({
-        kind,
-        id: p.id,
-        format: this.format(p, ''),
-        styling: p.styling,
-        renderingEngine: p.renderingEngine,
-      })),
+    const kind = ['inline', 'display', 'codeblock'];
+    if (this.plugin.excalidrawPluginInstalled) kind.push('excalidraw');
+
+    const processors = kind.flatMap(
+      (kind) =>
+        this.plugin.settings.processor[kind as 'inline' | 'display' | 'codeblock' | 'excalidraw']?.processors.map(
+          (p) => ({
+            kind,
+            id: p.id,
+            format: this.format(p, ''),
+            styling: p.styling,
+            renderingEngine: p.renderingEngine,
+          }),
+        ) ?? [],
     );
 
     // キャッシュ
     const sources: Map<string, Uint8Array> = new Map();
-    const cachePaths = (
-      await this.plugin.app.vault.adapter.list(this.plugin.cachesDirPath)
-    ).files.filter((file) => file.endsWith('.cache'));
+    const cachePaths = (await this.plugin.app.vault.adapter.list(this.plugin.cachesDirPath)).files.filter((file) =>
+      file.endsWith('.cache'),
+    );
     for (const cachePath of cachePaths) {
       try {
-        const cacheMap = unzip(
-          await this.plugin.app.vault.adapter.readBinary(cachePath),
-        );
+        const cacheMap = unzip(await this.plugin.app.vault.adapter.readBinary(cachePath));
         cacheMap.forEach((data, path) => {
           sources.set(`@${path}`, new Uint8Array(data!));
         });
@@ -100,22 +103,18 @@ export default class TypstManager {
     customElementsRedefine('typstmate-svg', TypstSVGElement);
 
     // コードブロックプロセッサーをオーバライド
-    for (const processor of this.plugin.settings.processor.codeblock
-      .processors) {
+    for (const processor of this.plugin.settings.processor.codeblock?.processors ?? []) {
       try {
-        this.plugin.registerMarkdownCodeBlockProcessor(
-          processor.id,
-          (source, el, _ctx) => {
-            if (!this.ready) {
-              el.textContent = source;
-              el.addClass('typstmate-waiting');
-              el.setAttribute('kind', processor.id);
-              return el;
-            }
+        this.plugin.registerMarkdownCodeBlockProcessor(processor.id, (source, el, _ctx) => {
+          if (!this.ready) {
+            el.textContent = source;
+            el.addClass('typstmate-waiting');
+            el.setAttribute('kind', processor.id);
+            return el;
+          }
 
-            return this.render(source, el, processor.id);
-          },
-        );
+          return this.render(source, el, processor.id);
+        });
       } catch {
         new Notice(`Already registered codeblock language: ${processor.id}`);
       }
@@ -136,9 +135,7 @@ export default class TypstManager {
         return container;
       }
 
-      return r.display
-        ? this.render(e, container, 'display')
-        : this.render(e, container, 'inline');
+      return r.display ? this.render(e, container, 'display') : this.render(e, container, 'inline');
     };
   }
 
@@ -148,33 +145,25 @@ export default class TypstManager {
     switch (kind) {
       case 'inline':
         processor =
-          this.plugin.settings.processor.inline.processors.find((p) =>
-            code.startsWith(`${p.id}`),
-          ) ?? DEFAULT_SETTINGS.processor.inline.processors.at(-1)!;
-        if (processor.id.length !== 0)
-          code = code.slice(processor.id.length + 1);
+          this.plugin.settings.processor.inline?.processors.find((p) => code.startsWith(`${p.id}`)) ??
+          DEFAULT_SETTINGS.processor.inline?.processors.at(-1)!;
+        if (processor.id.length !== 0) code = code.slice(processor.id.length + 1);
 
         break;
       case 'display':
         processor =
-          this.plugin.settings.processor.display.processors.find((p) =>
-            code.startsWith(`${p.id}`),
-          ) ?? DEFAULT_SETTINGS.processor.display.processors.at(-1)!;
+          this.plugin.settings.processor.display?.processors.find((p) => code.startsWith(`${p.id}`)) ??
+          DEFAULT_SETTINGS.processor.display?.processors.at(-1)!;
         if (processor.id.length !== 0) code = code.slice(processor.id.length);
 
         break;
       default:
         processor =
-          this.plugin.settings.processor.codeblock.processors.find(
-            (p) => p.id === kind,
-          ) ?? DEFAULT_SETTINGS.processor.codeblock.processors.at(-1)!;
+          this.plugin.settings.processor.codeblock?.processors.find((p) => p.id === kind) ??
+          DEFAULT_SETTINGS.processor.codeblock?.processors.at(-1)!;
 
         if (processor.styling === 'codeblock')
-          containerEl.addClass(
-            'HyperMD-codeblock',
-            'HyperMD-codeblock-bg',
-            'cm-line',
-          );
+          containerEl.addClass('HyperMD-codeblock', 'HyperMD-codeblock-bg', 'cm-line');
 
         kind = 'codeblock';
     }
@@ -182,11 +171,7 @@ export default class TypstManager {
       return this.plugin.originalTex2chtml(code, {
         display: kind !== 'inline',
       });
-    containerEl.addClass(
-      `typstmate-${kind}`,
-      `typstmate-style-${processor.styling}`,
-      `typstmate-id-${processor.id}`,
-    );
+    containerEl.addClass(`typstmate-${kind}`, `typstmate-style-${processor.styling}`, `typstmate-id-${processor.id}`);
 
     // レンダリング
     const t = document.createElement('typstmate-svg') as TypstSVGElement;
@@ -203,9 +188,6 @@ export default class TypstManager {
   private format(processer: Processor, code: string) {
     return processer.noPreamble
       ? processer.format.replace('{CODE}', code)
-      : `${this.plugin.settings.preamble}\n${processer.format.replace(
-          '{CODE}',
-          code,
-        )}`;
+      : `${this.plugin.settings.preamble}\n${processer.format.replace('{CODE}', code)}`;
   }
 }

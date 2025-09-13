@@ -1,4 +1,5 @@
-import type { App, Editor } from 'obsidian';
+import type { Editor, MarkdownView } from 'obsidian';
+import type ObsidianTypstMate from '@/main';
 
 function isCursorInBlock(editor: Editor): boolean {
   const cursor = editor.getCursor();
@@ -8,11 +9,7 @@ function isCursorInBlock(editor: Editor): boolean {
     const line = editor.getLine(i);
     const trimmedLine = line.trim();
 
-    if (
-      trimmedLine.startsWith('```') ||
-      trimmedLine.startsWith('~~~') ||
-      trimmedLine.startsWith('$$')
-    )
+    if (trimmedLine.startsWith('```') || trimmedLine.startsWith('~~~') || trimmedLine.startsWith('$$'))
       inBlock = !inBlock;
   }
 
@@ -39,10 +36,14 @@ interface MathContentResult {
 }
 
 export class EditorHelper {
+  private plugin: ObsidianTypstMate;
+
   private previewElement: HTMLElement | null = null;
   private readonly PREVIEW_OFFSET = 6; // px
 
-  constructor(private app: App) {}
+  constructor(plugin: ObsidianTypstMate) {
+    this.plugin = plugin;
+  }
 
   updatePreview(editor: Editor): void {
     this.removePreview();
@@ -65,18 +66,11 @@ export class EditorHelper {
     const textBeforeCursor = lineText.slice(0, cursor.ch);
     const textAfterCursor = lineText.slice(cursor.ch);
 
-    if (
-      textBeforeCursor.indexOf('$') === -1 &&
-      textAfterCursor.indexOf('$') === -1
-    ) {
+    if (textBeforeCursor.indexOf('$') === -1 && textAfterCursor.indexOf('$') === -1) {
       return null;
     }
 
-    const totalUnescapedDollarsBefore = this.countUnescapedDollarsInDocument(
-      editor,
-      cursor.line,
-      cursor.ch,
-    );
+    const totalUnescapedDollarsBefore = this.countUnescapedDollarsInDocument(editor, cursor.line, cursor.ch);
 
     if (totalUnescapedDollarsBefore % 2 === 0) {
       return null;
@@ -93,9 +87,7 @@ export class EditorHelper {
       return null;
     }
 
-    const mathContent =
-      textBeforeCursor.slice(lastDollarBefore + 1) +
-      textAfterCursor.slice(0, firstDollarAfter);
+    const mathContent = textBeforeCursor.slice(lastDollarBefore + 1) + textAfterCursor.slice(0, firstDollarAfter);
 
     return {
       content: mathContent,
@@ -103,11 +95,7 @@ export class EditorHelper {
     };
   }
 
-  private countUnescapedDollarsInDocument(
-    editor: Editor,
-    currentLine: number,
-    currentCh: number,
-  ): number {
+  private countUnescapedDollarsInDocument(editor: Editor, currentLine: number, currentCh: number): number {
     let totalCount = 0;
 
     for (let line = 0; line < currentLine; line++) {
@@ -158,10 +146,7 @@ export class EditorHelper {
     return backslashCount % 2 === 1;
   }
 
-  private renderMathPreview(
-    editor: Editor,
-    mathContent: MathContentResult,
-  ): void {
+  private renderMathPreview(editor: Editor, mathContent: MathContentResult): void {
     const cursor = editor.getCursor();
     const codeMirror = editor.cm;
 
@@ -186,20 +171,14 @@ export class EditorHelper {
     }
   }
 
-  private createAndAppendPreview(
-    mathHtml: HTMLElement,
-    coordinates: { left: number; bottom: number },
-  ): void {
+  private createAndAppendPreview(mathHtml: HTMLElement, coordinates: { left: number; bottom: number }): void {
     const preview = document.createElement('div');
     preview.className = 'typstmate-inline-preview';
     preview.style.setProperty('--preview-left', `${coordinates.left}px`);
-    preview.style.setProperty(
-      '--preview-top',
-      `${coordinates.bottom + this.PREVIEW_OFFSET}px`,
-    );
+    preview.style.setProperty('--preview-top', `${coordinates.bottom + this.PREVIEW_OFFSET}px`);
     preview.appendChild(mathHtml);
 
-    this.app.workspace.containerEl.appendChild(preview);
+    this.plugin.app.workspace.containerEl.appendChild(preview);
     this.previewElement = preview;
   }
 
@@ -208,5 +187,10 @@ export class EditorHelper {
       this.previewElement.parentElement.removeChild(this.previewElement);
     }
     this.previewElement = null;
+  }
+
+  onEditorChange(editor: Editor, _markdownView: MarkdownView) {
+    if (!this.plugin.settings.enableInlinePreview) return;
+    this.updatePreview(editor);
   }
 }

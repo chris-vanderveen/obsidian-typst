@@ -10,10 +10,7 @@ export class ParentResizeService {
   private registered = new Map<Element, { cb: Callback; debounceMs: number }>();
   private waiting = new Set<Element>();
   private parentToChildren = new Map<Element, Set<Element>>();
-  private parentDebouncers = new Map<
-    Element,
-    (entry: ResizeObserverEntry) => void
-  >();
+  private parentDebouncers = new Map<Element, (entry: ResizeObserverEntry) => void>();
 
   constructor() {
     // 親要素のリサイズを監視

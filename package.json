@@ -7,19 +7,23 @@
 	},
 	"dependencies": {
 		"comlink": "^4.4.2",
+		"nanoid": "^5.1.5",
 		"pako": "^2.1.0",
 		"untar-sync": "^1.0.4"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.2.3",
+		"@biomejs/biome": "2.2.4",
 		"@types/bun": "^1.2.21",
 		"@types/pako": "^2.0.4",
+		"@zsviczian/excalidraw": "^0.18.0-37",
 		"autoprefixer": "^10.4.21",
 		"builtin-modules": "^5.0.0",
+		"i18next": "^25.5.2",
 		"obsidian": "^1.8.7",
-		"obsidian-typings": "^4.49.0",
+		"obsidian-excalidraw-plugin": "github:zsviczian/obsidian-excalidraw-plugin#master",
+		"obsidian-typings": "^4.50.0",
 		"postcss": "^8.5.6",
-		"vite": "^7.1.4",
+		"vite": "^7.1.5",
 		"vite-plugin-static-copy": "^3.1.2",
 		"vite-tsconfig-paths": "^5.1.4"
 	},

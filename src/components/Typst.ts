@@ -16,19 +16,10 @@ export default class TypstElement extends HTMLElement {
     const input = this.format();
 
     try {
-      const result = this.plugin.typst.render(
-        input,
-        this.kind,
-        this.processor.id,
-        this.renderingFormat,
-      );
+      const result = this.plugin.typst.render(input, this.kind, this.processor.id, this.renderingFormat);
 
       if (result instanceof Promise) {
-        if (
-          this.kind !== 'inline' &&
-          this.processor.fitToParentWidth &&
-          !this.source.includes('<br>')
-        )
+        if (this.kind !== 'inline' && this.processor.fitToParentWidth && !this.source.includes('<br>'))
           this.plugin.observer.register(
             this,
             (entry: ResizeObserverEntry) => {
@@ -66,22 +57,18 @@ export default class TypstElement extends HTMLElement {
   format() {
     const formatted = this.processor.format.replace('{CODE}', this.source);
 
-    return (
-      this.processor.noPreamble
-        ? formatted
-        : `${this.plugin.settings.preamble}\n${formatted}`
-    ).replaceAll('<br>', '\n');
+    return (this.processor.noPreamble ? formatted : `${this.plugin.settings.preamble}\n${formatted}`).replaceAll(
+      '<br>',
+      '\n',
+    );
   }
 
   postProcess(result: SVGResult) {
-    if (this.plugin.settings.failOnWarning && result.diags.length !== 0)
-      throw result.diags;
+    if (this.plugin.settings.failOnWarning && result.diags.length !== 0) throw result.diags;
 
     this.innerHTML = result.svg.replaceAll(
       '#000000',
-      this.plugin.settings.autoBaseColor
-        ? this.plugin.baseColor
-        : this.plugin.settings.baseColor,
+      this.plugin.settings.autoBaseColor ? this.plugin.baseColor : this.plugin.settings.baseColor,
     );
   }
 
@@ -97,14 +84,11 @@ export default class TypstElement extends HTMLElement {
       diagEl.className = 'typstmate-error';
 
       diagEl.textContent =
-        `${err[0]?.message}` +
-        (err[0]?.hints.length !== 0 ? ` [${err[0]?.hints.length} hints]` : '');
+        `${err[0]?.message}` + (err[0]?.hints.length !== 0 ? ` [${err[0]?.hints.length} hints]` : '');
 
       // TODO:
       if (err[0]?.hints.length !== 0)
-        diagEl.addEventListener('click', () =>
-          new DiagnosticModal(this.plugin.app, err).open(),
-        );
+        diagEl.addEventListener('click', () => new DiagnosticModal(this.plugin.app, err).open());
 
       this.replaceChildren(diagEl);
     }

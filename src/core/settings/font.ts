@@ -37,30 +37,22 @@ export class FontList {
       this.fontDataCountEl = containerEl.createDiv();
       this.fontDataCountEl.textContent = 'Click to get system font list';
 
-      this.fontDataTableEl = containerEl.createDiv(
-        'typstmate-settings-table typstmate-hidden',
-      );
+      this.fontDataTableEl = containerEl.createDiv('typstmate-settings-table typstmate-hidden');
     }
 
     // 読み込み済みフォント
     new Setting(containerEl)
       .setName('Imported Font(s)')
-      .setDesc(
-        'The string next to the font name is used to identify fonts that share the same PostScript name.',
-      );
+      .setDesc('The string next to the font name is used to identify fonts that share the same PostScript name.');
 
-    this.importedFontTableEl = containerEl.createDiv(
-      'typstmate-settings-table typstmate-hidden',
-    );
+    this.importedFontTableEl = containerEl.createDiv('typstmate-settings-table typstmate-hidden');
 
     this.displayImportedFontList();
   }
 
   async filterSystemFontList(filter: string) {
     let count = 0;
-    Array.from(
-      this.fontDataTableEl!.children as HTMLCollectionOf<HTMLElement>,
-    ).forEach((child) => {
+    Array.from(this.fontDataTableEl!.children as HTMLCollectionOf<HTMLElement>).forEach((child) => {
       const name = child.id ?? '';
 
       if (name.includes(filter)) {
@@ -97,9 +89,7 @@ export class FontList {
           button.setTooltip('Get Info');
 
           button.onClick(async () => {
-            const info = await this.plugin.typst.parseFont(
-              await (await fontData.blob()).arrayBuffer(),
-            );
+            const info = await this.plugin.typst.parseFont(await (await fontData.blob()).arrayBuffer());
 
             new FontModal(this.plugin.app, info).open();
           });
@@ -127,9 +117,7 @@ export class FontList {
         button.setTooltip('Get Info');
 
         button.onClick(async () => {
-          const info = await this.plugin.typst.parseFont(
-            await this.plugin.app.vault.adapter.readBinary(fontPath),
-          );
+          const info = await this.plugin.typst.parseFont(await this.plugin.app.vault.adapter.readBinary(fontPath));
 
           new FontModal(this.plugin.app, info).open();
         });
@@ -137,10 +125,7 @@ export class FontList {
       .addButton((button) => {
         button.setIcon('trash');
         button.setTooltip('Remove');
-        button.buttonEl.classList.add(
-          'typstmate-button',
-          'typstmate-button-danger',
-        );
+        button.buttonEl.classList.add('typstmate-button', 'typstmate-button-danger');
 
         button.onClick(this.removeFont.bind(this, basename));
       });
@@ -149,9 +134,9 @@ export class FontList {
   async displayImportedFontList() {
     this.importedFontTableEl.empty();
 
-    const fontPaths = (
-      await this.plugin.app.vault.adapter.list(this.plugin.fontsDirPath)
-    ).files.filter((f) => f.endsWith('.font'));
+    const fontPaths = (await this.plugin.app.vault.adapter.list(this.plugin.fontsDirPath)).files.filter((f) =>
+      f.endsWith('.font'),
+    );
 
     if (fontPaths.length === 0) {
       this.importedFontTableEl.classList.add('typstmate-hidden');
@@ -176,10 +161,7 @@ export class FontList {
     const fontArrayBuffer = await (await fontData.blob()).arrayBuffer();
 
     // フォントの読み込み
-    await this.plugin.app.vault.adapter.writeBinary(
-      `${this.plugin.fontsDirPath}/${basename}`,
-      fontArrayBuffer,
-    );
+    await this.plugin.app.vault.adapter.writeBinary(`${this.plugin.fontsDirPath}/${basename}`, fontArrayBuffer);
     await this.plugin.typst.store({
       fonts: [fontArrayBuffer],
     });
@@ -192,14 +174,11 @@ export class FontList {
 
   async removeFont(basename: string) {
     // フォントの削除
-    await this.plugin.app.vault.adapter.remove(
-      `${this.plugin.fontsDirPath}/${basename}`,
-    );
+    await this.plugin.app.vault.adapter.remove(`${this.plugin.fontsDirPath}/${basename}`);
 
     // 表示
     this.importedFontTableEl.children.namedItem(basename)?.remove();
-    if (this.importedFontTableEl.children.length === 0)
-      this.importedFontTableEl.classList.add('typstmate-hidden');
+    if (this.importedFontTableEl.children.length === 0) this.importedFontTableEl.classList.add('typstmate-hidden');
 
     new Notice('Removed successfully!');
   }

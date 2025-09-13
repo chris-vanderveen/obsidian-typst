@@ -16,12 +16,7 @@ export class ProcessorList {
 
   processorsEl: HTMLElement;
 
-  constructor(
-    plugin: ObsidianTypstMate,
-    kind: ProcessorKind,
-    containerEl: HTMLElement,
-    summaryText: string,
-  ) {
+  constructor(plugin: ObsidianTypstMate, kind: ProcessorKind, containerEl: HTMLElement, summaryText: string) {
     this.plugin = plugin;
     this.kind = kind;
 
@@ -36,44 +31,36 @@ export class ProcessorList {
     summaryEl.textContent = summaryText;
 
     this.processorsEl = detailEl.createEl('div');
-    this.plugin.settings.processor[this.kind].processors.forEach(
-      this.addProcessor.bind(this),
-    );
+    if (!this.plugin.settings.processor[this.kind]) {
+      this.plugin.settings.processor[this.kind] = {
+        processors: [],
+      };
+    }
+
+    this.plugin.settings.processor[this.kind].processors.forEach(this.addProcessor.bind(this));
     this.numbering();
   }
 
   newProcessor() {
-    this.plugin.settings.processor[this.kind].processors.unshift(
-      DefaultNewProcessor[this.kind] as any,
-    );
+    this.plugin.settings.processor[this.kind].processors.unshift(DefaultNewProcessor[this.kind] as any);
     this.plugin.saveSettings();
 
     this.addProcessor(DefaultNewProcessor[this.kind]);
 
-    this.processorsEl.insertBefore(
-      this.processorsEl.lastChild!,
-      this.processorsEl.firstChild!,
-    );
+    this.processorsEl.insertBefore(this.processorsEl.lastChild!, this.processorsEl.firstChild!);
 
     this.numbering();
   }
 
   addProcessor(processor: Processor) {
-    const processorEl = this.processorsEl.createDiv(
-      'typstmate-settings-processor',
-    );
+    const processorEl = this.processorsEl.createDiv('typstmate-settings-processor');
 
     new Setting(processorEl)
       .addButton((button) => {
         button.setButtonText('ext');
         button.setTooltip('Open more settings');
         button.onClick(() => {
-          new ProcessorModal(
-            this.plugin.app,
-            this.plugin,
-            this.kind,
-            processor.id,
-          ).open();
+          new ProcessorModal(this.plugin.app, this.plugin, this.kind, processor.id).open();
         });
       })
       .addDropdown((renderingEngineDropdown) => {
@@ -82,9 +69,8 @@ export class ProcessorList {
         renderingEngineDropdown.setValue(processor.renderingEngine);
 
         renderingEngineDropdown.onChange((renderingEngine) => {
-          this.plugin.settings.processor[this.kind].processors[
-            Number(processorEl.id)
-          ]!.renderingEngine = renderingEngine as RenderingEngine;
+          this.plugin.settings.processor[this.kind].processors[Number(processorEl.id)]!.renderingEngine =
+            renderingEngine as RenderingEngine;
 
           this.plugin.saveSettings();
         });
@@ -108,9 +94,7 @@ export class ProcessorList {
         stylingDropdown.setValue(processor.styling);
 
         stylingDropdown.onChange((styling) => {
-          this.plugin.settings.processor[this.kind].processors[
-            Number(processorEl.id)
-          ]!.styling = styling as Styling;
+          this.plugin.settings.processor[this.kind].processors[Number(processorEl.id)]!.styling = styling as Styling;
 
           this.plugin.saveSettings();
         });
@@ -122,9 +106,7 @@ export class ProcessorList {
         idText.onChange(
           debounce(
             async (id) => {
-              this.plugin.settings.processor[this.kind].processors[
-                Number(processorEl.id)
-              ]!.id = id;
+              this.plugin.settings.processor[this.kind].processors[Number(processorEl.id)]!.id = id;
 
               this.plugin.saveSettings();
               await this.plugin.typst.store({
@@ -166,9 +148,7 @@ export class ProcessorList {
       'input',
       debounce(
         async () => {
-          this.plugin.settings.processor[this.kind].processors[
-            Number(processorEl.id)
-          ]!.format = formatTextEl.value;
+          this.plugin.settings.processor[this.kind].processors[Number(processorEl.id)]!.format = formatTextEl.value;
 
           this.plugin.saveSettings();
           await this.plugin.typst.store({

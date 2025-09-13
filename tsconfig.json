@@ -26,5 +26,5 @@
       "@/*": ["./src/*"]
     },
 	},
-	"include": ["src"]
+	"include": ["src", "node_modules/obsidian-excalidraw-plugin/docs/API/ExcalidrawAutomate.d.ts", "node_modules/@zsviczian/excalidraw/types/element/src/types.d.ts"]
 }

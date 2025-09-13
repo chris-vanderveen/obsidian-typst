@@ -21,17 +21,11 @@ export class FontModal extends Modal {
 
       new Setting(this.contentEl).setName(`style: ${fontInfo.variant.style}`);
 
-      new Setting(this.contentEl).setName(
-        `weight: ${fontWeightAliasFromNumber(fontInfo.variant.weight)}`,
-      );
+      new Setting(this.contentEl).setName(`weight: ${fontWeightAliasFromNumber(fontInfo.variant.weight)}`);
 
-      new Setting(this.contentEl).setName(
-        `stretch: ${fontStretchAliasFromRatio(fontInfo.variant.stretch)}`,
-      );
+      new Setting(this.contentEl).setName(`stretch: ${fontStretchAliasFromRatio(fontInfo.variant.stretch)}`);
 
-      new Setting(this.contentEl).setName(
-        `flags: ${fontFlagsToArray(fontInfo.flags)}`,
-      );
+      new Setting(this.contentEl).setName(`flags: ${fontFlagsToArray(fontInfo.flags)}`);
     });
   }
 }
