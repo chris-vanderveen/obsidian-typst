@@ -7,7 +7,6 @@ import { unzip } from './util';
 
 import './typst.css';
 import TypstSVGElement from '@/components/SVG';
-import ExcalidrawPlugin from '@/core/ea';
 
 function customElementsRedefine(name: string, ctor: typeof HTMLElement) {
   const registry = window.customElements;

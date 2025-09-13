@@ -6,6 +6,8 @@
 
 Render math expressions in [Obsidian](https://obsidian.md) using [Typst](https://typst.app/) instead of MathJax.
 
+[![TypstMate](https://raw.githubusercontent.com/azyarashi/obsidian-typst-mate/main/assets/demo.png)](#readme)
+
 ---
 
 ## Features

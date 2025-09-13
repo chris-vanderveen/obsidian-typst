@@ -83,8 +83,7 @@ export default class TypstElement extends HTMLElement {
       const diagEl = document.createElement('span');
       diagEl.className = 'typstmate-error';
 
-      diagEl.textContent =
-        `${err[0]?.message}` + (err[0]?.hints.length !== 0 ? ` [${err[0]?.hints.length} hints]` : '');
+      diagEl.textContent = `${err[0]?.message}${err[0]?.hints.length !== 0 ? ` [${err[0]?.hints.length} hints]` : ''}`;
 
       // TODO:
       if (err[0]?.hints.length !== 0)

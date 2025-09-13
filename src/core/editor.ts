@@ -33,6 +33,7 @@ function isCursorInInlineCode(editor: Editor): boolean {
 interface MathContentResult {
   content: string;
   startIndex: number;
+  endIndex: number;
 }
 
 export class EditorHelper {
@@ -92,6 +93,7 @@ export class EditorHelper {
     return {
       content: mathContent,
       startIndex: lastDollarBefore + 1,
+      endIndex: cursor.ch + firstDollarAfter,
     };
   }
 
@@ -152,11 +154,11 @@ export class EditorHelper {
 
     if (!codeMirror || !window.MathJax) return;
 
-    const offset = editor.posToOffset({
+    const endOffset = editor.posToOffset({
       line: cursor.line,
-      ch: mathContent.startIndex,
+      ch: mathContent.endIndex,
     });
-    const coordinates = codeMirror.coordsAtPos(offset);
+    const coordinates = codeMirror.coordsAtPos(endOffset);
 
     if (!coordinates) return;
 
