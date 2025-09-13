@@ -19,6 +19,13 @@ Render math expressions in [Obsidian](https://obsidian.md) using [Typst](https:/
 - Use custom fonts and import system fonts (Desktop app only for import)
 - All Typst packages are supported!
 
+## Installation
+
+Currently, it's under review for the official plugin list. This process may take several months.
+Until then, please install using the official plugin [BRAT](https://tfthacker.com/brat-quick-guide).
+
+[![Screenshot](https://raw.githubusercontent.com/azyarashi/obsidian-typst-mate/main/assets/brat.png)](#readme)
+
 ## Compatibility
 
 ### Obsidian App
