@@ -32,7 +32,6 @@ interface GitHubAsset {
 
 export default class ObsidianTypstMate extends Plugin {
   pluginId = 'typst-mate';
-  version!: string;
   settings!: Settings;
 
   baseDirPath!: string;
@@ -82,7 +81,7 @@ export default class ObsidianTypstMate extends Plugin {
     this.connectOtherPlugins();
 
     // Wasm の準備
-    if (!(await adapter.exists(wasmPath))) await this.downloadWasm(wasmPath);
+    if (!(await adapter.exists(wasmPath))) await this.downloadWasm(wasmPath, version);
     // MathJax を読み込む
     await this.prepareMathJax();
     // TypstManager を設定する
@@ -137,7 +136,7 @@ export default class ObsidianTypstMate extends Plugin {
     await this.typstManager.registerOnce();
   }
 
-  private async downloadWasm(wasmPath: string) {
+  private async downloadWasm(wasmPath: string, version: string) {
     new Notice('Downloading latest wasm...');
 
     // 古い Wasm を削除する
@@ -149,10 +148,10 @@ export default class ObsidianTypstMate extends Plugin {
     }
 
     // 最新の Wasm がある URL を取得する
-    const releaseUrl = `https://api.github.com/repos/azyarashi/obsidian-typst-mate/releases/tags/${this.version}`;
+    const releaseUrl = `https://api.github.com/repos/azyarashi/obsidian-typst-mate/releases/tags/${version}`;
     const releaseResponse = await requestUrl(releaseUrl);
     const releaseData = (await releaseResponse.json) as { assets: GitHubAsset[] };
-    const asset = releaseData.assets.find((asset) => asset.name === `typst-${this.version}.wasm`);
+    const asset = releaseData.assets.find((asset) => asset.name === `typst-${version}.wasm`);
     if (!asset) throw new Error(`Could not find ${wasmPath} in release assets`);
 
     // Wasm をダウンロードする
