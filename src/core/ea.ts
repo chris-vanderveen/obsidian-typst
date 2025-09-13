@@ -1,19 +1,25 @@
 import { nanoid } from 'nanoid';
+import type { Plugin } from 'obsidian';
 import type { ExcalidrawAutomate } from 'obsidian-excalidraw-plugin/docs/API/ExcalidrawAutomate';
 
 import type { ExcalidrawProcessor } from '@/lib/processor';
 import type ObsidianTypstMate from '@/main';
 
 export default class ExcalidrawPlugin {
-  ea: ExcalidrawAutomate;
+  ea?: ExcalidrawAutomate;
   plugin: ObsidianTypstMate;
 
-  constructor(plugin: ObsidianTypstMate, ea: ExcalidrawAutomate) {
+  constructor(plugin: ObsidianTypstMate, ep: Plugin) {
     this.plugin = plugin;
-    this.ea = ea;
+    // @ts-expect-error
+    this.ea = ep.ea;
   }
 
   async addTypst(code: string, processor: ExcalidrawProcessor) {
+    if (!this.ea)
+      // @ts-expect-error
+      this.ea = this.plugin.app.plugins.plugins['obsidian-excalidraw-plugin'].ea as ExcalidrawAutomate;
+
     this.ea.setView();
     this.ea.clear();
 

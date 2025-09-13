@@ -180,10 +180,8 @@ export default class ObsidianTypstMate extends Plugin {
 
   private connectOtherPlugins() {
     if ('obsidian-excalidraw-plugin' in this.app.plugins.plugins) {
-      const ea =
-        // @ts-expect-error
-        this.app.plugins.plugins['obsidian-excalidraw-plugin'].ea;
-      this.excalidraw = new ExcalidrawPlugin(this, ea);
+      const ep = this.app.plugins.plugins['obsidian-excalidraw-plugin'];
+      this.excalidraw = new ExcalidrawPlugin(this, ep);
       this.excalidrawPluginInstalled = true;
     }
   }
