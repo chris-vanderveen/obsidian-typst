@@ -161,8 +161,10 @@ export default class TypstManager {
           this.plugin.settings.processor.codeblock?.processors.find((p) => p.id === kind) ??
           DEFAULT_SETTINGS.processor.codeblock?.processors.at(-1)!;
 
-        if (processor.styling === 'codeblock')
+        if (processor.styling === 'codeblock') {
           containerEl.addClass('HyperMD-codeblock', 'HyperMD-codeblock-bg', 'cm-line');
+          containerEl = containerEl.createEl('code');
+        }
 
         kind = 'codeblock';
     }
