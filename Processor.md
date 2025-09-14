@@ -35,7 +35,7 @@ To specify a processor, enter the ID after the initial `$$`.
 
 ### Code Block Processor
 
-Works with *code block* (<code>\`\`\` ... \`\`\`</code>) or (`~~~...~~~`).
+Works with *code block* (<code>\`\`\`...\`\`\`</code>) or (`~~~...~~~`).
 To specify a processor, enter the ID after the initial <code>\`\`\`</code> or `~~~`.
 
 Note that adding or editing code block IDs will not take effect and are fixed when the plugin is loaded. This is due to Obsidian's constraints.
