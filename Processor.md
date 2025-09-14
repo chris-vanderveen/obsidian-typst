@@ -6,7 +6,7 @@ A Processor is a collection of options that customize the rendering results, inc
 
 ## Why are Processors needed?
 
-Typst achieves fast rendering through a mechanism called incremental compilation.
+Typst achieves fast rendering through a mechanism called *incremental/differential compilation*.
 By having each processor function as a single file, Typst's powerful performance is realized.
 
 This is particularly useful when previewing display math in real-time with heavy packages.
@@ -33,9 +33,9 @@ The `inline-middle` styling option vertically centers inline math so it lines up
 Works with *display math* (`$$...$$`).
 To specify a processor, enter the ID after the initial `$$`.
 
-### CodeBlock Processor
+### Code Block Processor
 
-Works with *Code Block* (<code>\`\`\` ... \`\`\`</code>) or (`~~~...~~~`).
+Works with *code block* (<code>\`\`\` ... \`\`\`</code>) or (`~~~...~~~`).
 To specify a processor, enter the ID after the initial <code>\`\`\`</code> or `~~~`.
 
 Note that adding or editing code block IDs will not take effect and are fixed when the plugin is loaded. This is due to Obsidian's constraints.
@@ -50,10 +50,9 @@ Please note the following:
 
 ## Notes
 
-- The `fontsize` Layout/Length Value references Obsidian's default settings and is fixed to the value when the plugin is loaded.
-- The `time` Foundations/Datetime value is fixed to the value when the plugin is loaded based on the local timezone.
+- The `fontsize` [Layout/Length](https://typst.app/docs/reference/layout/length/) value references Obsidian's default settings and is fixed to the value when the plugin is loaded.
+- The `datetime` [Foundations/Datetime](https://typst.app/docs/reference/foundations/datetime/) value is fixed to the value when the plugin is loaded based on the local timezone.
 - Only the first page is rendered.
 - In tables, use *display math* instead of *code blocks*. `<br>` will be automatically replaced with line breaks.
 - While there are examples of using Typst for Syntax Highlighting in CodeBlock Processor, we recommend using the [Obsidian Shiki Plugin](https://github.com/mProjectsCode/obsidian-shiki-plugin).
 - Do not include special characters, especially slashes `/`, in Processors. This may cause issues.
-- `<br>` is automatically removed for table support.
