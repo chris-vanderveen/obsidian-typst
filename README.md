@@ -6,7 +6,7 @@
 
 Render math expressions in [Obsidian](https://obsidian.md) using [Typst](https://typst.app/) instead of MathJax.
 
-[![TypstMate](https://raw.githubusercontent.com/azyarashi/obsidian-typst-mate/main/assets/demo.png)](#readme)
+[![TypstMate](https://raw.githubusercontent.com/azyarashi/obsidian-typst-mate/main/assets/demo.png)](#demo)
 
 For details about the processor, see [Processor.md](https://github.com/azyarashi/obsidian-typst-mate/blob/main/Processor.md).
 
@@ -28,7 +28,7 @@ For details about the processor, see [Processor.md](https://github.com/azyarashi
 Currently, it's under review for the official plugin list. This process may take several months.
 Until then, please install using the official plugin [BRAT](https://tfthacker.com/brat-quick-guide).
 
-[Screenshot](https://raw.githubusercontent.com/azyarashi/obsidian-typst-mate/main/assets/brat.png)
+[![Screenshot](https://raw.githubusercontent.com/azyarashi/obsidian-typst-mate/main/assets/brat.png)](#brat)
 
 ## Compatibility
 
