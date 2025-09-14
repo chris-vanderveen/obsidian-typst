@@ -20,8 +20,10 @@ For details about the processor, see [Processor.md](https://github.com/azyarashi
 - Inline math preview
 - Use custom fonts and import system fonts (desktop app only for import)
 - All Typst packages are supported! (desktop app only for import local packages)
-- Excalidraw support
-- Table support (except code blocks)
+- Table support with proper display math handling
+- PDF Export compatibility
+- [Excalidraw](https://github.com/zsviczian/obsidian-excalidraw-plugin) integration
+- [Webpage HTML Export](https://github.com/KosmosisDire/obsidian-webpage-export) compatibility
 
 ## Installation
 

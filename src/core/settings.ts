@@ -209,7 +209,7 @@ export class SettingTab extends PluginSettingTab {
       .setName('Processor')
       .setDesc(
         buildDocumentFragment(
-          'In each mode, the first matching Processor ID from the top will be used. An empty Processor ID means the default and should be placed at the bottom. In the format, `{CODE}` can be used (only the first occurrence is replaced), and `fontsize` can be used as an internal length value. In inline mode, separate the id and the code with a colon `:`. When adding or removing processors for codeblock mode, reload the plugin to apply changes. *IDs should not contain any special characters!*',
+          'In each mode, the first matching Processor ID from the top will be used. An empty Processor ID means the default and should be placed at the bottom. In the format, `{CODE}` can be used (only the first occurrence is replaced), and `fontsize` can be used as an internal length value. In inline mode, separate the id and the code with a colon `:`. When adding or removing processors for codeblock mode, reload the plugin to apply changes. *IDs should not contain any special characters!* For more details, see [this](https://github.com/azyarashi/obsidian-typst-mate/blob/main/Processor.md).',
         ),
       )
       .setHeading();

@@ -55,12 +55,12 @@ export default class TypstElement extends HTMLElement {
   }
 
   format() {
-    const formatted = this.processor.format.replace('{CODE}', this.source);
+    let formatted = this.processor.format.replace('{CODE}', this.source);
+    formatted = this.processor.noPreamble ? formatted : `${this.plugin.settings.preamble}\n${formatted}`;
 
-    return (this.processor.noPreamble ? formatted : `${this.plugin.settings.preamble}\n${formatted}`).replaceAll(
-      '<br>',
-      '\n',
-    );
+    if (this.kind === 'display') formatted = formatted.replaceAll('<br>', '\n');
+
+    return formatted;
   }
 
   postProcess(result: SVGResult) {
