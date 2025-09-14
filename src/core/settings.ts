@@ -221,6 +221,7 @@ export class SettingTab extends PluginSettingTab {
       .setDesc('Preamble can be turned on or off by toggling each processor.');
     const preambleTextEl = containerEl.createEl('textarea');
     preambleTextEl.addClass('typstmate-form-control');
+    preambleTextEl.addClass('typstmate-preamble');
     preambleTextEl.value = this.plugin.settings.preamble;
     preambleTextEl.placeholder = 'preamble';
 

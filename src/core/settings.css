@@ -197,6 +197,10 @@
   font-size: 0.9em;
 }
 
+.typstmate-form-control.typstmate-preamble {
+  min-height: 6em;
+}
+
 .typstmate-form-control:focus {
   border-color: var(--interactive-accent);
   box-shadow: 0 0 0 1px var(--interactive-accent);
