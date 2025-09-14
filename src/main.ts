@@ -263,8 +263,8 @@ export default class ObsidianTypstMate extends Plugin {
     const adapter = this.app.vault.adapter;
 
     const main = {
-      notice(message: string) {
-        new Notice(message);
+      notice(message: string, duration?: number) {
+        new Notice(message, duration);
       },
 
       readBinary(p: string) {

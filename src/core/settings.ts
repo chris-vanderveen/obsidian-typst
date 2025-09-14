@@ -475,7 +475,9 @@ export class SettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName('Disable Package Cache')
-      .setDesc('Enable this if crashes occur on mobile devices with low RAM.')
+      .setDesc(
+        'Enable this if crashes occur on mobile apps with low RAM. However, packages will need to be installed every time. On desktop apps, startup time will be reduced. If you use a lot of packages, you may want to enable this.',
+      )
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.disablePackageCache);
         toggle.onChange((value) => {

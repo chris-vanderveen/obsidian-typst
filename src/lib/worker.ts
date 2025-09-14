@@ -104,7 +104,7 @@ export default class $ {
           } catch {}
         }
 
-        if (vpath === 'typst.toml') main.notice(`Downloading ${name}...`);
+        if (vpath === 'typst.toml') main.notice(`Downloading ${name}...`, 500);
 
         xhr.open('GET', `https://packages.typst.org/preview/${name}-${version}.tar.gz`, false);
         xhr.send(null);
@@ -136,7 +136,7 @@ export default class $ {
             map.set(`@${p}/${f.name}`, new Uint8Array(map.get(f.linkname!)?.buffer || new ArrayBuffer(0)));
           }
 
-          if (vpath === 'typst.toml') main.notice(`Downloaded successfully!`);
+          if (vpath === 'typst.toml') main.notice(`Downloaded successfully!`, 500);
         } catch (e) {
           console.error(e);
           throw 20; // PackageError::MalformedArchive;
@@ -220,7 +220,7 @@ export interface SVGResult {
 }
 
 export interface Main {
-  notice(message: string): void;
+  notice(message: string, duration?: number): void;
   readBinary(path: string): Uint8Array | Promise<ArrayBuffer>;
   writePackage(path: string, files: tarFile[]): void;
 }
