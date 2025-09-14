@@ -1,4 +1,5 @@
 import type fsModule from 'node:fs';
+import type pathModule from 'node:path';
 
 import { expose } from 'comlink';
 import pako from 'pako';

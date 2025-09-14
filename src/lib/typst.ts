@@ -1,10 +1,9 @@
 import { Notice } from 'obsidian';
-
+import TypstSVGElement from '@/components/SVG';
 import { DEFAULT_SETTINGS } from '@/core/settings';
 import type ObsidianTypstMate from '@/main';
 import type { Processor, ProcessorKind } from './processor';
 import { unzip, zip } from './util';
-import TypstSVGElement from '@/components/SVG';
 import type { PackageSpec } from './worker';
 
 import './typst.css';

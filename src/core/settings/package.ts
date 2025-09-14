@@ -1,5 +1,4 @@
 import { Notice, Platform, Setting } from 'obsidian';
-import { hashLike, zip } from '@/lib/util';
 import type { PackageSpec } from '@/lib/worker';
 import type ObsidianTypstMate from '@/main';
 
