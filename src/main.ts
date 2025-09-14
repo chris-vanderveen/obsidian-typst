@@ -258,7 +258,7 @@ export default class ObsidianTypstMate extends Plugin {
   async init(wasmPath: string) {
     this.worker?.terminate();
 
-    const { fs, baseDirPath, packagesDirPath, cachesDirPath } = this;
+    const { fs, path, baseDirPath, packagesDirPath, cachesDirPath } = this;
     const adapter = this.app.vault.adapter;
 
     const main = {
@@ -266,12 +266,12 @@ export default class ObsidianTypstMate extends Plugin {
         new Notice(message);
       },
 
-      readBinary(path: string) {
+      readBinary(p: string) {
         if (fs) {
-          if (path.startsWith('/')) return fs.readFileSync(path);
-          return fs.readFileSync(`${baseDirPath}/${path}`);
+          if (path!.isAbsolute(p)) return fs.readFileSync(p);
+          return fs.readFileSync(`${baseDirPath}/${p}`);
         }
-        return adapter.readBinary(path);
+        return adapter.readBinary(p);
       },
 
       writePackage(path: string, files: tarFile[]) {

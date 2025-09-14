@@ -18,13 +18,17 @@ export default class $ {
   typst!: Typst;
   packagesDirPaths: string[];
   fs?: typeof fsModule;
+  path?: typeof pathModule;
   baseDirPath: string;
 
   constructor(wasm: ArrayBuffer, packagesDirPaths: string[], baseDirPath: string, isDesktopApp: boolean) {
     this.wasm = wasm;
     this.packagesDirPaths = packagesDirPaths;
     this.baseDirPath = baseDirPath;
-    if (isDesktopApp) this.fs = require('node:fs');
+    if (isDesktopApp) {
+      this.fs = require('node:fs');
+      this.path = require('node:path');
+    }
   }
 
   async init(fontsize = 16): Promise<void> {
@@ -116,7 +120,7 @@ export default class $ {
     const readBinary = (vpath: string, rpath: string) => {
       const f = this.fs?.readFileSync ?? main.readBinary;
 
-      if (this.fs && !rpath.startsWith('/')) rpath = `${this.baseDirPath}/${rpath}`;
+      if (this.fs && !this.path!.isAbsolute(rpath)) rpath = `${this.baseDirPath}/${rpath}`;
 
       const result = f(rpath);
       if (result instanceof Promise) {

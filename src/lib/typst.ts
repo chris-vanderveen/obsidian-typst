@@ -252,7 +252,7 @@ export default class TypstManager {
   private async list(dirPath: string) {
     let filePaths: string[] = [];
     let folderPaths: string[] = [];
-    if (dirPath.startsWith('/')) {
+    if (this.plugin.path?.isAbsolute(dirPath)) {
       const items = await this.plugin.fs!.promises.readdir(dirPath, { withFileTypes: true });
 
       for (const item of items) {
@@ -276,7 +276,7 @@ export default class TypstManager {
     const { fs } = this.plugin;
 
     if (fs) {
-      if (path.startsWith('/')) return fs.readFileSync(path);
+      if (this.plugin.path?.isAbsolute(path)) return fs.readFileSync(path);
       return fs.readFileSync(`${this.plugin.baseDirPath}/${path}`);
     }
     return this.plugin.app.vault.adapter.readBinary(path);

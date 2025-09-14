@@ -45,7 +45,7 @@ export class PackagesList {
 
     const { fs, path } = this.plugin;
     for (let p of this.plugin.packagesDirPaths) {
-      if (!p.startsWith('/')) p = `${this.plugin.baseDirPath}/${p}`;
+      if (!path!.isAbsolute(p)) p = `${this.plugin.baseDirPath}/${p}`;
 
       const namespaces = fs!.readdirSync(p);
       for (const namespace of namespaces) {
