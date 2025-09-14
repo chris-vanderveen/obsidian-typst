@@ -37,12 +37,12 @@ export class ProcessorList {
       };
     }
 
-    this.plugin.settings.processor[this.kind].processors.forEach(this.addProcessor.bind(this));
+    this.plugin.settings.processor[this.kind]!.processors.forEach(this.addProcessor.bind(this));
     this.numbering();
   }
 
   newProcessor() {
-    this.plugin.settings.processor[this.kind].processors.unshift(DefaultNewProcessor[this.kind] as any);
+    this.plugin.settings.processor[this.kind]!.processors.unshift(DefaultNewProcessor[this.kind] as any);
     this.plugin.saveSettings();
 
     this.addProcessor(DefaultNewProcessor[this.kind]);
@@ -69,7 +69,7 @@ export class ProcessorList {
         renderingEngineDropdown.setValue(processor.renderingEngine);
 
         renderingEngineDropdown.onChange((renderingEngine) => {
-          this.plugin.settings.processor[this.kind].processors[Number(processorEl.id)]!.renderingEngine =
+          this.plugin.settings.processor[this.kind]!.processors[Number(processorEl.id)]!.renderingEngine =
             renderingEngine as RenderingEngine;
 
           this.plugin.saveSettings();
@@ -94,7 +94,7 @@ export class ProcessorList {
         stylingDropdown.setValue(processor.styling);
 
         stylingDropdown.onChange((styling) => {
-          this.plugin.settings.processor[this.kind].processors[Number(processorEl.id)]!.styling = styling as Styling;
+          this.plugin.settings.processor[this.kind]!.processors[Number(processorEl.id)]!.styling = styling as Styling;
 
           this.plugin.saveSettings();
         });
@@ -106,7 +106,7 @@ export class ProcessorList {
         idText.onChange(
           debounce(
             async (id) => {
-              this.plugin.settings.processor[this.kind].processors[Number(processorEl.id)]!.id = id;
+              this.plugin.settings.processor[this.kind]!.processors[Number(processorEl.id)]!.id = id;
 
               this.plugin.saveSettings();
               await this.plugin.typst.store({
@@ -148,7 +148,7 @@ export class ProcessorList {
       'input',
       debounce(
         async () => {
-          this.plugin.settings.processor[this.kind].processors[Number(processorEl.id)]!.format = formatTextEl.value;
+          this.plugin.settings.processor[this.kind]!.processors[Number(processorEl.id)]!.format = formatTextEl.value;
 
           this.plugin.saveSettings();
           await this.plugin.typst.store({
@@ -174,7 +174,7 @@ export class ProcessorList {
   }
 
   removeProcessor(index: number) {
-    this.plugin.settings.processor[this.kind].processors.splice(index, 1);
+    this.plugin.settings.processor[this.kind]!.processors.splice(index, 1);
     this.plugin.saveSettings();
 
     this.processorsEl.children.namedItem(index.toString())?.remove();
@@ -193,12 +193,12 @@ export class ProcessorList {
       return;
     }
 
-    const processors = this.plugin.settings.processor[this.kind].processors;
+    const processors = this.plugin.settings.processor[this.kind]!.processors;
     const processor1 = processors[index1]!;
     const processor2 = processors[index2]!;
 
-    this.plugin.settings.processor[this.kind].processors[index1] = processor2;
-    this.plugin.settings.processor[this.kind].processors[index2] = processor1;
+    this.plugin.settings.processor[this.kind]!.processors[index1] = processor2;
+    this.plugin.settings.processor[this.kind]!.processors[index2] = processor1;
 
     this.plugin.saveSettings();
 

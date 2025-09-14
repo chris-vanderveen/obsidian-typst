@@ -3,10 +3,11 @@ import { Notice } from 'obsidian';
 import { DEFAULT_SETTINGS } from '@/core/settings';
 import type ObsidianTypstMate from '@/main';
 import type { Processor, ProcessorKind } from './processor';
-import { unzip } from './util';
+import { unzip, zip } from './util';
+import TypstSVGElement from '@/components/SVG';
+import type { PackageSpec } from './worker';
 
 import './typst.css';
-import TypstSVGElement from '@/components/SVG';
 
 function customElementsRedefine(name: string, ctor: typeof HTMLElement) {
   const registry = window.customElements;
@@ -197,5 +198,87 @@ export default class TypstManager {
     return processer.noPreamble
       ? processer.format.replace('{CODE}', code)
       : `${this.plugin.settings.preamble}\n${processer.format.replace('{CODE}', code)}`;
+  }
+
+  private async collectFiles(
+    baseDirPath: string,
+    dirPath: string,
+    map: Map<string, Uint8Array | undefined>,
+  ): Promise<void> {
+    const { filePaths, folderPaths } = await this.list(dirPath);
+
+    await Promise.all(
+      filePaths.map(async (filePath) => {
+        try {
+          const data = new Uint8Array(await this.readBinary(filePath));
+          map.set(filePath.replace(baseDirPath, ''), data);
+        } catch {}
+      }),
+    );
+
+    for (const folderPath of folderPaths) {
+      await this.collectFiles(baseDirPath, folderPath, map);
+    }
+  }
+
+  async createCache(packageSpec: PackageSpec, store: boolean, targetDirPaths?: string[]) {
+    const map = new Map<string, Uint8Array>();
+
+    const baseDirPaths = targetDirPaths ?? this.plugin.packagesDirPaths;
+    for (const baseDirPath of baseDirPaths) {
+      try {
+        await this.collectFiles(
+          baseDirPath,
+          `${packageSpec.namespace}/${packageSpec.name}/${packageSpec.version}`,
+          map,
+        );
+      } catch {}
+    }
+
+    await this.plugin.app.vault.adapter.writeBinary(
+      `${this.plugin.cachesDirPath}/${packageSpec.namespace}_${packageSpec.name}_${packageSpec.version}.cache`,
+      zip(map).slice().buffer,
+    );
+
+    const atMap = new Map<string, Uint8Array>();
+    for (const [k, v] of map) {
+      atMap.set(`@${k}`, v);
+    }
+    if (store) await this.plugin.typst.store({ sources: atMap });
+
+    return atMap;
+  }
+
+  private async list(dirPath: string) {
+    let filePaths: string[] = [];
+    let folderPaths: string[] = [];
+    if (dirPath.startsWith('/')) {
+      const items = await this.plugin.fs!.promises.readdir(dirPath, { withFileTypes: true });
+
+      for (const item of items) {
+        const fullPath = this.plugin.path!.join(dirPath, item.name);
+        if (item.isDirectory()) {
+          folderPaths.push(fullPath);
+        } else if (item.isFile()) {
+          filePaths.push(fullPath);
+        }
+      }
+    } else {
+      const listedFiles = await this.plugin.app.vault.adapter.list(dirPath);
+      filePaths = listedFiles.files;
+      folderPaths = listedFiles.folders;
+    }
+
+    return { filePaths, folderPaths };
+  }
+
+  private async readBinary(path: string) {
+    const { fs } = this.plugin;
+
+    if (fs) {
+      if (path.startsWith('/')) return fs.readFileSync(path);
+      return fs.readFileSync(`${this.plugin.baseDirPath}/${path}`);
+    }
+    return this.plugin.app.vault.adapter.readBinary(path);
   }
 }

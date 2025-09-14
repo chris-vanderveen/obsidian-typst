@@ -1,4 +1,6 @@
 import type fsModule from 'node:fs';
+import type osModule from 'node:os';
+import type pathModule from 'node:path';
 
 import { proxy, type Remote, wrap } from 'comlink';
 import {
@@ -39,6 +41,7 @@ export default class ObsidianTypstMate extends Plugin {
   cachesDirPath!: string;
   pluginDirPath!: string;
   packagesDirPath!: string;
+  packagesDirPaths!: string[]; // ローカルも含む
 
   originalTex2chtml: any;
   typst!: $ | Remote<$>;
@@ -55,6 +58,8 @@ export default class ObsidianTypstMate extends Plugin {
   private editorHelper!: EditorHelper;
 
   fs?: typeof fsModule;
+  os?: typeof osModule;
+  path?: typeof pathModule;
 
   override async onload() {
     await this.loadSettings(); // ユーザーの設定 (data.json) を読み込む
@@ -64,7 +69,11 @@ export default class ObsidianTypstMate extends Plugin {
     const adapter = vault.adapter;
 
     // 値の設定
-    if (Platform.isDesktopApp) this.fs = require('node:fs');
+    if (Platform.isDesktopApp) {
+      this.fs = require('node:fs');
+      this.os = require('node:os');
+      this.path = require('node:path');
+    }
 
     this.setPaths();
 
@@ -105,10 +114,32 @@ export default class ObsidianTypstMate extends Plugin {
 
   private setPaths() {
     this.baseDirPath = this.app.vault.adapter.basePath;
-    this.pluginDirPath = `${this.app.vault.configDir}/plugins/${this.pluginId}`;
+    this.pluginDirPath = `${this.app.vault.configDir}/plugins/${this.pluginId}`; // .obsidian/plugins/typst-mate
     this.fontsDirPath = `${this.pluginDirPath}/fonts`;
     this.cachesDirPath = `${this.pluginDirPath}/caches`;
     this.packagesDirPath = `${this.pluginDirPath}/packages`;
+
+    this.packagesDirPaths = [this.packagesDirPath];
+    switch (true) {
+      case Platform.isWin: {
+        const localAppData = process.env.LOCALAPPDATA ?? this.path!.join(this.os!.homedir(), 'AppData', 'Local');
+        const winPackagesPath = this.path!.join(localAppData, 'typst', 'packages');
+        this.packagesDirPaths.push(winPackagesPath);
+        break;
+      }
+      case Platform.isMacOS: {
+        const macLibraryCachePath = this.path!.join(this.os!.homedir(), 'Library', 'Caches');
+        const macPackagesPath = this.path!.join(macLibraryCachePath, 'typst', 'packages');
+        this.packagesDirPaths.push(macPackagesPath);
+        break;
+      }
+      case Platform.isLinux: {
+        const xdgCachePath = process.env.XDG_CACHE_HOME ?? this.path!.join(this.os!.homedir(), '.local', 'share');
+        const linuxPackagesPath = this.path!.join(xdgCachePath, 'typst', 'packages');
+        this.packagesDirPaths.push(linuxPackagesPath);
+        break;
+      }
+    }
   }
 
   private async tryCreateDirs() {
@@ -236,7 +267,10 @@ export default class ObsidianTypstMate extends Plugin {
       },
 
       readBinary(path: string) {
-        if (fs) return Uint8Array.from(fs.readFileSync(`${baseDirPath}/${path}`));
+        if (fs) {
+          if (path.startsWith('/')) return fs.readFileSync(path);
+          return fs.readFileSync(`${baseDirPath}/${path}`);
+        }
         return adapter.readBinary(path);
       },
 
@@ -277,10 +311,10 @@ export default class ObsidianTypstMate extends Plugin {
     if (this.settings.enableBackgroundRendering) {
       this.worker = new TypstWorker();
       const api = wrap<typeof $>(this.worker);
-      this.typst = await new api(wasm, packagesDirPath);
+      this.typst = await new api(wasm, this.packagesDirPaths, this.baseDirPath, Platform.isDesktopApp);
       await this.typst.setMain(proxy(main));
     } else {
-      this.typst = new Typst(wasm, packagesDirPath);
+      this.typst = new Typst(wasm, this.packagesDirPaths, this.baseDirPath, Platform.isDesktopApp);
       this.typst.setMain(main);
     }
 

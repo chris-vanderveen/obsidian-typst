@@ -1,3 +1,5 @@
+import type fsModule from 'node:fs';
+
 import { expose } from 'comlink';
 import pako from 'pako';
 import untar from 'untar-sync';
@@ -14,11 +16,15 @@ export default class $ {
   wasm: ArrayBuffer;
   module!: InitOutput;
   typst!: Typst;
-  packagesDirPath: string;
+  packagesDirPaths: string[];
+  fs?: typeof fsModule;
+  baseDirPath: string;
 
-  constructor(wasm: ArrayBuffer, packagesDirPath: string) {
+  constructor(wasm: ArrayBuffer, packagesDirPaths: string[], baseDirPath: string, isDesktopApp: boolean) {
     this.wasm = wasm;
-    this.packagesDirPath = packagesDirPath;
+    this.packagesDirPaths = packagesDirPaths;
+    this.baseDirPath = baseDirPath;
+    if (isDesktopApp) this.fs = require('node:fs');
   }
 
   async init(fontsize = 16): Promise<void> {
@@ -56,7 +62,10 @@ export default class $ {
       throw 12; // FileError::NotFound
     }
 
+    let isPackage = false;
+
     if (path.startsWith('@')) {
+      isPackage = true;
       path = path.slice(1);
       const [namespace, name, version, vpath] = path.split('/');
       const p = `${namespace}/${name}/${version}`;
@@ -101,24 +110,41 @@ export default class $ {
         }
 
         return map.get(`@${p}/${vpath}`);
-      } else {
-        path = `${this.packagesDirPath}/${path}`;
       }
     }
 
-    const result = main.readBinary(path);
-    if (result instanceof Promise) {
-      result
-        .then((r) => {
-          map.set(path, new Uint8Array(r));
-        })
-        .catch(() => {
-          // TODO: IsDirectory を判断する
-          map.set(path, undefined);
-        });
+    const readBinary = (vpath: string, rpath: string) => {
+      const f = this.fs?.readFileSync ?? main.readBinary;
+
+      if (this.fs && !rpath.startsWith('/')) rpath = `${this.baseDirPath}/${rpath}`;
+
+      const result = f(rpath);
+      if (result instanceof Promise) {
+        result
+          .then((r) => {
+            map.set(vpath, new Uint8Array(r));
+          })
+          .catch(() => {
+            if (!map.has(vpath)) map.set(vpath, undefined);
+          });
+      } else {
+        map.set(vpath, result);
+        return new Uint8Array(result);
+      }
+
+      throw 0; // FileError::Other(implementation constraints)
+    };
+
+    if (isPackage) {
+      for (const packagesDirPath of this.packagesDirPaths) {
+        try {
+          return readBinary(`@${path}`, `${packagesDirPath}/${path}`);
+        } catch (e) {
+          console.error(e);
+        }
+      }
     } else {
-      map.set(path, result);
-      return result;
+      return readBinary(path, path);
     }
 
     throw 0; // FileError::Other(implementation constraints)

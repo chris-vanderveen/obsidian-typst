@@ -398,24 +398,12 @@ export class SettingTab extends PluginSettingTab {
   }
 
   addTypstPackageSettings(containerEl: HTMLElement) {
-    const setting = new Setting(containerEl)
+    new Setting(containerEl)
       .setName('Package')
       .setDesc(
         'When a package is imported, the cache is used instead of the actual files for faster performance. If you make changes directly, please click the package icon to refresh the cache(plugin reload is required.)',
       )
       .setHeading();
-
-    if (Platform.isDesktopApp) {
-      setting.addButton((button) => {
-        button.setIcon('folder-open');
-
-        button.setTooltip('Open Packages Directory');
-
-        button.onClick(() => {
-          window.open(`file://${this.plugin.baseDirPath}/${this.plugin.packagesDirPath}`);
-        });
-      });
-    }
 
     // パッケージ一覧
     new PackagesList(this.plugin, containerEl);

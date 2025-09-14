@@ -17,7 +17,7 @@ Render math expressions in [Obsidian](https://obsidian.md) using [Typst](https:/
   - e.g., an option `inline-middle` to vertically center *inline math* so it lines up naturally with the surrounding text
 - Inline math preview
 - Use custom fonts and import system fonts (Desktop app only for import)
-- All Typst packages are supported!
+- All Typst packages are supported! (Desktop app only for import local packages)
 
 ## Installation
 
@@ -34,7 +34,7 @@ Until then, please install using the official plugin [BRAT](https://tfthacker.co
 
 ### Other Plugins
 
-- [Excalidraw](https://github.com/azyarashi/obsidian-excalidraw) (use the `typst-render-to-excalidraw` command)
+- [Excalidraw](https://github.com/zsviczian/obsidian-excalidraw-plugin) (use the `typst-render-to-excalidraw` command)
 - [Markmind](https://github.com/MarkMindCkm/obsidian-markmind) (requires background rendering to be disabled)
 - [Webpage HTML Export](https://github.com/KosmosisDire/obsidian-webpage-export) (don't forget to include CSS from Style Options)
 
