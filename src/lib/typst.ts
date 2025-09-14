@@ -1,4 +1,5 @@
 import { Notice } from 'obsidian';
+
 import TypstSVGElement from '@/components/SVG';
 import { DEFAULT_SETTINGS } from '@/core/settings';
 import type ObsidianTypstMate from '@/main';
@@ -63,17 +64,19 @@ export default class TypstManager {
 
     // キャッシュ
     const sources: Map<string, Uint8Array> = new Map();
-    const cachePaths = (await this.plugin.app.vault.adapter.list(this.plugin.cachesDirPath)).files.filter((file) =>
-      file.endsWith('.cache'),
-    );
-    for (const cachePath of cachePaths) {
-      try {
-        const cacheMap = unzip(await this.plugin.app.vault.adapter.readBinary(cachePath));
-        cacheMap.forEach((data, path) => {
-          sources.set(`@${path}`, new Uint8Array(data!));
-        });
-      } catch {
-        new Notice(`Failed to load cache: ${cachePath.split('/').pop()}`);
+    if (!this.plugin.settings.disablePackageCache) {
+      const cachePaths = (await this.plugin.app.vault.adapter.list(this.plugin.cachesDirPath)).files.filter((file) =>
+        file.endsWith('.cache'),
+      );
+      for (const cachePath of cachePaths) {
+        try {
+          const cacheMap = unzip(await this.plugin.app.vault.adapter.readBinary(cachePath));
+          cacheMap.forEach((data, path) => {
+            sources.set(`@${path}`, new Uint8Array(data!));
+          });
+        } catch {
+          new Notice(`Failed to load cache: ${cachePath.split('/').pop()}`);
+        }
       }
     }
 

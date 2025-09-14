@@ -101,7 +101,7 @@ export default class ObsidianTypstMate extends Plugin {
     // EditorHelper を初期化
     this.editorHelper = new EditorHelper(this);
     // Typst Tools を登録
-    this.registerView(TypstToolsView.viewtype, (leaf) => new TypstToolsView(leaf));
+    this.registerView(TypstToolsView.viewtype, (leaf) => new TypstToolsView(leaf, this));
     this.activateLeaf();
 
     setTimeout(() => {
@@ -120,6 +120,7 @@ export default class ObsidianTypstMate extends Plugin {
     this.packagesDirPath = `${this.pluginDirPath}/packages`;
 
     this.packagesDirPaths = [this.packagesDirPath];
+    if (!Platform.isDesktopApp) return; // ? iOS/iPadOS でも Platform.isMacOS が true になる
     switch (true) {
       case Platform.isWin: {
         const localAppData = process.env.LOCALAPPDATA ?? this.path!.join(this.os!.homedir(), 'AppData', 'Local');
@@ -301,9 +302,7 @@ export default class ObsidianTypstMate extends Plugin {
             `${cachesDirPath}/${namespace}_${name}_${version}.cache`,
             zip(map).slice().buffer,
           )
-          .then(() => {
-            new Notice('Cached successfully!');
-          });
+          .catch(() => {});
       },
     };
     const wasm = await adapter.readBinary(wasmPath);

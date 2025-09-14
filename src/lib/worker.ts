@@ -68,14 +68,42 @@ export default class $ {
     }
 
     let isPackage = false;
+    const readBinary = (vpath: string, rpath: string) => {
+      const f = this.fs?.readFileSync ?? main.readBinary;
+
+      if (this.path && !this.path.isAbsolute(rpath)) rpath = `${this.baseDirPath}/${rpath}`;
+
+      const result = f(rpath);
+      if (result instanceof Promise) {
+        result
+          .then((r) => {
+            map.set(vpath, new Uint8Array(r));
+          })
+          .catch(() => {
+            if (!map.has(vpath)) map.set(vpath, undefined);
+          });
+      } else {
+        map.set(vpath, result);
+        return new Uint8Array(result);
+      }
+
+      throw 0; // FileError::Other(implementation constraints)
+    };
 
     if (path.startsWith('@')) {
       isPackage = true;
       path = path.slice(1);
-      const [namespace, name, version, vpath] = path.split('/');
+      const [namespace, name, version] = path.split('/');
+      const vpath = path.split('/').slice(3).join('/');
       const p = `${namespace}/${name}/${version}`;
 
       if (namespace === 'preview') {
+        if (this.fs) {
+          try {
+            return readBinary(`@${path}`, `${this.packagesDirPaths[0]}/${p}/${vpath}`);
+          } catch {}
+        }
+
         if (vpath === 'typst.toml') main.notice(`Downloading ${name}...`);
 
         xhr.open('GET', `https://packages.typst.org/preview/${name}-${version}.tar.gz`, false);
@@ -118,35 +146,11 @@ export default class $ {
       }
     }
 
-    const readBinary = (vpath: string, rpath: string) => {
-      const f = this.fs?.readFileSync ?? main.readBinary;
-
-      if (this.fs && !this.path!.isAbsolute(rpath)) rpath = `${this.baseDirPath}/${rpath}`;
-
-      const result = f(rpath);
-      if (result instanceof Promise) {
-        result
-          .then((r) => {
-            map.set(vpath, new Uint8Array(r));
-          })
-          .catch(() => {
-            if (!map.has(vpath)) map.set(vpath, undefined);
-          });
-      } else {
-        map.set(vpath, result);
-        return new Uint8Array(result);
-      }
-
-      throw 0; // FileError::Other(implementation constraints)
-    };
-
     if (isPackage) {
       for (const packagesDirPath of this.packagesDirPaths) {
         try {
           return readBinary(`@${path}`, `${packagesDirPath}/${path}`);
-        } catch (e) {
-          console.error(e);
-        }
+        } catch {}
       }
     } else {
       return readBinary(path, path);

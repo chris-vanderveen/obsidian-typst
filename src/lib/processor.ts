@@ -1,4 +1,4 @@
-export const RenderingEngineTokens = ['typst', 'mathjax'] as const;
+export const RenderingEngineTokens = ['typst-svg', 'mathjax'] as const;
 export type RenderingEngine = (typeof RenderingEngineTokens)[number];
 export const InlineStylingTokens = ['inline', 'inline-middle'] as const;
 export type InlineStyling = (typeof InlineStylingTokens)[number];
@@ -50,7 +50,7 @@ export type ProcessorKind = (typeof ProcessorKindTokens)[number];
 
 export const DefaultNewInlineProcessor: InlineProcessor = {
   id: 'new',
-  renderingEngine: 'typst',
+  renderingEngine: 'typst-svg',
   format: '${CODE}$',
   styling: 'inline',
   noPreamble: false,
@@ -58,7 +58,7 @@ export const DefaultNewInlineProcessor: InlineProcessor = {
 };
 export const DefaultNewDisplayProcessor: DisplayProcessor = {
   id: 'new',
-  renderingEngine: 'typst',
+  renderingEngine: 'typst-svg',
   format: '$\n{CODE}\n$',
   styling: 'block-center',
   noPreamble: false,
@@ -66,7 +66,7 @@ export const DefaultNewDisplayProcessor: DisplayProcessor = {
 };
 export const DefaultNewCodeblockProcessor: CodeblockProcessor = {
   id: 'new',
-  renderingEngine: 'typst',
+  renderingEngine: 'typst-svg',
   format: '{CODE}',
   styling: 'block',
   noPreamble: false,
@@ -74,7 +74,7 @@ export const DefaultNewCodeblockProcessor: CodeblockProcessor = {
 };
 export const DefaultNewExcalidrawProcessor: ExcalidrawProcessor = {
   id: 'new',
-  renderingEngine: 'typst',
+  renderingEngine: 'typst-svg',
   format: '#set page(margin: 0.25em)\n${CODE}$',
   styling: 'default',
   noPreamble: false,

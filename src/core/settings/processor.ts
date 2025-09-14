@@ -13,19 +13,29 @@ import { ProcessorModal } from '../modals/processorExt';
 export class ProcessorList {
   plugin: ObsidianTypstMate;
   kind: ProcessorKind;
+  simple?: boolean;
 
   processorsEl: HTMLElement;
 
-  constructor(plugin: ObsidianTypstMate, kind: ProcessorKind, containerEl: HTMLElement, summaryText: string) {
+  constructor(
+    plugin: ObsidianTypstMate,
+    kind: ProcessorKind,
+    containerEl: HTMLElement,
+    summaryText: string,
+    simple?: boolean,
+  ) {
     this.plugin = plugin;
     this.kind = kind;
+    this.simple = simple;
 
     const detailEl = containerEl.createEl('details');
-    new Setting(detailEl).addButton((button) => {
-      button.setButtonText('New');
+    if (!this.simple) {
+      new Setting(detailEl).addButton((button) => {
+        button.setButtonText('New');
 
-      button.onClick(this.newProcessor.bind(this));
-    });
+        button.onClick(this.newProcessor.bind(this));
+      });
+    }
 
     const summaryEl = detailEl.createEl('summary');
     summaryEl.textContent = summaryText;
@@ -55,90 +65,103 @@ export class ProcessorList {
   addProcessor(processor: Processor) {
     const processorEl = this.processorsEl.createDiv('typstmate-settings-processor');
 
-    new Setting(processorEl)
-      .addButton((button) => {
-        button.setButtonText('ext');
-        button.setTooltip('Open more settings');
-        button.onClick(() => {
-          new ProcessorModal(this.plugin.app, this.plugin, this.kind, processor.id).open();
+    const setting = new Setting(processorEl);
+    if (!this.simple) {
+      setting
+        .addButton((button) => {
+          button.setButtonText('ext');
+          button.setTooltip('Open more settings');
+          button.onClick(() => {
+            new ProcessorModal(this.plugin.app, this.plugin, this.kind, processor.id).open();
+          });
+        })
+        .addDropdown((renderingEngineDropdown) => {
+          renderingEngineDropdown.addOption('typst-svg', 'Typst SVG');
+          renderingEngineDropdown.addOption('mathjax', 'MathJax');
+
+          // @ts-expect-error: 過去バージョンとの互換性を保つため
+          if (processor.renderingEngine === 'typst') {
+            this.plugin.settings.processor[this.kind]!.processors[Number(processorEl.id)]!.renderingEngine =
+              'typst-svg';
+            processor.renderingEngine = 'typst-svg';
+          }
+
+          renderingEngineDropdown.setValue(processor.renderingEngine);
+
+          renderingEngineDropdown.onChange((renderingEngine) => {
+            this.plugin.settings.processor[this.kind]!.processors[Number(processorEl.id)]!.renderingEngine =
+              renderingEngine as RenderingEngine;
+
+            this.plugin.saveSettings();
+          });
+        })
+        .addDropdown((stylingDropdown) => {
+          switch (this.kind) {
+            case 'inline':
+              stylingDropdown.addOption('inline', 'inline');
+              stylingDropdown.addOption('inline-middle', 'inline-middle');
+              break;
+            case 'display':
+              stylingDropdown.addOption('block', 'block');
+              stylingDropdown.addOption('block-center', 'block-center');
+              break;
+            case 'codeblock':
+              stylingDropdown.addOption('block', 'block');
+              stylingDropdown.addOption('block-center', 'block-center');
+              stylingDropdown.addOption('codeblock', 'codeblock');
+              break;
+          }
+          stylingDropdown.setValue(processor.styling);
+
+          stylingDropdown.onChange((styling) => {
+            this.plugin.settings.processor[this.kind]!.processors[Number(processorEl.id)]!.styling = styling as Styling;
+
+            this.plugin.saveSettings();
+          });
         });
-      })
-      .addDropdown((renderingEngineDropdown) => {
-        renderingEngineDropdown.addOption('typst', 'Typst');
-        renderingEngineDropdown.addOption('mathjax', 'MathJax');
-        renderingEngineDropdown.setValue(processor.renderingEngine);
+    }
+    setting.addText((idText) => {
+      idText.setValue(processor.id);
+      idText.setPlaceholder('id');
 
-        renderingEngineDropdown.onChange((renderingEngine) => {
-          this.plugin.settings.processor[this.kind]!.processors[Number(processorEl.id)]!.renderingEngine =
-            renderingEngine as RenderingEngine;
+      idText.onChange(
+        debounce(
+          async (id) => {
+            this.plugin.settings.processor[this.kind]!.processors[Number(processorEl.id)]!.id = id;
 
-          this.plugin.saveSettings();
-        });
-      })
-      .addDropdown((stylingDropdown) => {
-        switch (this.kind) {
-          case 'inline':
-            stylingDropdown.addOption('inline', 'inline');
-            stylingDropdown.addOption('inline-middle', 'inline-middle');
-            break;
-          case 'display':
-            stylingDropdown.addOption('block', 'block');
-            stylingDropdown.addOption('block-center', 'block-center');
-            break;
-          case 'codeblock':
-            stylingDropdown.addOption('block', 'block');
-            stylingDropdown.addOption('block-center', 'block-center');
-            stylingDropdown.addOption('codeblock', 'codeblock');
-            break;
-        }
-        stylingDropdown.setValue(processor.styling);
-
-        stylingDropdown.onChange((styling) => {
-          this.plugin.settings.processor[this.kind]!.processors[Number(processorEl.id)]!.styling = styling as Styling;
-
-          this.plugin.saveSettings();
-        });
-      })
-      .addText((idText) => {
-        idText.setValue(processor.id);
-        idText.setPlaceholder('id');
-
-        idText.onChange(
-          debounce(
-            async (id) => {
-              this.plugin.settings.processor[this.kind]!.processors[Number(processorEl.id)]!.id = id;
-
-              this.plugin.saveSettings();
-              await this.plugin.typst.store({
-                processors: [
-                  {
-                    kind: this.kind,
-                    id: processor.id,
-                    format: formatTextEl.value,
-                  },
-                ],
-              });
-            },
-            500,
-            true,
-          ),
-        );
-      });
+            this.plugin.saveSettings();
+            await this.plugin.typst.store({
+              processors: [
+                {
+                  kind: this.kind,
+                  id: processor.id,
+                  format: formatTextEl.value,
+                },
+              ],
+            });
+          },
+          500,
+          true,
+        ),
+      );
+    });
 
     const processorBottomEl = processorEl.createEl('div');
     processorBottomEl.addClass('typstmate-settings-processor-bottom');
 
-    const moveButtonsEl = processorBottomEl.createEl('div');
-    moveButtonsEl.addClass('typstmate-settings-processor-move-buttons');
+    if (!this.simple) {
+      const moveButtonsEl = processorBottomEl.createEl('div');
+      moveButtonsEl.addClass('typstmate-settings-processor-move-buttons');
 
-    new ButtonComponent(moveButtonsEl)
-      .setButtonText('Move up')
-      .setIcon('chevrons-up')
-      .onClick(() => this.moveProcessor(Number(processorEl.id), 'up'));
-    new ButtonComponent(moveButtonsEl)
-      .setButtonText('Move down')
-      .setIcon('chevrons-down')
-      .onClick(() => this.moveProcessor(Number(processorEl.id), 'down'));
+      new ButtonComponent(moveButtonsEl)
+        .setButtonText('Move up')
+        .setIcon('chevrons-up')
+        .onClick(() => this.moveProcessor(Number(processorEl.id), 'up'));
+      new ButtonComponent(moveButtonsEl)
+        .setButtonText('Move down')
+        .setIcon('chevrons-down')
+        .onClick(() => this.moveProcessor(Number(processorEl.id), 'down'));
+    }
 
     const formatTextEl = processorBottomEl.createEl('textarea');
     formatTextEl.value = processor.format;
@@ -166,11 +189,13 @@ export class ProcessorList {
       ),
     );
 
-    new ButtonComponent(processorBottomEl)
-      .setButtonText('Remove')
-      .setIcon('trash')
-      .onClick(() => this.removeProcessor(Number(processorEl.id)))
-      .buttonEl.addClasses(['typstmate-button', 'typstmate-button-danger']);
+    if (!this.simple) {
+      new ButtonComponent(processorBottomEl)
+        .setButtonText('Remove')
+        .setIcon('trash')
+        .onClick(() => this.removeProcessor(Number(processorEl.id)))
+        .buttonEl.addClasses(['typstmate-button', 'typstmate-button-danger']);
+    }
   }
 
   removeProcessor(index: number) {

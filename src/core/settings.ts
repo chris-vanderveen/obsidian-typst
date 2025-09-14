@@ -17,6 +17,7 @@ export interface Settings {
   enableMathjaxFallback: boolean;
   skipPreparationWaiting: boolean;
   enableInlinePreview: boolean;
+  disablePackageCache: boolean;
   preamble: string;
   processor: {
     inline?: {
@@ -41,6 +42,7 @@ export const DEFAULT_SETTINGS: Settings = {
   enableMathjaxFallback: false,
   skipPreparationWaiting: false,
   enableInlinePreview: true,
+  disablePackageCache: false,
   preamble: [
     '#set page(margin: 0pt, width: auto, height: auto)',
     '#show raw: set text(size: 1.25em)',
@@ -51,7 +53,7 @@ export const DEFAULT_SETTINGS: Settings = {
       processors: [
         {
           id: 'ce',
-          renderingEngine: 'typst',
+          renderingEngine: 'typst-svg',
           format: [
             '#import "@preview/typsium:0.3.0": ce',
             '#show math.equation: set text(font: ("New Computer Modern Math", "Noto Serif CJK SC"))',
@@ -63,7 +65,7 @@ export const DEFAULT_SETTINGS: Settings = {
         },
         {
           id: 'mid',
-          renderingEngine: 'typst',
+          renderingEngine: 'typst-svg',
           format: '$\n{CODE}\n$',
           styling: 'inline-middle',
           noPreamble: true,
@@ -79,7 +81,7 @@ export const DEFAULT_SETTINGS: Settings = {
         },
         {
           id: '',
-          renderingEngine: 'typst',
+          renderingEngine: 'typst-svg',
           format: '${CODE}$',
           styling: 'inline',
           noPreamble: false,
@@ -91,7 +93,7 @@ export const DEFAULT_SETTINGS: Settings = {
       processors: [
         {
           id: 'block',
-          renderingEngine: 'typst',
+          renderingEngine: 'typst-svg',
           format: '$\n{CODE}\n$',
           styling: 'block',
           noPreamble: false,
@@ -99,7 +101,7 @@ export const DEFAULT_SETTINGS: Settings = {
         },
         {
           id: '',
-          renderingEngine: 'typst',
+          renderingEngine: 'typst-svg',
           format: '$\n{CODE}\n$',
           styling: 'block-center',
           noPreamble: false,
@@ -111,7 +113,7 @@ export const DEFAULT_SETTINGS: Settings = {
       processors: [
         {
           id: 'typ',
-          renderingEngine: 'typst',
+          renderingEngine: 'typst-svg',
           format: '{CODE}',
           styling: 'block',
           noPreamble: false,
@@ -119,7 +121,7 @@ export const DEFAULT_SETTINGS: Settings = {
         },
         {
           id: 'typst',
-          renderingEngine: 'typst',
+          renderingEngine: 'typst-svg',
           format: '```typst\n{CODE}\n```',
           styling: 'codeblock',
           noPreamble: true,
@@ -131,7 +133,7 @@ export const DEFAULT_SETTINGS: Settings = {
       processors: [
         {
           id: 'default',
-          renderingEngine: 'typst',
+          renderingEngine: 'typst-svg',
           format: '#set page(margin: 0.25em)\n{CODE}$',
           styling: 'default',
           noPreamble: false,
@@ -470,5 +472,16 @@ export class SettingTab extends PluginSettingTab {
         this.plugin.saveSettings();
       });
     });
+
+    new Setting(containerEl)
+      .setName('Disable Package Cache')
+      .setDesc('Enable this if crashes occur on mobile devices with low RAM.')
+      .addToggle((toggle) => {
+        toggle.setValue(this.plugin.settings.disablePackageCache);
+        toggle.onChange((value) => {
+          this.plugin.settings.disablePackageCache = value;
+          this.plugin.saveSettings();
+        });
+      });
   }
 }

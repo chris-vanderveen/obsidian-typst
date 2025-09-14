@@ -19,7 +19,7 @@ For details about the processor, see [Processor.md](https://github.com/azyarashi
   - e.g., an option `inline-middle` to vertically center *inline math* so it lines up naturally with the surrounding text
 - Inline math preview
 - Use custom fonts and import system fonts (desktop app only for import)
-- All Typst packages are supported! (desktop app only for import local packages)
+- Almost all Typst packages are supported! (desktop app only for import local packages)
 - Table support with proper display math handling
 - PDF Export compatibility
 - [Excalidraw](https://github.com/zsviczian/obsidian-excalidraw-plugin) integration

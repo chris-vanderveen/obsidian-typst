@@ -33,7 +33,7 @@ The `inline-middle` styling option vertically centers inline math so it lines up
 Works with *display math* (`$$...$$`).
 To specify a processor, enter the ID after the initial `$$`.
 
-### Code Block Processor
+### CodeBlock Processor
 
 Works with *code block* (<code>\`\`\`...\`\`\`</code>) or (`~~~...~~~`).
 To specify a processor, enter the ID after the initial <code>\`\`\`</code> or `~~~`.
