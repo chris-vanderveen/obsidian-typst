@@ -26,7 +26,11 @@ For details about the processor, see [Processor.md](https://github.com/azyarashi
 - [Webpage HTML Export](https://github.com/KosmosisDire/obsidian-webpage-export) compatibility
 - [No more flickering inline math](https://github.com/rainsia/obsidian-editor-math) compatibility
 
-For a better typing experience, I recommend installing the [No more flickering inline math](https://www.obsidianstats.com/plugins/inline-math) plugin.
+For a better typing experience, I **strongly** recommend installing the [No more flickering inline math](https://www.obsidianstats.com/plugins/inline-math) plugin by [RyotaUshio](https://github.com/RyotaUshio):
+
+Turned OFF               | Turned ON
+:-----------------------:|:------------------------:
+![Turned OFF](https://github.com/RyotaUshio/obsidian-inline-math/blob/master/fig/off.gif?raw=true) | ![Turned ON](https://github.com/RyotaUshio/obsidian-inline-math/blob/master/fig/on.gif?raw=true)
 
 ## Installation
 
