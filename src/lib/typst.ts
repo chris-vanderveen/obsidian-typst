@@ -188,6 +188,7 @@ export default class TypstManager {
     const t = document.createElement('typstmate-svg') as TypstSVGElement;
     t.plugin = this.plugin;
     t.kind = kind as ProcessorKind;
+    if (code.startsWith('{}') && code.endsWith('{}')) code = code.slice(2, -2);
     t.source = code;
     t.processor = processor;
     containerEl.appendChild(t);
