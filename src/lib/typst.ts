@@ -142,12 +142,13 @@ export default class TypstManager {
   }
 
   render(code: string, containerEl: Element, kind: string) {
-    if (kind === 'inline' && code.startsWith('{} ') && code.endsWith(' {}')) code = code.slice(3, -3);
-
     // プロセッサーを決定
     let processor: Processor;
     switch (kind) {
       case 'inline':
+        // ? プラグイン No more flickering inline math との互換性のため
+        if (code.startsWith('{} ') && code.endsWith(' {}')) code = code.slice(3, -3);
+
         processor =
           this.plugin.settings.processor.inline?.processors.find((p) => code.startsWith(`${p.id}`)) ??
           DEFAULT_SETTINGS.processor.inline?.processors.at(-1)!;
