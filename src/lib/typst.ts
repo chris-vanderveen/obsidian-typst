@@ -142,6 +142,8 @@ export default class TypstManager {
   }
 
   render(code: string, containerEl: Element, kind: string) {
+    if (kind === 'inline' && code.startsWith('{} ') && code.endsWith(' {}')) code = code.slice(3, -3);
+
     // プロセッサーを決定
     let processor: Processor;
     switch (kind) {
@@ -188,7 +190,6 @@ export default class TypstManager {
     const t = document.createElement('typstmate-svg') as TypstSVGElement;
     t.plugin = this.plugin;
     t.kind = kind as ProcessorKind;
-    if (code.startsWith('{}') && code.endsWith('{}')) code = code.slice(2, -2);
     t.source = code;
     t.processor = processor;
     containerEl.appendChild(t);
