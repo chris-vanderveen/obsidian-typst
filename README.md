@@ -24,6 +24,7 @@ For details about the processor, see [Processor.md](https://github.com/azyarashi
 - PDF Export compatibility
 - [Excalidraw](https://github.com/zsviczian/obsidian-excalidraw-plugin) integration
 - [Webpage HTML Export](https://github.com/KosmosisDire/obsidian-webpage-export) compatibility
+- [No more flickering inline math](https://github.com/rainsia/obsidian-editor-math) compatibility
 
 ## Installation
 
@@ -43,6 +44,7 @@ Until then, please install using the official plugin [BRAT](https://tfthacker.co
 - [Excalidraw](https://github.com/zsviczian/obsidian-excalidraw-plugin) (use the `typst-render-to-excalidraw` command)
 - [Markmind](https://github.com/MarkMindCkm/obsidian-markmind) (requires background rendering to be disabled)
 - [Webpage HTML Export](https://github.com/KosmosisDire/obsidian-webpage-export) (don't forget to include CSS from Style Options)
+- [No more flickering inline math](https://github.com/rainsia/obsidian-editor-math)
 
 ### Default Preamble
 
