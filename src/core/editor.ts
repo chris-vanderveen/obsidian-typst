@@ -1,4 +1,5 @@
 import type { Editor, MarkdownView } from 'obsidian';
+
 import type ObsidianTypstMate from '@/main';
 
 function isCursorInBlock(editor: Editor): boolean {

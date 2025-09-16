@@ -6,7 +6,7 @@ export class FontModal extends Modal {
   constructor(app: App, fontInfoArray: FontInfo[]) {
     super(app);
 
-    fontInfoArray.forEach((fontInfo) => {
+    for (const fontInfo of fontInfoArray) {
       new Setting(this.contentEl)
         .setName(fontInfo.family)
         .setHeading()
@@ -24,7 +24,7 @@ export class FontModal extends Modal {
       new Setting(this.contentEl).setName(`weight: ${fontWeightAliasFromNumber(fontInfo.variant.weight)}`);
       new Setting(this.contentEl).setName(`stretch: ${fontStretchAliasFromRatio(fontInfo.variant.stretch)}`);
       new Setting(this.contentEl).setName(`flags: ${fontFlagsToArray(fontInfo.flags)}`);
-    });
+    }
   }
 }
 

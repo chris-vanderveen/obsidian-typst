@@ -71,9 +71,9 @@ export default class TypstManager {
       for (const cachePath of cachePaths) {
         try {
           const cacheMap = unzip(await this.plugin.app.vault.adapter.readBinary(cachePath));
-          cacheMap.forEach((data, path) => {
+          for (const [path, data] of cacheMap) {
             sources.set(`@${path}`, new Uint8Array(data!));
-          });
+          }
         } catch {
           new Notice(`Failed to load cache: ${cachePath.split('/').pop()}`);
         }
@@ -90,9 +90,10 @@ export default class TypstManager {
         result.then(() => {
           this.ready = true;
 
-          document.querySelectorAll('.typstmate-waiting').forEach((el) => {
+          const waitingElements = document.querySelectorAll('.typstmate-waiting');
+          for (const el of waitingElements) {
             this.render(el.textContent!, el, el.getAttribute('kind')!);
-          });
+          }
         });
       } else this.ready = true;
     } else {
@@ -112,6 +113,7 @@ export default class TypstManager {
             el.textContent = source;
             el.addClass('typstmate-waiting');
             el.setAttribute('kind', processor.id);
+
             return el;
           }
 

@@ -1,4 +1,5 @@
 import { type App, Modal, Setting } from 'obsidian';
+
 import { DefaultNewExcalidrawProcessor } from '@/lib/processor';
 import type ObsidianTypstMate from '@/main';
 

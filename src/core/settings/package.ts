@@ -112,7 +112,7 @@ export class PackagesList {
 
     this.packageTableEl.removeClass('typstmate-hidden');
 
-    specs.forEach((spec) => {
+    for (const spec of specs) {
       const packageEl = new Setting(this.packageTableEl)
         .setName(`@${spec.namespace}/${spec.name}:${spec.version}`)
         .addButton((cacheButton) => {
@@ -146,7 +146,7 @@ export class PackagesList {
           });
         });
       packageEl.settingEl.id = `${spec.namespace}/${spec.name}:${spec.version}`;
-    });
+    }
   }
 
   async removePackage(spec: PackageSpec) {

@@ -52,7 +52,9 @@ export class FontList {
 
   async filterSystemFontList(filter: string) {
     let count = 0;
-    Array.from(this.fontDataTableEl!.children as HTMLCollectionOf<HTMLElement>).forEach((child) => {
+
+    const children = this.fontDataTableEl!.children as HTMLCollectionOf<HTMLElement>;
+    for (const child of children) {
       const name = child.id ?? '';
 
       if (name.includes(filter)) {
@@ -61,7 +63,7 @@ export class FontList {
       } else {
         child.classList.add('typstmate-hidden');
       }
-    });
+    }
 
     this.fontDataCountEl!.textContent = `${count} font(s)`;
     if (count === 0) this.fontDataTableEl!.classList.add('typstmate-hidden');

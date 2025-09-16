@@ -27,11 +27,6 @@ import type $ from './lib/worker';
 import Typst from './lib/worker';
 import TypstWorker from './lib/worker?worker&inline';
 
-interface GitHubAsset {
-  name: string;
-  url: string;
-}
-
 export default class ObsidianTypstMate extends Plugin {
   pluginId = 'typst-mate';
   settings!: Settings;
@@ -68,18 +63,18 @@ export default class ObsidianTypstMate extends Plugin {
     const vault = app.vault;
     const adapter = vault.adapter;
 
-    // 値の設定
     if (Platform.isDesktopApp) {
       this.fs = require('node:fs');
       this.os = require('node:os');
       this.path = require('node:path');
     }
 
+    // 基本的なパスの設定
     this.setPaths();
-
+    // SVG のベースにする色を設定
     const styles = getComputedStyle(document.body);
     this.baseColor = styles.getPropertyValue('--color-base-100').trim();
-
+    // マニフェストの読み込みと Wasm のパスを設定
     const manifestPath = `${this.pluginDirPath}/manifest.json`;
     const version = JSON.parse(await adapter.read(manifestPath)).version;
     const wasmPath = `${this.pluginDirPath}/typst-${version}.wasm`;
@@ -96,15 +91,15 @@ export default class ObsidianTypstMate extends Plugin {
     // TypstManager を設定する
     await this.prepareTypst(wasmPath);
 
-    // 設定タブを登録
-    this.addSettingTab(new SettingTab(this.app, this));
-    // EditorHelper を初期化
-    this.editorHelper = new EditorHelper(this);
-    // Typst Tools を登録
-    this.registerView(TypstToolsView.viewtype, (leaf) => new TypstToolsView(leaf, this));
-    this.activateLeaf();
-
+    // ? Obsidian の起動時間を短縮するため setTimeout を使用
     setTimeout(() => {
+      // 設定タブを登録
+      this.addSettingTab(new SettingTab(this.app, this));
+      // EditorHelper を初期化
+      this.editorHelper = new EditorHelper(this);
+      // Typst Tools を登録
+      this.registerView(TypstToolsView.viewtype, (leaf) => new TypstToolsView(leaf, this));
+      this.activateLeaf();
       // コマンドを登録する
       this.addCommands();
       // 監視を登録する
@@ -322,14 +317,15 @@ export default class ObsidianTypstMate extends Plugin {
 
   applyBaseColor() {
     if (!this.settings.autoBaseColor) return;
-    const styles = getComputedStyle(document.body);
 
+    const styles = getComputedStyle(document.body);
     const beforeColor = this.baseColor;
     this.baseColor = styles.getPropertyValue('--color-base-100').trim();
+
     const svgs = document.querySelectorAll('svg.typst-doc');
-    svgs.forEach((svg) => {
+    for (const svg of svgs) {
       svg.innerHTML = svg.innerHTML.replaceAll(beforeColor, this.baseColor);
-    });
+    }
   }
 
   override async onunload() {

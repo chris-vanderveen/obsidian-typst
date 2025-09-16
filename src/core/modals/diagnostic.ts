@@ -6,12 +6,12 @@ export class DiagnosticModal extends Modal {
   constructor(app: App, diagnosticArray: Diagnostic[]) {
     super(app);
 
-    diagnosticArray.forEach((diagnostic) => {
+    for (const diagnostic of diagnosticArray) {
       new Setting(this.contentEl).setName(diagnostic.message).setHeading();
 
-      diagnostic.hints.forEach((hint) => {
+      for (const hint of diagnostic.hints) {
         new Setting(this.contentEl).setName(`hint: ${hint}`);
-      });
-    });
+      }
+    }
   }
 }
