@@ -170,9 +170,7 @@ export default class ObsidianTypstMate extends Plugin {
     const oldWasms = (await this.app.vault.adapter.list(this.pluginDirPath)).files.filter((file) =>
       file.endsWith('.wasm'),
     );
-    for (const wasm of oldWasms) {
-      await this.app.vault.adapter.remove(wasm);
-    }
+    oldWasms.forEach(this.app.vault.adapter.remove.bind(this.app.vault.adapter));
 
     // 最新の Wasm がある URL を取得する
     const releaseUrl = `https://api.github.com/repos/azyarashi/obsidian-typst-mate/releases/tags/${version}`;
@@ -205,9 +203,10 @@ export default class ObsidianTypstMate extends Plugin {
   }
 
   private connectOtherPlugins() {
+    // Excalidraw
     if ('obsidian-excalidraw-plugin' in this.app.plugins.plugins) {
-      const ep = this.app.plugins.plugins['obsidian-excalidraw-plugin'];
-      this.excalidraw = new ExcalidrawPlugin(this, ep);
+      const excalidrawPlugin = this.app.plugins.plugins['obsidian-excalidraw-plugin'];
+      this.excalidraw = new ExcalidrawPlugin(this, excalidrawPlugin);
       this.excalidrawPluginInstalled = true;
     }
   }
@@ -263,35 +262,36 @@ export default class ObsidianTypstMate extends Plugin {
       },
 
       readBinary(p: string) {
-        if (fs) {
-          if (path!.isAbsolute(p)) return fs.readFileSync(p);
-          return fs.readFileSync(`${baseDirPath}/${p}`);
-        }
-        return adapter.readBinary(p);
+        // MobileApp
+        if (!fs) return adapter.readBinary(p);
+
+        // DesktopApp
+        if (path!.isAbsolute(p)) return fs.readFileSync(p);
+        return fs.readFileSync(`${baseDirPath}/${p}`);
       },
 
-      writePackage(path: string, files: tarFile[]) {
+      async writePackage(path: string, files: tarFile[]) {
         const map = new Map<string, Uint8Array>();
 
         // ディレクトリ
-        for (const f of files.filter((f) => f.type === '5')) {
-          adapter.mkdir(`${packagesDirPath}/${path}/${f.name}`);
+        for (const file of files.filter((f) => f.type === '5')) {
+          await adapter.mkdir(`${packagesDirPath}/${path}/${file.name}`);
         }
 
         // ファイル
-        for (const f of files.filter((f) => f.type === '0')) {
-          adapter.writeBinary(`${packagesDirPath}/${path}/${f.name}`, f.buffer);
-          map.set(`${path}/${f.name}`, new Uint8Array(f.buffer));
+        for (const file of files.filter((f) => f.type === '0')) {
+          await adapter.writeBinary(`${packagesDirPath}/${path}/${file.name}`, file.buffer);
+          map.set(`${path}/${file.name}`, new Uint8Array(file.buffer));
         }
 
         // シンボリックリンク
-        for (const f of files.filter((f) => f.type === '2')) {
-          adapter.copy(`${packagesDirPath}/${path}/${f.name}`, `${packagesDirPath}/${path}/${f.linkname}`);
-          map.set(`${path}/${f.linkname}`, map.get(`${path}/${f.name}`)!);
+        for (const file of files.filter((f) => f.type === '2')) {
+          await adapter.copy(`${packagesDirPath}/${path}/${file.name}`, `${packagesDirPath}/${path}/${file.linkname}`);
+          map.set(`${path}/${file.linkname}`, map.get(`${path}/${file.name}`)!);
         }
 
         const [namespace, name, version] = path.split('/');
-        adapter
+        await adapter
           .writeBinary(
             // ? .DS_STORE などが紛れ込まないようにするため
             `${cachesDirPath}/${namespace}_${name}_${version}.cache`,
@@ -331,9 +331,7 @@ export default class ObsidianTypstMate extends Plugin {
   override async onunload() {
     // 監視を終了
     this.observer?.stopAll();
-    for (const listener of this.listeners) {
-      this.app.workspace.offref(listener);
-    }
+    this.listeners.forEach(this.app.workspace.offref.bind(this.app.workspace));
 
     // Worker を終了
     this.worker?.terminate();
