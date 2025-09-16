@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      SCCACHE_DIR: ${{ runner.temp }}/sccache
+      RUSTC_WRAPPER: sccache
 
     steps:
       - name: Checkout code
@@ -21,15 +24,12 @@ jobs:
 
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@v0.0.9
-        env:
-          SCCACHE_GHA_ENABLED: "true"
-          RUSTC_WRAPPER: "sccache"
-          SCCACHE_DIR: "${{ runner.temp }}/sccache"
+        # no need to set SCCACHE_DIR here because it's declared at job env
 
       - name: Cache sccache
         uses: actions/cache@v4
         with:
-          path: ${{ runner.temp }}/sccache
+          path: ${{ env.SCCACHE_DIR }}
           key: sccache-${{ runner.os }}-${{ hashFiles('**/Cargo.lock', '**/Cargo.toml') }}
           restore-keys: |
             sccache-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
@@ -43,8 +43,6 @@ jobs:
         uses: oven-sh/setup-bun@v2
 
       - name: Build Wasm
-        env:
-          RUSTC_WRAPPER: "sccache"
         run: |
           wasm-pack build wasm --target web --release --out-dir ../pkg
 
