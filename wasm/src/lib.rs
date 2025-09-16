@@ -28,7 +28,6 @@ use crate::world::WasmWorld;
 #[wasm_bindgen]
 pub struct Typst {
     world: WasmWorld,
-    typstyle: Typstyle,
 
     last_kind: String,
     last_id: String,
@@ -43,10 +42,6 @@ impl Typst {
 
         Self {
             world: WasmWorld::new(fetch, fontsize),
-            typstyle: Typstyle::new(Config {
-                collapse_markup_spaces: true,
-                ..Config::default()
-            }),
 
             last_kind: String::new(),
             last_id: String::new(),
