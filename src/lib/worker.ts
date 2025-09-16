@@ -60,6 +60,10 @@ export default class $ {
     return this.typst!.list_packages();
   }
 
+  mitex(code: string): string {
+    return this.typst!.mitex(code);
+  }
+
   fetch(path: string) {
     if (map.has(path)) {
       const v = map.get(path);

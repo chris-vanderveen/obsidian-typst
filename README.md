@@ -24,6 +24,11 @@ For details about the processor, see [Processor.md](https://github.com/azyarashi
 - [Excalidraw](https://www.obsidianstats.com/plugins/obsidian-excalidraw-plugin) integration
 - [No more flickering inline math](https://www.obsidianstats.com/plugins/inline-math) compatibility
 - PDF Export, [Better Export PDF](https://www.obsidianstats.com/plugins/better-export-pdf), [Export Image plugin](https://www.obsidianstats.com/plugins/obsidian-export-image), and [Webpage HTML Export](https://www.obsidianstats.com/plugins/webpage-html-export) compatibility
+- Typst Tools
+  - Symbols viewer
+  - Packages viewer
+  - Processors editor
+  - LaTeX to Typst converter
 
 For a better typing experience, I **strongly** recommend installing the [No more flickering inline math](https://www.obsidianstats.com/plugins/inline-math) plugin by [RyotaUshio](https://github.com/RyotaUshio):
 
@@ -72,8 +77,9 @@ Depending on the three modes (`inline`, `display`, and `codeblock`), the styling
 
 ---
 
-Typst Mate leverages the following open-source project:
+Typst Mate leverages the following open-source projects:
 
-- [Typst](https://typst.app/) – a powerful typesetting system
+- [Typst](https://typst.app/) – a modern and powerful typesetting system
+- [MiTex](https://github.com/mitex-rs/mitex) – a fast and lightweight LaTeX to Typst converter
 
-I'm grateful to the Typst developers for making this plugin possible.
+I'm grateful to the developers for making this plugin possible.

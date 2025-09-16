@@ -12,7 +12,7 @@ export default class ExcalidrawPlugin {
   constructor(plugin: ObsidianTypstMate, ep: Plugin) {
     this.plugin = plugin;
     // @ts-expect-error
-    this.ea = ep.ea;
+    this.ea = ep?.ea;
   }
 
   async addTypst(code: string, processor: ExcalidrawProcessor) {

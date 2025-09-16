@@ -39,25 +39,66 @@ export class TypstToolsView extends ItemView {
     if (Platform.isDesktop) {
       dropdown.addOption('symbols', 'Symbols').addOption('packages', 'Packages');
     }
-    dropdown.addOption('processors', 'Processors').onChange((value) => {
-      item.empty();
-      switch (value) {
-        case 'symbols':
-          item.createEl('iframe').src = 'https://typst.app/docs/reference/symbols/sym/';
-          break;
-        case 'packages':
-          item.createEl('iframe').src = 'https://typst.app/universe/search/';
-          break;
-        case 'processors':
-          new ProcessorList(this.plugin, 'inline', item, 'Inline($...$) Processors', true);
-          new ProcessorList(this.plugin, 'display', item, 'Display($$...$$) Processors', true);
-          new ProcessorList(this.plugin, 'codeblock', item, 'CodeBlock(```...```) Processors', true);
-          if (this.plugin.excalidrawPluginInstalled) {
-            new ProcessorList(this.plugin, 'excalidraw', item, 'Excalidraw Processors', true);
+    dropdown
+      .addOption('processors', 'Processors')
+      .addOption('tex2typ', 'tex2typ')
+      .onChange((value) => {
+        item.empty();
+        switch (value) {
+          case 'symbols':
+            item.createEl('iframe').src = 'https://typst.app/docs/reference/symbols/sym/';
+            break;
+          case 'packages':
+            item.createEl('iframe').src = 'https://typst.app/universe/search/';
+            break;
+          case 'tex2typ': {
+            const updatePreview = () => {
+              const code = input.value;
+              preview.empty();
+              if (code) {
+                this.plugin.typstManager.render(result, preview, 'inline');
+              }
+            };
+
+            let result = '';
+            const input = item.createEl('textarea');
+            input.addClass('typstmate-form-control');
+
+            const output = item.createEl('textarea');
+            output.addClass('typstmate-form-control');
+            input.addEventListener('input', async () => {
+              const code = input.value;
+              try {
+                result = await this.plugin.typst!.mitex(code);
+                output.value = result;
+                updatePreview();
+              } catch (error) {
+                output.value = String(error);
+              }
+            });
+
+            const preview = item.createEl('div');
+            preview.addClass('typstmate-settings-preview-preview');
+
+            const button = item.createEl('button');
+            button.setText('Copy');
+            button.addClass('typstmate-button');
+            button.onClickEvent(async () => {
+              navigator.clipboard.writeText(`$${result}$`);
+            });
+
+            break;
           }
-          break;
-      }
-    });
+          case 'processors':
+            new ProcessorList(this.plugin, 'inline', item, 'Inline($...$) Processors', true);
+            new ProcessorList(this.plugin, 'display', item, 'Display($$...$$) Processors', true);
+            new ProcessorList(this.plugin, 'codeblock', item, 'CodeBlock(```...```) Processors', true);
+            if (this.plugin.excalidrawPluginInstalled) {
+              new ProcessorList(this.plugin, 'excalidraw', item, 'Excalidraw Processors', true);
+            }
+            break;
+        }
+      });
     new ButtonComponent(menuEl)
       .setIcon('refresh-ccw')
       .setTooltip('再読み込み')
@@ -68,6 +109,9 @@ export class TypstToolsView extends ItemView {
             break;
           case 'packages':
             item.createEl('iframe').src = 'https://typst.app/universe/search/';
+            break;
+          case 'tex2typ':
+            item.createEl('iframe').src = 'https://mitex-rs.github.io/mitex/';
             break;
         }
       });

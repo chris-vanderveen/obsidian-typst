@@ -1,7 +1,9 @@
 use ecow::EcoString;
 use js_sys::{ArrayBuffer, Uint8Array};
+use mitex::convert_math;
 use rustc_hash::FxHashMap;
 use serde_wasm_bindgen::to_value;
+use typstyle_core::{Config, Typstyle};
 use wasm_bindgen::prelude::*;
 
 use typst::{
@@ -27,6 +29,7 @@ use crate::world::WasmWorld;
 #[wasm_bindgen]
 pub struct Typst {
     world: WasmWorld,
+    typstyle: Typstyle,
 
     last_kind: String,
     last_id: String,
@@ -41,6 +44,10 @@ impl Typst {
 
         Self {
             world: WasmWorld::new(fetch, fontsize),
+            typstyle: Typstyle::new(Config {
+                collapse_markup_spaces: true,
+                ..Config::default()
+            }),
 
             last_kind: String::new(),
             last_id: String::new(),
@@ -132,11 +139,22 @@ impl Typst {
         let vec = Uint8Array::new(&buffer).to_vec();
         let bytes = Bytes::new(vec);
 
-        let infos: Vec<font::FontInfoSer> = FontInfo::iter(&bytes)
-            .map(|info| font::FontInfoSer::from(&info)) // あるいは .map(|info| (&info).into())
-            .collect();
+        let infos: Vec<font::FontInfoSer> =
+            FontInfo::iter(&bytes).map(|info| (&info).into()).collect();
 
         to_value(&infos).unwrap()
+    }
+
+    pub fn mitex(&mut self, code: &str) -> Result<JsValue, JsValue> {
+        match convert_math(code, None) {
+            Ok(result) => Ok(JsValue::from_str(&result)),
+
+            /*match self.typstyle.format_text(&result).render() {
+                Ok(formatted) => Ok(JsValue::from_str(&formatted)),
+                Err(error) => Err(JsValue::from_str(&error.to_string())),
+            },*/
+            Err(error) => Err(JsValue::from_str(&error)),
+        }
     }
 
     pub fn svg(&mut self, code: &str, kind: &str, id: &str) -> Result<JsValue, JsValue> {
