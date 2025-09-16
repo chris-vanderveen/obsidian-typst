@@ -1099,15 +1099,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "itertools"
-version = "0.14.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b192c782037fadd9cfa75548310488aabdbf3d2da73885b31bd0abd03351285"
-dependencies = [
- "either",
-]
-
-[[package]]
 name = "itoa"
 version = "1.0.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1588,16 +1579,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "85eae3c4ed2f50dcfe72643da4befc30deadb458a9b590d720cde2f2b1e97da9"
 dependencies = [
  "zerocopy",
-]
-
-[[package]]
-name = "prettyless"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "749d63085aa461d80b3233e48781bf9e9dca8147fbc98f577e0697c6827dc418"
-dependencies = [
- "typed-arena",
- "unicode-width",
 ]
 
 [[package]]
@@ -2678,25 +2659,8 @@ dependencies = [
  "typst",
  "typst-assets",
  "typst-svg",
- "typstyle-core",
  "wasm-bindgen",
  "wasm-bindgen-futures",
-]
-
-[[package]]
-name = "typstyle-core"
-version = "0.13.17"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "11f75a1926d11271addf8bc8db4bcb24803464317e000c6c743d825111fb6b56"
-dependencies = [
- "ecow",
- "itertools",
- "prettyless",
- "rustc-hash 2.1.1",
- "smallvec",
- "thiserror 2.0.16",
- "typst-syntax",
- "unicode-width",
 ]
 
 [[package]]
@@ -2780,12 +2744,6 @@ name = "unicode-vo"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b1d386ff53b415b7fe27b50bb44679e2cc4660272694b7b6f3326d8480823a94"
-
-[[package]]
-name = "unicode-width"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4a1a07cc7db3810833284e8d372ccdc6da29741639ecc70c9ec107df0fa6154c"
 
 [[package]]
 name = "unsafe-libyaml"

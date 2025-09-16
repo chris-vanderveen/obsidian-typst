@@ -3,7 +3,6 @@ use js_sys::{ArrayBuffer, Uint8Array};
 use mitex::convert_math;
 use rustc_hash::FxHashMap;
 use serde_wasm_bindgen::to_value;
-use typstyle_core::{Config, Typstyle};
 use wasm_bindgen::prelude::*;
 
 use typst::{
@@ -148,11 +147,6 @@ impl Typst {
     pub fn mitex(&mut self, code: &str) -> Result<JsValue, JsValue> {
         match convert_math(code, None) {
             Ok(result) => Ok(JsValue::from_str(&result)),
-
-            /*match self.typstyle.format_text(&result).render() {
-                Ok(formatted) => Ok(JsValue::from_str(&formatted)),
-                Err(error) => Err(JsValue::from_str(&error.to_string())),
-            },*/
             Err(error) => Err(JsValue::from_str(&error)),
         }
     }
