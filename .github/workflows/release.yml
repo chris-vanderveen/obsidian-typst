@@ -43,7 +43,7 @@ jobs:
 
       - name: Build Wasm
         run: |
-          wasm-pack build wasm --target web --release --out-dir ../pkg
+          bun wasm
 
       - name: Build Plugin
         run: |
