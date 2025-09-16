@@ -1,10 +1,9 @@
 version: "3"
 
-vars:
-  PLUGIN_ID: "typst-mate"
-
 dotenv:
   - ".env"
+vars:
+  PLUGIN_ID: "typst-mate"
 
 tasks:
   default:
@@ -30,6 +29,7 @@ tasks:
       - cp manifest.json '{{.PLUGIN_DIR}}'
       - cp pkg/typst_wasm_bg.wasm '{{.PLUGIN_DIR}}'
       - mv '{{.PLUGIN_DIR}}/typst_wasm_bg.wasm' '{{.PLUGIN_DIR}}/typst-{{.version}}.wasm'
+    desc: "Copy static files to plugin directory"
   wasm:
     vars:
       PLUGIN_DIR: "{{.CONFIG_DIR}}/plugins/{{.PLUGIN_ID}}"
@@ -38,22 +38,11 @@ tasks:
     cmds:
       - wasm-pack build wasm --target web --dev --out-dir ../pkg
       - mv './pkg/typst_wasm_bg.wasm' '{{.PLUGIN_DIR}}/typst-{{.version}}.wasm'
-  dev: bunx --bun vite build -w -m development --outDir '{{.CONFIG_DIR}}/plugins/{{.PLUGIN_ID}}'
-  build:
+    desc: "Build WASM file and copy to plugin directory"
+  dev:
     cmds:
-      - bun run wasm
-      - mv pkg/typst_wasm_bg.wasm typst.wasm
-      - bun run build
-      - rm typst.wasm
-
-  commit:
-    cmds:
-      - bun run check
-      - git add .
-      - git commit -m "{{.MESSAGE}}"
-    preconditions:
-      - sh: "[ {{.MESSAGE}} != '' ]"
-    desc: "e.g. task commit MESSAGE=update"
+      - bunx --bun vite build -w -m development --outDir '{{.CONFIG_DIR}}/plugins/{{.PLUGIN_ID}}'
+    desc: "Build in development mode and copy to plugin directory"
 
   release:
     vars:
@@ -67,4 +56,4 @@ tasks:
       - git push origin "{{.tag}}"
     preconditions:
       - sh: "[ {{.TYPE}} != '' ]"
-    desc: "e.g. task release TYPE=patch"
+    desc: "e.g. task release TYPE=major | TYPE=minor | TYPE=patch | TYPE=mock"

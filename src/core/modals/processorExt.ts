@@ -9,11 +9,11 @@ export class ProcessorModal extends Modal {
     super(app);
 
     const processor = plugin.settings.processor[kind]?.processors.find((processor) => processor.id === id);
-
     if (!processor) return;
 
     new Setting(this.contentEl).setName(processor.id).setHeading();
 
+    // Preamble 設定
     new Setting(this.contentEl).setName(`Use preamble`).addToggle((toggle) => {
       toggle.setValue(!processor.noPreamble);
 
@@ -23,6 +23,7 @@ export class ProcessorModal extends Modal {
       });
     });
 
+    // Fit to parent width 設定
     new Setting(this.contentEl)
       .setName('Fit to parent width')
       .setDesc(

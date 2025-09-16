@@ -13,7 +13,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.4",
-		"@types/bun": "^1.2.21",
+		"@types/bun": "^1.2.22",
 		"@types/pako": "^2.0.4",
 		"@zsviczian/excalidraw": "^0.18.0-37",
 		"autoprefixer": "^10.4.21",

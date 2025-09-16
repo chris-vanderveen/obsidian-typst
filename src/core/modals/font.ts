@@ -1,6 +1,7 @@
 import { type App, Modal, Notice, Setting } from 'obsidian';
 
 import type { FontInfo } from '@/lib/worker';
+
 export class FontModal extends Modal {
   constructor(app: App, fontInfoArray: FontInfo[]) {
     super(app);
@@ -14,17 +15,14 @@ export class FontModal extends Modal {
           button.setTooltip('Copy Font Family Name');
 
           button.onClick(async () => {
-            navigator.clipboard.writeText(fontInfo.family);
+            await navigator.clipboard.writeText(fontInfo.family);
             new Notice('Copied!');
           });
         });
 
       new Setting(this.contentEl).setName(`style: ${fontInfo.variant.style}`);
-
       new Setting(this.contentEl).setName(`weight: ${fontWeightAliasFromNumber(fontInfo.variant.weight)}`);
-
       new Setting(this.contentEl).setName(`stretch: ${fontStretchAliasFromRatio(fontInfo.variant.stretch)}`);
-
       new Setting(this.contentEl).setName(`flags: ${fontFlagsToArray(fontInfo.flags)}`);
     });
   }
@@ -43,23 +41,23 @@ export const FontWeightAlias = {
 };
 export const fontWeightAliasFromNumber = (weight: number) => {
   if (weight < 150) {
-    return FontWeightAlias.THIN;
+    return `${FontWeightAlias.THIN}(THIN)`;
   } else if (weight < 250) {
-    return FontWeightAlias.EXTRALIGHT;
+    return `${FontWeightAlias.EXTRALIGHT}(EXTRALIGHT)`;
   } else if (weight < 350) {
-    return FontWeightAlias.LIGHT;
+    return `${FontWeightAlias.LIGHT}(LIGHT)`;
   } else if (weight < 450) {
-    return FontWeightAlias.REGULAR;
+    return `${FontWeightAlias.REGULAR}(REGULAR)`;
   } else if (weight < 550) {
-    return FontWeightAlias.MEDIUM;
+    return `${FontWeightAlias.MEDIUM}(MEDIUM)`;
   } else if (weight < 650) {
-    return FontWeightAlias.SEMIBOLD;
+    return `${FontWeightAlias.SEMIBOLD}(SEMIBOLD)`;
   } else if (weight < 750) {
-    return FontWeightAlias.BOLD;
+    return `${FontWeightAlias.BOLD}(BOLD)`;
   } else if (weight < 850) {
-    return FontWeightAlias.EXTRABOLD;
+    return `${FontWeightAlias.EXTRABOLD}(EXTRABOLD)`;
   } else {
-    return FontWeightAlias.BLACK;
+    return `${FontWeightAlias.BLACK}(BLACK)`;
   }
 };
 
@@ -75,25 +73,26 @@ export const FontStretchAlias = {
   ULTRA_EXPANDED: 2000,
 };
 export const fontStretchAliasFromRatio = (ratio: number) => {
-  const weight = Math.round(clamp(ratio, 0.5, 2.0) * 1000.0);
+  const weight = Math.round(Math.clamp(ratio, 0.5, 2.0) * 1000.0);
+
   if (weight < 563) {
-    return FontStretchAlias.ULTRA_CONDENSED;
+    return `${FontStretchAlias.ULTRA_CONDENSED}(ULTRA_CONDENSED)`;
   } else if (563 <= weight && weight < 688) {
-    return FontStretchAlias.EXTRA_CONDENSED;
+    return `${FontStretchAlias.EXTRA_CONDENSED}(EXTRA_CONDENSED)`;
   } else if (688 <= weight && weight < 813) {
-    return FontStretchAlias.CONDENSED;
+    return `${FontStretchAlias.CONDENSED}(CONDENSED)`;
   } else if (813 <= weight && weight < 938) {
-    return FontStretchAlias.SEMI_CONDENSED;
+    return `${FontStretchAlias.SEMI_CONDENSED}(SEMI_CONDENSED)`;
   } else if (938 <= weight && weight < 1063) {
-    return FontStretchAlias.NORMAL;
+    return `${FontStretchAlias.NORMAL}(NORMAL)`;
   } else if (1063 <= weight && weight < 1188) {
-    return FontStretchAlias.SEMI_EXPANDED;
+    return `${FontStretchAlias.SEMI_EXPANDED}(SEMI_EXPANDED)`;
   } else if (1188 <= weight && weight < 1375) {
-    return FontStretchAlias.EXPANDED;
+    return `${FontStretchAlias.EXPANDED}(EXPANDED)`;
   } else if (1375 <= weight && weight < 1750) {
-    return FontStretchAlias.EXTRA_EXPANDED;
+    return `${FontStretchAlias.EXTRA_EXPANDED}(EXTRA_EXPANDED)`;
   } else if (1750 <= weight) {
-    return FontStretchAlias.ULTRA_EXPANDED;
+    return `${FontStretchAlias.ULTRA_EXPANDED}(ULTRA_EXPANDED)`;
   }
 };
 
@@ -108,14 +107,9 @@ export const fontFlagsToArray = (bits: number): string[] => {
 
   for (const [key, value] of Object.entries(FontFlagAlias)) {
     if (typeof value !== 'number') continue;
-    if ((bits & value) !== 0) {
-      result.push(key.toUpperCase());
-    }
+    if ((bits & value) !== 0) result.push(key.toUpperCase());
   }
 
+  if (result.length === 0) result.push('none');
   return result;
 };
-
-function clamp(ratio: number, arg1: number, arg2: number) {
-  return Math.max(arg1, Math.min(ratio, arg2));
-}

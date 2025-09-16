@@ -5,17 +5,16 @@ import type ObsidianTypstMate from '@/main';
 export class ExcalidrawModal extends Modal {
   constructor(app: App, plugin: ObsidianTypstMate) {
     super(app);
-
-    let id = '';
-    let code = '';
+    let id: string, code: string;
 
     new Setting(this.contentEl).setName('Excalidraw').setHeading();
 
+    // Processor の選択
     new Setting(this.contentEl).setName('processor id').addDropdown((dropdown) => {
       const processors = plugin.settings.processor.excalidraw?.processors ?? [];
-      processors.forEach((processor) => {
+      for (const processor of processors) {
         dropdown.addOption(processor.id, processor.id);
-      });
+      }
       dropdown.setValue(processors.at(-1)!.id);
       id = processors.at(-1)!.id;
 
@@ -24,18 +23,18 @@ export class ExcalidrawModal extends Modal {
       });
     });
 
+    // コード
     new Setting(this.contentEl).setName('code').addText((text) => {
       text.onChange((value) => {
         code = value;
         previewEl.empty();
-        if (code) {
-          plugin.typstManager.render(`${id}\n${code}`, previewEl, 'excalidraw');
-        }
+        if (code) plugin.typstManager.render(`${id}\n${code}`, previewEl, 'excalidraw');
       });
     });
 
+    // 追加ボタン
     new Setting(this.contentEl).addButton((button) => {
-      button.setButtonText('Add Typst');
+      button.setButtonText('Add');
 
       button.onClick(() => {
         this.close();

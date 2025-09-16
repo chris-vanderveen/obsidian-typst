@@ -362,13 +362,7 @@ export default class ObsidianTypstMate extends Plugin {
     await this.saveData(this.settings);
   }
 
-  override onConfigFileChange = debounce(
-    async () => {
-      await this.loadSettings();
-    },
-    500,
-    true,
-  );
+  override onConfigFileChange = debounce(this.loadSettings.bind(this), 500, true);
 
   async reload(openSettingsTab: boolean) {
     await this.app.plugins.disablePlugin(this.pluginId); // ? onunload も呼ばれる

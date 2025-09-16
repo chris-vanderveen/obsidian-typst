@@ -148,21 +148,6 @@
   margin: 0.5em 0;
 }
 
-.typstmate-button {
-  padding: 4px 8px;
-  border: 1px solid var(--background-modifier-border);
-  border-radius: 3px;
-  background: var(--background-primary);
-  color: var(--text-normal);
-  cursor: pointer;
-  font-size: 0.9em;
-  transition: background-color 0.1s ease;
-}
-
-.typstmate-button:hover {
-  background: var(--background-modifier-hover);
-}
-
 .typstmate-button-primary {
   background: var(--interactive-accent);
   color: var(--text-on-accent);

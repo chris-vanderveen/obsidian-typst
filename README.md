@@ -21,10 +21,9 @@ For details about the processor, see [Processor.md](https://github.com/azyarashi
 - Use custom fonts and import system fonts (desktop app only for import)
 - Almost all Typst packages are supported! (desktop app only for import local packages)
 - Table support with proper display math handling
-- PDF Export compatibility
-- [Excalidraw](https://github.com/zsviczian/obsidian-excalidraw-plugin) integration
-- [Webpage HTML Export](https://github.com/KosmosisDire/obsidian-webpage-export) compatibility
-- [No more flickering inline math](https://github.com/RyotaUshio/obsidian-inline-math) compatibility
+- [Excalidraw](https://www.obsidianstats.com/plugins/obsidian-excalidraw-plugin) integration
+- [No more flickering inline math](https://www.obsidianstats.com/plugins/inline-math) compatibility
+- PDF Export, [Better Export PDF](https://www.obsidianstats.com/plugins/better-export-pdf), [Export Image plugin](https://www.obsidianstats.com/plugins/obsidian-export-image), and [Webpage HTML Export](https://www.obsidianstats.com/plugins/webpage-html-export) compatibility
 
 For a better typing experience, I **strongly** recommend installing the [No more flickering inline math](https://www.obsidianstats.com/plugins/inline-math) plugin by [RyotaUshio](https://github.com/RyotaUshio):
 
@@ -47,10 +46,12 @@ Until then, please install using the official plugin [BRAT](https://tfthacker.co
 
 ### Other Plugins
 
-- [Excalidraw](https://github.com/zsviczian/obsidian-excalidraw-plugin) (use the `typst-render-to-excalidraw` command)
-- [Markmind](https://github.com/MarkMindCkm/obsidian-markmind) (requires background rendering to be disabled)
-- [Webpage HTML Export](https://github.com/KosmosisDire/obsidian-webpage-export) (don't forget to include CSS from Style Options)
-- [No more flickering inline math](https://github.com/RyotaUshio/obsidian-inline-math)
+- [Excalidraw](https://www.obsidianstats.com/plugins/obsidian-excalidraw-plugin) (use the `typst-render-to-excalidraw` command)
+- [Markmind](https://www.obsidianstats.com/plugins/obsidian-markmind) (requires background rendering to be disabled)
+- [No more flickering inline math](https://www.obsidianstats.com/plugins/inline-math)
+- [Better Export PDF](https://www.obsidianstats.com/plugins/better-export-pdf)
+- [Export Image plugin](https://www.obsidianstats.com/plugins/obsidian-export-image)
+- [Webpage HTML Export](https://www.obsidianstats.com/plugins/webpage-html-export) (don't forget to include CSS from Style Options)
 
 ### Default Preamble
 
@@ -63,7 +64,7 @@ Until then, please install using the official plugin [BRAT](https://tfthacker.co
 ### Custom Styling
 
 You can apply your own custom CSS, not just the styling included in the plugin.
-Depending on the three modes (`inline`, `display`, `codeblock`), the styling method (`style`), and the identifier (`id`), the following CSS classes will be added:
+Depending on the three modes (`inline`, `display`, and `codeblock`), the styling method (`style`), and the identifier (`id`), the following CSS classes will be added:
 
 - `typstmate-(mode)`
 - `typstmate-style-(style)`
