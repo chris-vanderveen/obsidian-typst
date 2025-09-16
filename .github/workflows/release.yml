@@ -7,12 +7,11 @@ on:
 
 jobs:
   release:
-    name: Release
     runs-on: ubuntu-latest
     permissions:
       contents: write
     env:
-      SCCACHE_DIR: ${{ runner.temp }}/sccache
+      SCCACHE_DIR: ${{ github.workspace }}/.sccache
       RUSTC_WRAPPER: sccache
 
     steps:
@@ -24,7 +23,6 @@ jobs:
 
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@v0.0.9
-        # no need to set SCCACHE_DIR here because it's declared at job env
 
       - name: Cache sccache
         uses: actions/cache@v4
