@@ -17,6 +17,10 @@
   height: 100%;
 }
 
+.typstmate-leaf div.typstmate-content select {
+  margin-bottom: 4pt;
+}
+
 .typstmate-leaf div.typstmate-content iframe {
   width: 100%;
   height: 100%;

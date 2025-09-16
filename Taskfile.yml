@@ -27,8 +27,6 @@ tasks:
     cmds:
       - touch '{{.PLUGIN_DIR}}/.hotreload'
       - cp manifest.json '{{.PLUGIN_DIR}}'
-      - cp pkg/typst_wasm_bg.wasm '{{.PLUGIN_DIR}}'
-      - mv '{{.PLUGIN_DIR}}/typst_wasm_bg.wasm' '{{.PLUGIN_DIR}}/typst-{{.version}}.wasm'
     desc: "Copy static files to plugin directory"
   wasm:
     vars:
@@ -54,6 +52,8 @@ tasks:
       - git tag "{{.tag}}"
       - git push
       - git push origin "{{.tag}}"
+      - task wasm
+      - task putstatic
     preconditions:
       - sh: "[ {{.TYPE}} != '' ]"
     desc: "e.g. task release TYPE=major | TYPE=minor | TYPE=patch | TYPE=mock"

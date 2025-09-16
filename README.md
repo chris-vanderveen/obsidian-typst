@@ -15,12 +15,17 @@ For details about the processor, see [Processor.md](https://github.com/azyarashi
 ## Features
 
 - Support *inline math*, *display math*, and *code blocks*
-- Additional styling customization
+- Support **preamble** and **templates** (called processors)
+- **Inline math preview**
+- **Available on mobile app**
+- Offer **background rendering**
+- Use **font size** from Obsidian settings
+- Inherit **text color** from Obsidian theme
+- **Additional styling customization**
   - e.g., an option `inline-middle` to vertically center *inline math* so it lines up naturally with the surrounding text
-- Inline math preview
-- Use custom fonts and import system fonts (desktop app only for import)
-- Almost all Typst packages are supported! (desktop app only for import local packages)
-- Table support with proper display math handling
+- Use **custom fonts** and import system fonts (desktop app only for import)
+- Almost all **Typst packages** are supported (desktop app only for import local packages)
+- **Table support** with proper display math handling
 - [Excalidraw](https://www.obsidianstats.com/plugins/obsidian-excalidraw-plugin) integration
 - [No more flickering inline math](https://www.obsidianstats.com/plugins/inline-math) compatibility
 - PDF Export, [Better Export PDF](https://www.obsidianstats.com/plugins/better-export-pdf), [Export Image plugin](https://www.obsidianstats.com/plugins/obsidian-export-image), and [Webpage HTML Export](https://www.obsidianstats.com/plugins/webpage-html-export) compatibility
@@ -28,7 +33,7 @@ For details about the processor, see [Processor.md](https://github.com/azyarashi
   - Symbols viewer
   - Packages viewer
   - Processors editor
-  - LaTeX to Typst converter
+  - bidirectional converter between TeX/LaTeX and Typst ([MiTex](https://github.com/mitex-rs/mitex) / [tex2typst](https://github.com/qwinsi/tex2typst)) (Typst to TeX/LaTeX conversion is `tex2typst` mode only)
 
 For a better typing experience, I **strongly** recommend installing the [No more flickering inline math](https://www.obsidianstats.com/plugins/inline-math) plugin by [RyotaUshio](https://github.com/RyotaUshio):
 
@@ -80,6 +85,7 @@ Depending on the three modes (`inline`, `display`, and `codeblock`), the styling
 Typst Mate leverages the following open-source projects:
 
 - [Typst](https://typst.app/) – a modern and powerful typesetting system
-- [MiTex](https://github.com/mitex-rs/mitex) – a fast and lightweight LaTeX to Typst converter
+- [MiTex](https://github.com/mitex-rs/mitex) – a fast, lightweight LaTeX to Typst converter with **high compatibility**
+- [tex2typst](https://github.com/qwinsi/tex2typst) – a fast, lightweight bidirectional converter between TeX/LaTeX and Typst with **readable output**
 
 I'm grateful to the developers for making this plugin possible.

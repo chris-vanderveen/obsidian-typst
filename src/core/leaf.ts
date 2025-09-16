@@ -1,4 +1,5 @@
 import { ButtonComponent, DropdownComponent, ItemView, Platform, type WorkspaceLeaf } from 'obsidian';
+import { tex2typst, typst2tex } from 'tex2typst';
 
 import type ObsidianTypstMate from '@/main';
 import { ProcessorList } from './settings/processor';
@@ -39,96 +40,110 @@ export class TypstToolsView extends ItemView {
     if (Platform.isDesktop) {
       dropdown.addOption('symbols', 'Symbols').addOption('packages', 'Packages');
     }
-    dropdown
-      .addOption('processors', 'Processors')
-      .addOption('tex2typ', 'tex2typ')
-      .onChange((value) => {
-        item.empty();
-        switch (value) {
-          case 'symbols':
-            item.createEl('iframe').src = 'https://typst.app/docs/reference/symbols/sym/';
-            break;
-          case 'packages':
-            item.createEl('iframe').src = 'https://typst.app/universe/search/';
-            break;
-          case 'tex2typ': {
-            const updatePreview = () => {
-              const code = input.value;
-              preview.empty();
-              if (code) {
-                this.plugin.typstManager.render(result, preview, 'inline');
+    dropdown.addOption('processors', 'Processors').addOption('converter', 'Converter');
+
+    const onChangeHandler = (value: string) => {
+      content.empty();
+      switch (value) {
+        case 'symbols':
+          content.createEl('iframe').src = 'https://typst.app/docs/reference/symbols/sym/';
+          break;
+        case 'packages':
+          content.createEl('iframe').src = 'https://typst.app/universe/search/';
+          break;
+        case 'converter': {
+          const dropdown = new DropdownComponent(content);
+          dropdown.addOption('tex2typst', 'tex2typst').addOption('mitex', 'MiTex');
+
+          const updatePreview = () => {
+            preview.empty();
+            this.plugin.typstManager.render(output.value, preview, 'inline');
+          };
+
+          const input = content.createEl('textarea');
+          input.placeholder = '(La)Tex';
+          input.addClass('typstmate-form-control');
+          input.addEventListener('input', async () => {
+            try {
+              switch (dropdown.getValue()) {
+                case 'tex2typst':
+                  output.value = tex2typst(input.value);
+                  break;
+                case 'mitex':
+                  output.value = await this.plugin.typst!.mitex(input.value);
+                  break;
               }
-            };
-
-            let result = '';
-            const input = item.createEl('textarea');
-            input.addClass('typstmate-form-control');
-
-            const output = item.createEl('textarea');
-            output.addClass('typstmate-form-control');
-            input.addEventListener('input', async () => {
-              const code = input.value;
-              try {
-                result = await this.plugin.typst!.mitex(code);
-                output.value = result;
-                updatePreview();
-              } catch (error) {
-                output.value = String(error);
-              }
-            });
-
-            const preview = item.createEl('div');
-            preview.addClass('typstmate-settings-preview-preview');
-
-            const button = item.createEl('button');
-            button.setText('Copy');
-            button.addClass('typstmate-button');
-            button.onClickEvent(async () => {
-              navigator.clipboard.writeText(`$${result}$`);
-            });
-
-            break;
-          }
-          case 'processors':
-            new ProcessorList(this.plugin, 'inline', item, 'Inline($...$) Processors', true);
-            new ProcessorList(this.plugin, 'display', item, 'Display($$...$$) Processors', true);
-            new ProcessorList(this.plugin, 'codeblock', item, 'CodeBlock(```...```) Processors', true);
-            if (this.plugin.excalidrawPluginInstalled) {
-              new ProcessorList(this.plugin, 'excalidraw', item, 'Excalidraw Processors', true);
+              updatePreview();
+            } catch (error) {
+              output.value = String(error);
             }
-            break;
+          });
+
+          const output = content.createEl('textarea');
+          output.placeholder = 'Typst';
+          output.addClass('typstmate-form-control');
+          output.addEventListener('input', async () => {
+            try {
+              switch (dropdown.getValue()) {
+                case 'tex2typst':
+                  input.value = typst2tex(output.value);
+                  break;
+                case 'mitex':
+                  return;
+              }
+              updatePreview();
+            } catch (error) {
+              input.value = String(error);
+            }
+          });
+
+          const preview = content.createEl('div');
+          preview.addClass('typstmate-settings-preview-preview');
+
+          const button = content.createEl('button');
+          button.setText('Copy');
+          button.addClass('typstmate-button');
+          button.onClickEvent(async () => {
+            navigator.clipboard.writeText(`$${output.value}$`);
+          });
+
+          break;
         }
-      });
+        case 'processors':
+          new ProcessorList(this.plugin, 'inline', content, 'Inline($...$) Processors', true);
+          new ProcessorList(this.plugin, 'display', content, 'Display($$...$$) Processors', true);
+          new ProcessorList(this.plugin, 'codeblock', content, 'CodeBlock(```...```) Processors', true);
+          if (this.plugin.excalidrawPluginInstalled) {
+            new ProcessorList(this.plugin, 'excalidraw', content, 'Excalidraw Processors', true);
+          }
+          break;
+      }
+    };
+    dropdown.onChange(onChangeHandler);
+
     new ButtonComponent(menuEl)
       .setIcon('refresh-ccw')
       .setTooltip('再読み込み')
       .onClick(() => {
         switch (dropdown.getValue()) {
           case 'symbols':
-            item.createEl('iframe').src = 'https://typst.app/docs/reference/symbols/sym/';
+            content.createEl('iframe').src = 'https://typst.app/docs/reference/symbols/sym/';
             break;
           case 'packages':
-            item.createEl('iframe').src = 'https://typst.app/universe/search/';
-            break;
-          case 'tex2typ':
-            item.createEl('iframe').src = 'https://mitex-rs.github.io/mitex/';
+            content.createEl('iframe').src = 'https://typst.app/universe/search/';
             break;
         }
       });
 
-    // iframe
-    const item = container.createEl('div');
-    item.className = 'typstmate-content';
+    // content
+    const content = container.createEl('div');
+    content.className = 'typstmate-content';
     if (Platform.isDesktop) {
-      const iframe = item.createEl('iframe');
-      iframe.src = 'https://typst.app/docs/reference/symbols/sym/';
+      dropdown.setValue('symbols');
+      onChangeHandler('symbols');
     } else {
-      new ProcessorList(this.plugin, 'inline', item, 'Inline($...$) Processors', true);
-      new ProcessorList(this.plugin, 'display', item, 'Display($$...$$) Processors', true);
-      new ProcessorList(this.plugin, 'codeblock', item, 'CodeBlock(```...```) Processors', true);
-      if (this.plugin.excalidrawPluginInstalled) {
-        new ProcessorList(this.plugin, 'excalidraw', item, 'Excalidraw Processors', true);
-      }
+      dropdown.setValue('converter');
+      onChangeHandler('converter');
     }
   }
 }

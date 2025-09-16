@@ -9,6 +9,7 @@
 		"comlink": "^4.4.2",
 		"nanoid": "^5.1.5",
 		"pako": "^2.1.0",
+		"tex2typst": "^0.3.23",
 		"untar-sync": "^1.0.4"
 	},
 	"devDependencies": {
