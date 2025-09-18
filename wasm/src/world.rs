@@ -1,7 +1,6 @@
-use std::{path::PathBuf, sync::Mutex};
+use std::{path::PathBuf, str::FromStr, sync::Mutex};
 
 use chrono::{DateTime, Datelike, FixedOffset, Local, Utc};
-use ecow::EcoString;
 use rustc_hash::{FxHashMap, FxHashSet};
 use send_wrapper::SendWrapper;
 use wasm_bindgen::{JsCast, JsValue};
@@ -9,12 +8,12 @@ use wasm_bindgen::{JsCast, JsValue};
 use typst::{
     Library, World,
     diag::{FileError, FileResult, PackageError},
-    ecow,
-    foundations::{Bytes, Datetime, Value},
+    foundations::{Bytes, Content, Datetime, Style, Value},
     layout::{Abs, Length},
     syntax::{FileId, Source, VirtualPath, package::PackageSpec},
-    text::{Font, FontBook},
+    text::{Font, FontBook, TextElem},
     utils::LazyHash,
+    visualize::{Color, Paint},
 };
 
 use crate::vfs::FileSlot;
@@ -48,7 +47,14 @@ impl WasmWorld {
 
         let mut library = Library::default();
         let fontsize_val = Value::Length(Length::from(Abs::pt(fontsize * 0.75)));
+
+        let cursor_text = TextElem::new("|".into());
+        let cursor_paint = Paint::Solid(Color::from_str("#00f").unwrap());
+        let cursor_style = Style::Property(TextElem::set_fill(cursor_paint));
+        let cursor_val = Value::Content(Content::new(cursor_text).styled(cursor_style));
+
         library.global.scope_mut().define("fontsize", fontsize_val);
+        library.global.scope_mut().define("CURSOR", cursor_val);
 
         Self {
             main,
@@ -147,14 +153,14 @@ impl WasmWorld {
                     _ => FileError::Other(Some("unexpected error".into())),
                 };
             }
-            FileError::Other(e.as_string().map(EcoString::from))
+            FileError::Other(e.as_string().map(Into::into))
         };
 
         self.fetch(rpath.clone()).map_err(f).and_then(|js_value| {
             if let Some(u8arr) = js_value.dyn_ref::<js_sys::Uint8Array>() {
                 Ok(Bytes::new(u8arr.to_vec()))
             } else {
-                Err(FileError::Other(Some(EcoString::from("unexpected error"))))
+                Err(FileError::Other(Some("unexpected error".into())))
             }
         })
     }

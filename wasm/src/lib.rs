@@ -1,4 +1,3 @@
-use ecow::EcoString;
 use js_sys::{ArrayBuffer, Uint8Array};
 use mitex::convert_math;
 use rustc_hash::FxHashMap;
@@ -8,7 +7,6 @@ use wasm_bindgen::prelude::*;
 use typst::{
     World,
     diag::Warned,
-    ecow,
     foundations::Bytes,
     layout::PagedDocument,
     syntax::{
@@ -89,8 +87,8 @@ impl Typst {
                 let patch: u32 = v_parts.next().unwrap().parse().unwrap();
 
                 let spec = PackageSpec {
-                    namespace: EcoString::from(namespace),
-                    name: EcoString::from(name),
+                    namespace: namespace.into(),
+                    name: name.into(),
                     version: PackageVersion {
                         major,
                         minor,
