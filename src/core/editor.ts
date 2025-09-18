@@ -48,10 +48,6 @@ export class EditorHelper {
   }
 
   updatePreview(editor: Editor): void {
-    this.removePreview();
-
-    if (this.shouldSkipPreview(editor)) return;
-
     const mathContent = this.extractMathContent(editor);
     if (!mathContent) return;
 
@@ -194,6 +190,9 @@ export class EditorHelper {
 
   onEditorChange(editor: Editor, _markdownView: MarkdownView) {
     if (!this.plugin.settings.enableInlinePreview) return;
+    this.removePreview();
+    if (this.shouldSkipPreview(editor)) return;
+
     this.updatePreview(editor);
   }
 }

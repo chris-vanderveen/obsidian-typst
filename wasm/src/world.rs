@@ -46,12 +46,14 @@ impl WasmWorld {
         }
 
         let mut library = Library::default();
-        let fontsize_val = Value::Length(Length::from(Abs::pt(fontsize * 0.75)));
 
-        let cursor_text = TextElem::new("|".into());
+        let fontsize_abs = Abs::pt(fontsize);
+        let fontsize_val = Value::Length(fontsize_abs.into());
+
+        let cursor_elem = TextElem::new("|".into());
         let cursor_paint = Paint::Solid(Color::from_str("#00f").unwrap());
         let cursor_style = Style::Property(TextElem::set_fill(cursor_paint));
-        let cursor_val = Value::Content(Content::new(cursor_text).styled(cursor_style));
+        let cursor_val = Value::Content(Content::new(cursor_elem).styled(cursor_style));
 
         library.global.scope_mut().define("fontsize", fontsize_val);
         library.global.scope_mut().define("CURSOR", cursor_val);

@@ -6,6 +6,7 @@ import type ObsidianTypstMate from '@/main';
 import { FontList } from './settings/font';
 import { PackagesList } from './settings/package';
 import { ProcessorList } from './settings/processor';
+import type { Snippet } from '@/lib/snippet';
 
 import './settings.css';
 
@@ -33,6 +34,7 @@ export interface Settings {
       processors: ExcalidrawProcessor[];
     };
   };
+  snippets: Snippet[];
 }
 export const DEFAULT_SETTINGS: Settings = {
   enableBackgroundRendering: true,
@@ -142,6 +144,15 @@ export const DEFAULT_SETTINGS: Settings = {
       ],
     },
   },
+  snippets: [
+    {
+      category: 'integral',
+      name: 'intx',
+      processor_kind: 'inline',
+      processor_id: 'ce',
+      content: 'integral #CURSOR dif',
+    },
+  ],
 };
 
 export class SettingTab extends PluginSettingTab {

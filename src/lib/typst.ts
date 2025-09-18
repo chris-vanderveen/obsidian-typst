@@ -158,6 +158,8 @@ export default class TypstManager {
 
         break;
       case 'display':
+        code = code.replaceAll(/\n[\s\t]*> /g, '\n');
+
         processor =
           this.plugin.settings.processor.display?.processors.find((p) => code.startsWith(`${p.id}`)) ??
           DEFAULT_SETTINGS.processor.display?.processors.at(-1)!;
