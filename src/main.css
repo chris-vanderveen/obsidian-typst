@@ -1,0 +1,15 @@
+/*
+ * 参照: Typst -- `js typst_assets::fonts()`
+ * 参照: MathJax -- `rs MathJax.chtmlStylesheet()`
+ * MathJax のフォントは, JS 側の関数による副作用で自動的に読み込まれる
+ */
+@font-face {
+  font-family: "NewComputerModernMath";
+  src: url("https://mirrors.ctan.org/fonts/newcomputermodern/otf/NewCMMono10-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.typstmate__symbol {
+  font-family: "NewComputerModernMath", "MJXZERO", "MJXTEX-S1", "MJXTEX-S4", "MJXTEX", "MJXTEX-A", monospace;
+}

@@ -1,7 +1,7 @@
-import { DiagnosticModal } from '@/core/modals/diagnostic';
-import type { Processor, ProcessorKind } from '@/lib/processor';
-import type { Diagnostic, SVGResult } from '@/lib/worker';
+import type { Processor, ProcessorKind } from '@/libs/processor';
+import type { Diagnostic, SVGResult } from '@/libs/worker';
 import type ObsidianTypstMate from '@/main';
+import { DiagnosticModal } from '@/ui/modals/diagnostic';
 
 export default class TypstElement extends HTMLElement {
   kind!: ProcessorKind;

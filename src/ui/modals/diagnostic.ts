@@ -1,6 +1,6 @@
 import { type App, Modal, Setting } from 'obsidian';
 
-import type { Diagnostic } from '@/lib/worker';
+import type { Diagnostic } from '@/libs/worker';
 
 export class DiagnosticModal extends Modal {
   constructor(app: App, diagnosticArray: Diagnostic[]) {

@@ -1,12 +1,12 @@
 import { type App, debounce, Notice, Platform, PluginSettingTab, Setting } from 'obsidian';
 
-import type { CodeblockProcessor, DisplayProcessor, ExcalidrawProcessor, InlineProcessor } from '@/lib/processor';
-import { buildDocumentFragment } from '@/lib/util';
+import type { CodeblockProcessor, DisplayProcessor, ExcalidrawProcessor, InlineProcessor } from '@/libs/processor';
+import type { Snippet } from '@/libs/snippet';
 import type ObsidianTypstMate from '@/main';
+import { CustomFragment } from '@/utils/customFragment';
 import { FontList } from './settings/font';
 import { PackagesList } from './settings/package';
 import { ProcessorList } from './settings/processor';
-import type { Snippet } from '@/lib/snippet';
 
 import './settings.css';
 
@@ -34,7 +34,9 @@ export interface Settings {
       processors: ExcalidrawProcessor[];
     };
   };
-  snippets: Snippet[];
+  snippets?: Snippet[];
+  complementSymbol?: boolean;
+  complementSymbolWithUnicode?: boolean;
 }
 export const DEFAULT_SETTINGS: Settings = {
   enableBackgroundRendering: true,
@@ -146,13 +148,42 @@ export const DEFAULT_SETTINGS: Settings = {
   },
   snippets: [
     {
-      category: 'integral',
-      name: 'intx',
-      processor_kind: 'inline',
-      processor_id: 'ce',
-      content: 'integral #CURSOR dif',
+      category: 'Matrix',
+      name: 'mat',
+      kind: 'display',
+      id: '',
+      content:
+        'const parts = v.split(",").map(s => s.trim()); const x = Number(parts[0]); const y = Number(parts[1]); const rowText = `${("#CURSOR, ".repeat(x)).slice(0, -2)} ;\\n`; const contentText = `  ${rowText}`.repeat(y); return `mat(\\n${contentText})`;',
+      script: true,
+    },
+    {
+      category: 'Matrix',
+      name: 'matf',
+      kind: 'display',
+      id: '',
+      content:
+        'const parts = v.split(",").map(s => s.trim()); const x = Number(parts[0]); const y = Number(parts[1]); const rowText = `${("#CURSOR, ".repeat(x)).slice(0, -2)} ;\\n`; const contentText = `  ${rowText}`.repeat(y); return `mat(\\n${contentText})`;',
+      script: true, // TODO
+    },
+    {
+      category: 'Cases',
+      name: 'cases',
+      kind: 'display',
+      id: '',
+      content: 'cases(#CURSOR "if" #CURSOR, #CURSOR "else",)',
+      script: false,
+    },
+    {
+      category: 'Cases',
+      name: 'casesn',
+      kind: 'display',
+      id: '',
+      content: 'cases(#CURSOR "if" #CURSOR, #CURSOR "else",)',
+      script: true, // TODO
     },
   ],
+  complementSymbol: true,
+  complementSymbolWithUnicode: true,
 };
 
 export class SettingTab extends PluginSettingTab {
@@ -190,9 +221,10 @@ export class SettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName('Enable Background Rendering')
       .setDesc(
-        buildDocumentFragment(
-          'The UI will no longer freeze, but *it may conflict with plugins related to export or rendering*.',
-        ),
+        new CustomFragment()
+          .appendText('The UI will no longer freeze, but ')
+          .appendText('it may conflict with plugins related to export or rendering')
+          .appendText('.'),
       )
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.enableBackgroundRendering);
@@ -221,9 +253,24 @@ export class SettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName('Processor')
       .setDesc(
-        buildDocumentFragment(
-          'In each mode, the first matching Processor ID from the top will be used. An empty Processor ID means the default and should be placed at the bottom. In the format, `{CODE}` can be used (only the first occurrence is replaced), and `fontsize` can be used as an internal length value. In inline mode, separate the id and the code with a colon `:`. When adding or removing processors for codeblock mode, reload the plugin to apply changes. *IDs should not contain any special characters!* For more details, see [this](https://github.com/azyarashi/obsidian-typst-mate/blob/main/Processor.md).',
-        ),
+        new CustomFragment()
+          .appendText(
+            'In each mode, the first matching Processor ID from the top will be used. An empty Processor ID means the default and should be placed at the bottom. In the format, ',
+          )
+          .appendCodeText('{CODE}')
+          .appendText(' can be used (only the first occurrence is replaced), and ')
+          .appendCodeText('fontsize')
+          .appendText(
+            ' can be used as an internal length value. In inline mode, separate the id and the code with a colon ',
+          )
+          .appendCodeText(':')
+          .appendText(
+            ' in the format. When adding or removing processors for codeblock mode, reload the plugin to apply changes. ',
+          )
+          .appendBoldText('IDs should not contain any special characters!')
+          .appendText(' For more details, see ')
+          .appendLinkText('Processor.md', 'https://github.com/azyarashi/obsidian-typst-mate/blob/main/Processor.md')
+          .appendText('.'),
       )
       .setHeading();
 
@@ -437,9 +484,12 @@ export class SettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName('Base Color')
       .setDesc(
-        buildDocumentFragment(
-          'Replace black in SVGs with another color. This is useful when using a dark theme. To enable this, you need to disable the `Use Theme Text Color` setting.',
-        ),
+        new CustomFragment()
+          .appendText(
+            'Replace black in SVGs with another color. This is useful when using a dark theme. To enable this, you need to disable the ',
+          )
+          .appendCodeText('Use Theme Text Color')
+          .appendText(' setting.'),
       )
       .addColorPicker((colorPicker) => {
         colorPicker.setValue(this.plugin.settings.baseColor);
@@ -452,9 +502,10 @@ export class SettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName('Enable MathJax Fallback')
       .setDesc(
-        buildDocumentFragment(
-          'Not recommended for performance reasons. When enabled, *Typst errors, warnings, and hints will be unavailable.*',
-        ),
+        new CustomFragment()
+          .appendText('Not recommended for performance reasons. When enabled, ')
+          .appendBoldText('Typst errors, warnings, and hints will be unavailable.')
+          .appendText(''),
       )
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.enableMathjaxFallback);
@@ -497,5 +548,25 @@ export class SettingTab extends PluginSettingTab {
           this.plugin.saveSettings();
         });
       });
+
+    new Setting(containerEl).setName('Complement Symbol').addToggle((toggle) => {
+      toggle.setValue(this.plugin.settings.complementSymbol ?? DEFAULT_SETTINGS.complementSymbol!);
+      toggle.onChange((value) => {
+        this.plugin.settings.complementSymbol = value;
+        this.plugin.saveSettings();
+      });
+    });
+
+    new Setting(containerEl).setName('Complement Symbol with Unicode').addToggle((toggle) => {
+      toggle.setValue(
+        this.plugin.settings.complementSymbolWithUnicode ?? DEFAULT_SETTINGS.complementSymbolWithUnicode!,
+      );
+      toggle.onChange((value) => {
+        this.plugin.settings.complementSymbolWithUnicode = value;
+        this.plugin.saveSettings();
+      });
+    });
+
+    // TODO
   }
 }

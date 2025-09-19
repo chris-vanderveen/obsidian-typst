@@ -8,6 +8,12 @@ Render math expressions in [Obsidian](https://obsidian.md) using [Typst](https:/
 
 [![TypstMate](https://raw.githubusercontent.com/azyarashi/obsidian-typst-mate/main/assets/demo.png)](#demo)
 
+<!-- TODO
+Symbol completion        | Snippet / Script
+:-----------------------:|:------------------------:
+![Symbol completion]() | ![Snippet / Script]()
+-->
+
 For details about the processor, see [Processor.md](https://github.com/azyarashi/obsidian-typst-mate/blob/main/Processor.md).
 
 ---
@@ -16,6 +22,10 @@ For details about the processor, see [Processor.md](https://github.com/azyarashi
 
 - Support *inline math*, *display math*, and *code blocks*
 - Support **preamble** and **templates** (called processors)
+<!-- TODO
+- **Snippets** / **Scripts** (coming soon)
+- **Symbol completion** (coming soon)
+-->
 - **Inline math preview**
 - **Available on mobile app**
 - Offer **background rendering**
@@ -32,6 +42,7 @@ For details about the processor, see [Processor.md](https://github.com/azyarashi
 - Typst Tools
   - Symbols viewer
   - Packages viewer
+  - Snippets editor
   - Processors editor
   - Bidirectional converter between TeX/LaTeX and Typst ([MiTex](https://github.com/mitex-rs/mitex) / [tex2typst](https://github.com/qwinsi/tex2typst)) (Typst to TeX/LaTeX conversion is `tex2typst` mode only)
 

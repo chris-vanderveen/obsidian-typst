@@ -1,8 +1,8 @@
 import { Notice, Platform, Setting } from 'obsidian';
 
-import { FontModal } from '@/core/modals/font';
-import { hashLike } from '@/lib/util';
 import type ObsidianTypstMate from '@/main';
+import { FontModal } from '@/ui/modals/font';
+import { hashLike } from '@/utils/hashLike';
 
 export class FontList {
   plugin: ObsidianTypstMate;

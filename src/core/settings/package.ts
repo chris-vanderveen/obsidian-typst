@@ -1,5 +1,6 @@
 import { Notice, Platform, Setting } from 'obsidian';
-import type { PackageSpec } from '@/lib/worker';
+
+import type { PackageSpec } from '@/libs/worker';
 import type ObsidianTypstMate from '@/main';
 
 interface PackageSpecWithRPath extends PackageSpec {

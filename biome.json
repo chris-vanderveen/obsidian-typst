@@ -56,6 +56,6 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["src/**", "scripts/version.ts", "vite.config.ts", "postcss.config.cjs"]
+    "includes": ["src/**", "scripts/*", "vite.config.ts", "postcss.config.cjs"]
   }
 }

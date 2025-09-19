@@ -1,10 +1,10 @@
 import { ButtonComponent, DropdownComponent, ItemView, Platform, type WorkspaceLeaf } from 'obsidian';
 import { tex2typst, typst2tex } from 'tex2typst';
 
+import { ProcessorList } from '@/core/settings/processor';
 import type ObsidianTypstMate from '@/main';
-import { ProcessorList } from './settings/processor';
 
-import './leaf.css';
+import './typst-tools.css';
 
 export class TypstToolsView extends ItemView {
   static viewtype = 'typst-tools';
@@ -40,7 +40,10 @@ export class TypstToolsView extends ItemView {
     if (Platform.isDesktop) {
       dropdown.addOption('symbols', 'Symbols').addOption('packages', 'Packages');
     }
-    dropdown.addOption('processors', 'Processors').addOption('converter', 'Converter');
+    dropdown
+      .addOption('snippets', 'Snippets')
+      .addOption('converter', 'Converter')
+      .addOption('processors', 'Processors');
 
     const onChangeHandler = (value: string) => {
       content.empty();
@@ -51,6 +54,63 @@ export class TypstToolsView extends ItemView {
         case 'packages':
           content.createEl('iframe').src = 'https://typst.app/universe/search/';
           break;
+        case 'snippets': {
+          const dropdown = new DropdownComponent(content);
+          const options = this.plugin.settings.snippets?.map((snippet) => snippet.name) ?? [];
+          dropdown.addOption('', 'ALL');
+          dropdown.addOptions(Object.fromEntries(options.map((name) => [name, name])));
+          dropdown.setValue('');
+
+          const snippetsEl = content.createEl('div');
+          const renderSnippets = () => {
+            snippetsEl.empty();
+            const category = dropdown.getValue();
+            const snippets =
+              category === ''
+                ? (this.plugin.settings.snippets ?? [])
+                : (this.plugin.settings.snippets?.filter((snippet) => snippet.name === category) ?? []);
+            snippets.forEach((snippet) => {
+              const snippetEl = snippetsEl.createEl('div');
+              snippetEl.className = 'typstmate-snippet';
+              snippetEl.createEl('div', { text: `${snippet.name}` });
+              snippetEl.createEl('div', { text: `${snippet.kind}` });
+
+              const preview = snippetEl.createEl('div');
+              let content: string;
+              switch (snippet.kind) {
+                case 'inline':
+                  content = `${snippet.id}${snippet.id === '' ? '' : ':'}${snippet.content}`;
+                  break;
+                case 'display':
+                  content = `${snippet.id}\n${snippet.content}\n`;
+                  break;
+                case 'codeblock':
+                  content = snippet.content;
+                  break;
+              }
+              this.plugin.typstManager.render(content, preview, snippet.kind);
+
+              preview.onClickEvent(() => {
+                switch (snippet.kind) {
+                  case 'inline':
+                    navigator.clipboard.writeText(`$${content}$`);
+                    break;
+                  case 'display':
+                    navigator.clipboard.writeText(`$$${content}$$`);
+                    break;
+                  case 'codeblock':
+                    navigator.clipboard.writeText(content);
+                    break;
+                }
+              });
+
+              snippetEl.createEl('hr');
+            });
+          };
+          renderSnippets();
+          dropdown.onChange(renderSnippets);
+          break;
+        }
         case 'converter': {
           const dropdown = new DropdownComponent(content);
           dropdown.addOption('tex2typst', 'tex2typst').addOption('mitex', 'MiTex');

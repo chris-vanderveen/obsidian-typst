@@ -14,18 +14,19 @@ import {
   requestUrl,
   type WorkspaceLeaf,
 } from 'obsidian';
-
-import ExcalidrawPlugin from './core/ea';
 import { EditorHelper } from './core/editor';
-import { TypstToolsView } from './core/leaf';
-import { ExcalidrawModal } from './core/modals/excalidraw';
 import { DEFAULT_SETTINGS, type Settings, SettingTab } from './core/settings';
-import { ParentResizeService } from './lib/observer';
-import TypstManager from './lib/typst';
-import { zip } from './lib/util';
-import type $ from './lib/worker';
-import Typst from './lib/worker';
-import TypstWorker from './lib/worker?worker&inline';
+import ExcalidrawPlugin from './extensions/excalidraw';
+import TypstManager from './libs/typst';
+import type $ from './libs/worker';
+import Typst from './libs/worker';
+import TypstWorker from './libs/worker?worker&inline';
+import { ExcalidrawModal } from './ui/modals/excalidraw';
+import { TypstToolsView } from './ui/views/typstTools';
+import { zip } from './utils/packageCompressor';
+import { ParentResizeService } from './utils/parentWidthObserver';
+
+import './main.css';
 
 export default class ObsidianTypstMate extends Plugin {
   pluginId = 'typst-mate';
@@ -50,7 +51,7 @@ export default class ObsidianTypstMate extends Plugin {
   excalidraw?: ExcalidrawPlugin;
   excalidrawPluginInstalled = false;
 
-  private editorHelper!: EditorHelper;
+  editorHelper!: EditorHelper;
 
   fs?: typeof fsModule;
   os?: typeof osModule;
@@ -97,6 +98,7 @@ export default class ObsidianTypstMate extends Plugin {
       this.addSettingTab(new SettingTab(this.app, this));
       // EditorHelper を初期化
       this.editorHelper = new EditorHelper(this);
+      if (document.body.getAttribute('typstmate-loaded') === 'true') this.editorHelper.appendChildren();
       // Typst Tools を登録
       this.registerView(TypstToolsView.viewtype, (leaf) => new TypstToolsView(leaf, this));
       this.activateLeaf();
@@ -160,7 +162,7 @@ export default class ObsidianTypstMate extends Plugin {
         'Failed to initialize Typst. Please check that the processor ID does not contain any symbols, try clearing the package cache, and ensure that there are no invalid fonts installed.',
       );
     });
-    await this.typstManager.registerOnce();
+    this.typstManager.registerOnce();
   }
 
   private async downloadWasm(wasmPath: string, version: string) {
@@ -247,6 +249,7 @@ export default class ObsidianTypstMate extends Plugin {
       this.app.workspace.on('css-change', this.applyBaseColor.bind(this)),
       this.app.workspace.on('editor-change', this.editorHelper.onEditorChange.bind(this.editorHelper)),
       this.app.workspace.on('active-leaf-change', this.editorHelper.removePreview.bind(this)),
+      this.app.workspace.on('layout-ready', this.editorHelper.appendChildren.bind(this.editorHelper)),
     );
   }
 
@@ -329,9 +332,14 @@ export default class ObsidianTypstMate extends Plugin {
   }
 
   override async onunload() {
+    // TODO: 要素を削除
+    const temporaryElements = document.querySelectorAll('.typstmate-temporary');
+    for (const el of temporaryElements) el.remove();
+
     // 監視を終了
     this.observer?.stopAll();
     this.listeners.forEach(this.app.workspace.offref.bind(this.app.workspace));
+    document.removeEventListener('keydown', this.editorHelper.keyListener, { capture: true });
 
     // Worker を終了
     this.worker?.terminate();

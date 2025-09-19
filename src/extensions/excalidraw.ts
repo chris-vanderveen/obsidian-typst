@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 import type { Plugin } from 'obsidian';
 import type { ExcalidrawAutomate } from 'obsidian-excalidraw-plugin/docs/API/ExcalidrawAutomate';
 
-import type { ExcalidrawProcessor } from '@/lib/processor';
+import type { ExcalidrawProcessor } from '@/libs/processor';
 import type ObsidianTypstMate from '@/main';
 
 export default class ExcalidrawPlugin {

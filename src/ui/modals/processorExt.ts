@@ -1,8 +1,8 @@
 import { type App, Modal, Setting } from 'obsidian';
 
-import type { ProcessorKind } from '@/lib/processor';
-import { buildDocumentFragment } from '@/lib/util';
+import type { ProcessorKind } from '@/libs/processor';
 import type ObsidianTypstMate from '@/main';
+import { CustomFragment } from '@/utils/customFragment';
 
 export class ProcessorModal extends Modal {
   constructor(app: App, plugin: ObsidianTypstMate, kind: ProcessorKind, id: string) {
@@ -13,7 +13,7 @@ export class ProcessorModal extends Modal {
 
     new Setting(this.contentEl).setName(processor.id).setHeading();
 
-    // Preamble 設定
+    // Preamble
     new Setting(this.contentEl).setName(`Use preamble`).addToggle((toggle) => {
       toggle.setValue(!processor.noPreamble);
 
@@ -23,13 +23,21 @@ export class ProcessorModal extends Modal {
       });
     });
 
-    // Fit to parent width 設定
+    // Width 自動調整
     new Setting(this.contentEl)
       .setName('Fit to parent width')
       .setDesc(
-        buildDocumentFragment(
-          "Monitors changes in the parent element's size, adds a line at the beginning of the code declaring length: `WIDTH`, and replaces `width: auto` with `width: WIDTH`. This can only be used when background rendering is enabled, and *it may not work correctly with some plugin/export functions*.",
-        ),
+        new CustomFragment()
+          .appendText(
+            "Monitors changes in the parent element's size, adds a line at the beginning of the code declaring length: ",
+          )
+          .appendCodeText('WIDTH')
+          .appendText('and replaces ')
+          .appendCodeText('width: auto')
+          .appendText('with ')
+          .appendCodeText('width: WIDTH')
+          .appendText('. This can only be used when background rendering is enabled, and ')
+          .appendBoldText('it may not work correctly with some plugin/export functions'),
       )
       .addToggle((toggle) => {
         toggle.setValue(processor.fitToParentWidth ?? false);

@@ -6,9 +6,9 @@ import {
   type ProcessorKind,
   type RenderingEngine,
   type Styling,
-} from '@/lib/processor';
+} from '@/libs/processor';
 import type ObsidianTypstMate from '@/main';
-import { ProcessorModal } from '../modals/processorExt';
+import { ProcessorModal } from '@/ui/modals/processorExt';
 
 export class ProcessorList {
   plugin: ObsidianTypstMate;

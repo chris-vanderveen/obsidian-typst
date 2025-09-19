@@ -1,25 +1,16 @@
 import { Notice } from 'obsidian';
-
-import TypstSVGElement from '@/components/SVG';
 import { DEFAULT_SETTINGS } from '@/core/settings';
 import type ObsidianTypstMate from '@/main';
+import InlinePreviewElement from '@/ui/components/InlinePreview';
+import SnippetSuggestElement from '@/ui/components/SnippetSuggest';
+import TypstSVGElement from '@/ui/components/SVG';
+import SymbolSuggestElement from '@/ui/components/SymbolSuggest';
+import { overwriteCustomElements } from '@/utils/custromElementRegistry';
+import { unzip, zip } from '@/utils/packageCompressor';
 import type { Processor, ProcessorKind } from './processor';
-import { unzip, zip } from './util';
 import type { PackageSpec } from './worker';
 
 import './typst.css';
-
-function customElementsRedefine(name: string, ctor: typeof HTMLElement) {
-  const registry = window.customElements;
-  const existing = registry.get(name);
-
-  if (existing && existing !== ctor) {
-    Object.setPrototypeOf(existing.prototype, ctor.prototype);
-    Object.setPrototypeOf(existing, ctor);
-  } else if (!existing) {
-    registry.define(name, ctor);
-  }
-}
 
 export default class TypstManager {
   plugin: ObsidianTypstMate;
@@ -102,8 +93,11 @@ export default class TypstManager {
     }
   }
 
-  async registerOnce() {
-    customElementsRedefine('typstmate-svg', TypstSVGElement);
+  registerOnce() {
+    overwriteCustomElements('typstmate-svg', TypstSVGElement);
+    overwriteCustomElements('typstmate-symbols', SymbolSuggestElement);
+    overwriteCustomElements('typstmate-snippets', SnippetSuggestElement);
+    overwriteCustomElements('typstmate-inline-preview', InlinePreviewElement);
 
     // コードブロックプロセッサーをオーバライド
     for (const processor of this.plugin.settings.processor.codeblock?.processors ?? []) {
@@ -114,10 +108,10 @@ export default class TypstManager {
             el.addClass('typstmate-waiting');
             el.setAttribute('kind', processor.id);
 
-            return el;
+            return Promise.resolve(el as HTMLElement);
           }
 
-          return this.render(source, el, processor.id);
+          return Promise.resolve(this.render(source, el, processor.id));
         });
       } catch {
         new Notice(`Already registered codeblock language: ${processor.id}`);
@@ -143,7 +137,7 @@ export default class TypstManager {
     };
   }
 
-  render(code: string, containerEl: Element, kind: string) {
+  render(code: string, containerEl: Element, kind: string): HTMLElement {
     // プロセッサーを決定
     let processor: Processor;
     switch (kind) {
@@ -200,7 +194,7 @@ export default class TypstManager {
     containerEl.appendChild(t);
     t.render();
 
-    return containerEl;
+    return containerEl as HTMLElement;
   }
 
   private format(processer: Processor, code: string) {
