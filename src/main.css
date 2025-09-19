@@ -1,6 +1,6 @@
 /*
- * 参照: Typst -- `js typst_assets::fonts()`
- * 参照: MathJax -- `rs MathJax.chtmlStylesheet()`
+ * 参照: Typst -- `rs typst_assets::fonts()`
+ * 参照: MathJax -- `js MathJax.chtmlStylesheet()`
  * MathJax のフォントは, JS 側の関数による副作用で自動的に読み込まれる
  */
 @font-face {

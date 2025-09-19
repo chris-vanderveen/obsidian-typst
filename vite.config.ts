@@ -13,16 +13,8 @@ export default defineConfig(async ({ mode }) => {
       prod
         ? viteStaticCopy({
             targets: [
-              {
-                src: `typst.wasm`,
-                dest: '',
-                rename: `typst-${version}.wasm`,
-              },
-              {
-                src: 'manifest.json',
-                dest: '',
-                rename: 'manifest.json',
-              },
+              { src: `typst.wasm`, rename: `typst-${version}.wasm`, dest: '' },
+              { src: 'manifest.json', rename: 'manifest.json', dest: '' },
             ],
           })
         : undefined,
