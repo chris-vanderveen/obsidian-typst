@@ -69,12 +69,16 @@ export class EditorHelper {
   private onKeyDown(e: KeyboardEvent) {
     if (e.key === 'Tab') {
       if (this.snippetSuggestEl.isOpen || this.symbolSuggestEl.isOpen) return;
-      if (!isCursorDisplayMath(this.editor!)) return;
+      if (!isCursorDisplayMath()) return;
+
       const cursor = this.editor?.getCursor();
       if (!cursor) return;
       const lineText = this.editor?.getLine(cursor.line);
-      if (!lineText) return;
-      const cursorIndex = lineText.indexOf('#CURSOR', 0);
+      const cursorIndex = lineText?.indexOf('#CURSOR');
+      // ? 初めの #CURSOR は別で置き換わるので, cursorIndex === 0 は気にしなくていい
+      if (!cursorIndex) return;
+
+      // ない場合は次の行へ
       if (cursorIndex === -1) {
         e.preventDefault();
         this.editor?.setCursor({
@@ -83,6 +87,8 @@ export class EditorHelper {
         });
         return;
       }
+
+      // ある場合は置き換える
       e.preventDefault();
       this.replaceLength(
         this.editor!,
@@ -106,6 +112,7 @@ export class EditorHelper {
 
   onEditorChange(editor: Editor, _markdownView: MarkdownView) {
     this.editor = editor;
+    if (!getSelection()!.isCollapsed) return; // 選択されている
     if (!this.plugin.settings.enableInlinePreview) return;
     if (this.shouldSkipPreview(editor)) return;
 
@@ -124,37 +131,17 @@ export class EditorHelper {
     const lineText = editor.getLine(cursor.line);
     const textBeforeCursor = lineText.slice(0, cursor.ch);
     const textAfterCursor = lineText.slice(cursor.ch);
-    const totalUnescapedDollarsBefore = this.countUnescapedDollarsInDocument(editor, cursor.line, cursor.ch);
-    const inDisplayMath = isCursorDisplayMath(editor);
-
-    let skipFlag = false;
-
-    // カーソル行中に$がない ... インライン数式内ではない
-    if (textBeforeCursor.indexOf('$') === -1 && textAfterCursor.indexOf('$') === -1) {
-      if (!inDisplayMath) {
-        this.removeSuggest();
-        return null;
-      }
-      skipFlag = true;
-    }
-
-    // カーソル行中カーソル前にある$が偶数 ... インライン数式内ではない
-    if (totalUnescapedDollarsBefore % 2 === 0) {
-      this.removeSuggest();
-      skipFlag = true;
-    }
 
     const lastDollarBefore = textBeforeCursor.lastIndexOf('$');
     const firstDollarAfter = textAfterCursor.indexOf('$');
 
-    // 行中に$がない かつディスプレイ数式ではない
-    if (
-      (lastDollarBefore === -1 ||
-        firstDollarAfter === -1 ||
-        this.hasUnescapedDollar(textBeforeCursor, lastDollarBefore)) &&
-      !inDisplayMath
-    )
-      return null;
+    // 数式内にいない
+    if (!isCursorMath()) return null;
+
+    const inDisplay = isCursorDisplayMath();
+
+    // インライン数式の範囲外
+    if (!inDisplay && (lastDollarBefore === -1 || firstDollarAfter === -1)) return null;
 
     // snippet / symbol
     if (textBeforeCursor.endsWith('@') && !textBeforeCursor.startsWith('#import')) {
@@ -188,7 +175,8 @@ export class EditorHelper {
       }
     }
 
-    if (skipFlag) return null;
+    // ディスプレイ数式中
+    if (inDisplay) return null;
 
     this.symbolSuggestEl.close();
     const mathContent = textBeforeCursor.slice(lastDollarBefore + 1) + textAfterCursor.slice(0, firstDollarAfter);
@@ -198,57 +186,6 @@ export class EditorHelper {
       startIndex: lastDollarBefore + 1,
       endIndex: cursor.ch + firstDollarAfter,
     };
-  }
-
-  private countUnescapedDollarsInDocument(editor: Editor, currentLine: number, currentCh: number): number {
-    let totalCount = 0;
-
-    for (let line = 0; line < currentLine; line++) {
-      const lineText = editor.getLine(line);
-      totalCount += this.countUnescapedDollarsInLine(lineText);
-    }
-
-    const currentLineText = editor.getLine(currentLine).slice(0, currentCh);
-    totalCount += this.countUnescapedDollarsInLine(currentLineText);
-
-    return totalCount;
-  }
-
-  private countUnescapedDollarsInLine(text: string): number {
-    let count = 0;
-    let backslashCount = 0;
-    let i = 0;
-
-    while (i < text.length) {
-      const char = text[i];
-
-      if (char === '\\') {
-        backslashCount++;
-        i++;
-        continue;
-      }
-
-      if (char === '$') {
-        if (backslashCount % 2 === 0) {
-          count++;
-        }
-        backslashCount = 0;
-      } else if (char !== '\\') {
-        backslashCount = 0;
-      }
-
-      i++;
-    }
-
-    return count;
-  }
-
-  private hasUnescapedDollar(text: string, dollarIndex: number): boolean {
-    let backslashCount = 0;
-    for (let i = dollarIndex - 1; i >= 0 && text[i] === '\\'; i--) {
-      backslashCount++;
-    }
-    return backslashCount % 2 === 1;
   }
 
   private suggestSnippets(editor: Editor, find: boolean) {
@@ -388,7 +325,7 @@ export class EditorHelper {
 
   removeSuggest(): void {
     this.symbolSuggestEl?.close();
-    this.snippetSuggestEl?.close();
+    // this.snippetSuggestEl?.close();
   }
 
   replaceLength(editor: Editor, content: string, from: EditorPosition, length: number): number {
@@ -400,18 +337,12 @@ export class EditorHelper {
   }
 }
 
-function isCursorDisplayMath(editor: Editor): boolean {
-  const cursor = editor.getCursor();
-  let inBlock = false;
+function isCursorDisplayMath(): boolean {
+  return document.body.querySelector('span.cm-formatting-math.cm-math-block') !== null;
+}
 
-  for (let i = cursor.line - 1; i >= 0; i--) {
-    const line = editor.getLine(i);
-    const trimmedLine = line.trim();
-
-    if (trimmedLine.startsWith('$$')) inBlock = !inBlock;
-  }
-
-  return inBlock;
+function isCursorMath(): boolean {
+  return document.body.querySelector('span.cm-formatting-math') !== null;
 }
 
 function isCursorInCodeBlock(editor: Editor): boolean {
