@@ -56,7 +56,7 @@ export class TypstToolsView extends ItemView {
           break;
         case 'snippets': {
           const dropdown = new DropdownComponent(content);
-          const options = this.plugin.settings.snippets?.map((snippet) => snippet.name) ?? [];
+          const options = this.plugin.settings.snippets?.map((snippet) => snippet.category) ?? [];
           dropdown.addOption('', 'ALL');
           dropdown.addOptions(Object.fromEntries(options.map((name) => [name, name])));
           dropdown.setValue('');
@@ -68,7 +68,7 @@ export class TypstToolsView extends ItemView {
             const snippets =
               category === ''
                 ? (this.plugin.settings.snippets ?? [])
-                : (this.plugin.settings.snippets?.filter((snippet) => snippet.name === category) ?? []);
+                : (this.plugin.settings.snippets?.filter((snippet) => snippet.category === category) ?? []);
             snippets.forEach((snippet) => {
               const snippetEl = snippetsEl.createEl('div');
               snippetEl.className = 'typstmate-snippet';
@@ -77,18 +77,22 @@ export class TypstToolsView extends ItemView {
 
               const preview = snippetEl.createEl('div');
               let content: string;
-              switch (snippet.kind) {
-                case 'inline':
-                  content = `${snippet.id}${snippet.id === '' ? '' : ':'}${snippet.content}`;
-                  break;
-                case 'display':
-                  content = `${snippet.id}\n${snippet.content}\n`;
-                  break;
-                case 'codeblock':
-                  content = snippet.content;
-                  break;
+              if (snippet.script) {
+                preview.textContent = snippet.content;
+              } else {
+                switch (snippet.kind) {
+                  case 'inline':
+                    content = `${snippet.id}${snippet.id === '' ? '' : ':'}${snippet.content}`;
+                    break;
+                  case 'display':
+                    content = `${snippet.id}\n${snippet.content}\n`;
+                    break;
+                  case 'codeblock':
+                    content = snippet.content;
+                    break;
+                }
+                this.plugin.typstManager.render(content, preview, snippet.kind);
               }
-              this.plugin.typstManager.render(content, preview, snippet.kind);
 
               preview.onClickEvent(() => {
                 switch (snippet.kind) {

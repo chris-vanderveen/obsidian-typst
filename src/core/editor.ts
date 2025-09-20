@@ -7,8 +7,6 @@ import type SnippetSuggestElement from '@/ui/components/SnippetSuggest';
 import type SymbolSuggestElement from '@/ui/components/SymbolSuggest';
 import { type SymbolData, searchSymbols } from '@/utils/symbolSearcher';
 
-// TODO: モバイルの処理, 判定
-
 export interface Position {
   x: number;
   y: number;
@@ -69,23 +67,34 @@ export class EditorHelper {
   private onKeyDown(e: KeyboardEvent) {
     if (e.key === 'Tab') {
       if (this.snippetSuggestEl.isOpen || this.symbolSuggestEl.isOpen) return;
-      if (!isCursorDisplayMath()) return;
+      if (!isCursorMath()) return;
 
       const cursor = this.editor?.getCursor();
       if (!cursor) return;
-      const lineText = this.editor?.getLine(cursor.line);
-      const cursorIndex = lineText?.indexOf('#CURSOR');
+      let line = cursor.line;
+
+      let lineText = this.editor?.getLine(line);
+      let cursorIndex = lineText?.indexOf('#CURSOR');
       // ? 初めの #CURSOR は別で置き換わるので, cursorIndex === 0 は気にしなくていい
       if (!cursorIndex) return;
 
-      // ない場合は次の行へ
+      // ない場合は次の行も確認
       if (cursorIndex === -1) {
-        e.preventDefault();
-        this.editor?.setCursor({
-          line: cursor.line + 1,
-          ch: 0,
-        });
-        return;
+        line++;
+
+        lineText = this.editor?.getLine(line);
+        cursorIndex = lineText?.indexOf('#CURSOR');
+        if (!cursorIndex) return;
+
+        // なければ次の行に移動
+        if (cursorIndex === -1) {
+          e.preventDefault();
+          this.editor?.setCursor({
+            line,
+            ch: 0,
+          });
+          return;
+        }
       }
 
       // ある場合は置き換える
@@ -94,13 +103,13 @@ export class EditorHelper {
         this.editor!,
         '',
         {
-          line: cursor.line,
+          line,
           ch: cursorIndex,
         },
         7,
       );
       this.editor?.setCursor({
-        line: cursor.line,
+        line,
         ch: cursorIndex,
       });
     }
@@ -147,22 +156,22 @@ export class EditorHelper {
     if (textBeforeCursor.endsWith('@') && !textBeforeCursor.startsWith('#import')) {
       this.removePreview();
       this.symbolSuggestEl.close();
-      const suffix = '@';
 
-      const match = textBeforeCursor.match(/(?<word>[a-zA-Z-]+)(?<value>\(.*\))?@$/);
+      const match = textBeforeCursor.match(/(?<word>[^\W_]+)(?<value>\(.*\))?@$/);
       if (match) {
         this.word = match.groups?.word;
+        if (this.word === null) return null;
+
         this.value = match.groups?.value;
         this.wordLine = cursor.line;
-        console.log(cursor.ch, this.word!.length, suffix.length);
-        this.startWordIndex = cursor.ch - this.word!.length - suffix.length;
-        if (this.word === null) return null;
-        //if (textBeforeCursor.includes('${}')) this.startWordIndex -= 3;
+
+        this.startWordIndex = cursor.ch - this.word!.length - 1;
         if (this.value) this.startWordIndex -= this.value.length;
-        console.log(this.startWordIndex);
+
         this.suggestSnippets(editor, this.value !== undefined);
         return null;
       }
+      this.word = undefined;
     } else if (!textBeforeCursor.endsWith(' ')) {
       const match = textBeforeCursor.match(/(?<symbol>\\?([a-zA-Z.][a-zA-Z.]+|[-<>|=[\]~:-][-<>|=[\]~:-]+))$/);
       if (match) {
@@ -173,6 +182,7 @@ export class EditorHelper {
         this.suggestSymbols(editor, this.symbol);
         return null;
       }
+      this.symbolSuggestEl.close();
     }
 
     // ディスプレイ数式中
@@ -220,26 +230,20 @@ export class EditorHelper {
       },
       this.word!.length + 1,
     );
-    // editor.setCursor(this.wordLine!, this.startWordIndex! + content.length);
   }
 
   applySnippet(editor: Editor, snippet: Snippet) {
     this.removePreview();
     this.snippetSuggestEl.close();
     let content = snippet.content;
-    if (snippet.script) content = new Function('v', content)(this.value?.slice(1, -1));
+    if (snippet.script) content = new Function('input', content)(this.value?.slice(1, -1));
 
     const cursorIndex = content.indexOf('#CURSOR');
     content = content.replace('#CURSOR', '');
     let replaceLength = this.word!.length + 1;
-    console.log(content, this.value);
-    if (this.value) {
-      content = content.replaceAll('#VALUE', this.value.slice(1, -1));
-      replaceLength += this.value.length;
-    }
+    if (this.value) replaceLength += this.value.length;
     if (cursorIndex === -1) content = `${content} `;
 
-    console.log(this.startWordIndex!, this.word!.length);
     this.replaceLength(
       editor,
       content,

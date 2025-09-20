@@ -51,7 +51,7 @@ export default class SnippetSuggestElement extends HTMLElement {
 
       let content: string = snippet.content;
       if (snippet.script) {
-        item.append(`📦: ${snippet.name} (${snippet.category})`);
+        item.append(`📦${snippet.name} (${snippet.category})`);
       } else {
         switch (snippet.kind) {
           case 'inline':
@@ -65,7 +65,7 @@ export default class SnippetSuggestElement extends HTMLElement {
             break;
         }
         this.plugin.typstManager.render(content, svg, snippet.kind);
-        item.appendChild(document.createTextNode(`${snippet.name} (${snippet.category}):`));
+        item.appendChild(document.createTextNode(`${snippet.name} (${snippet.category})`));
         item.appendChild(svg);
       }
       this.container.appendChild(item);
@@ -131,10 +131,28 @@ export default class SnippetSuggestElement extends HTMLElement {
       case 'Enter': {
         e.preventDefault();
         this.prevEl?.focus();
-        if (this.selectedIndex >= 0)
-          this.plugin.editorHelper.applySnippet(this.editor!, this.snippets[this.selectedIndex]!);
-        else this.plugin.editorHelper.applySnippet(this.editor!, this.snippets[0]!);
-        this.close();
+        let snippet: Snippet;
+        if (this.selectedIndex >= 0) {
+          snippet = this.snippets[this.selectedIndex]!;
+        } else {
+          snippet = this.snippets[0]!;
+        }
+        if (snippet.script && this.plugin.editorHelper.value === undefined) {
+          this.plugin.editorHelper.complementSnippet(this.editor!, snippet);
+          const cursor = this.editor!.getCursor();
+          this.editor?.replaceRange('()', {
+            line: cursor.line,
+            ch: cursor.ch - 1,
+          });
+        } else {
+          this.plugin.editorHelper.applySnippet(this.editor!, snippet);
+          this.close();
+        }
+        return;
+      }
+
+      case 'Shift': {
+        e.preventDefault();
         return;
       }
 
@@ -159,7 +177,12 @@ export default class SnippetSuggestElement extends HTMLElement {
             line: cursor.line,
             ch: cursor.ch - (this.plugin.editorHelper.value ? 2 : 1),
           });
+          return;
         } else if (e.key === 'Backspace') {
+          // @ のみのとき
+          if (this.plugin.editorHelper.word === undefined) break;
+
+          // @直前を消す
           e.preventDefault();
           const cursor = this.editor!.getCursor();
           this.plugin.editorHelper.replaceLength(
@@ -171,16 +194,17 @@ export default class SnippetSuggestElement extends HTMLElement {
             },
             this.plugin.editorHelper.value === '()' ? 2 : 1,
           );
+          return;
         } else if (e.key === 'Shift') {
           e.preventDefault();
-        } else {
-          this.prevEl?.focus();
-          this.blur();
-          this.close();
-          break;
+          return;
         }
       }
     }
+
+    this.prevEl?.focus();
+    this.blur();
+    this.close();
   }
 
   close() {

@@ -143,10 +143,11 @@ export default class TypstManager {
     switch (kind) {
       case 'inline':
         // ? プラグイン No more flickering inline math との互換性のため
-        if (code.startsWith('{} ') && code.endsWith(' {}')) code = code.slice(3, -3);
+        if (code.startsWith('{}') && code.endsWith('{}'))
+          code = code.slice(code.at(2) === ' ' ? 3 : 2, code.at(-3) === ' ' ? -3 : -2);
 
         processor =
-          this.plugin.settings.processor.inline?.processors.find((p) => code.startsWith(`${p.id}`)) ??
+          this.plugin.settings.processor.inline?.processors.find((p) => code.startsWith(`${p.id}:`)) ??
           DEFAULT_SETTINGS.processor.inline?.processors.at(-1)!;
         if (processor.id.length !== 0) code = code.slice(processor.id.length + 1);
 

@@ -153,7 +153,7 @@ export const DEFAULT_SETTINGS: Settings = {
       kind: 'display',
       id: '',
       content:
-        'const parts = v.split(",").map(s => s.trim()); const x = Number(parts[0]); const y = Number(parts[1]); const rowText = `${("#CURSOR, ".repeat(x)).slice(0, -2)} ;\\n`; const contentText = `  ${rowText}`.repeat(y); return `mat(\\n${contentText})`;',
+        'const parts = input.split(",").map(s => s.trim()); const x = Number(parts[0]); const y = Number(parts[1]); const rowText = `${("#CURSOR, ".repeat(x)).slice(0, -2)} ;\\n`; const contentText = `  ${rowText}`.repeat(y); return `mat(\\n${contentText})`;',
       script: true,
     },
     {
@@ -162,15 +162,15 @@ export const DEFAULT_SETTINGS: Settings = {
       kind: 'display',
       id: '',
       content:
-        'const parts = v.split(",").map(s => s.trim()); const x = Number(parts[0]); const y = Number(parts[1]); const rowText = `${("#CURSOR, ".repeat(x)).slice(0, -2)} ;\\n`; const contentText = `  ${rowText}`.repeat(y); return `mat(\\n${contentText})`;',
-      script: true, // TODO
+        'const parts = input.split(",").map(s => s.trim()); const x = Number(parts[0]); const y = Number(parts[1]); const rowText = `${("#CURSOR, ".repeat(x)).slice(0, -2)} ; `; const contentText = `  ${rowText}`.repeat(y); return `mat(\\n${contentText})`;',
+      script: true,
     },
     {
       category: 'Cases',
       name: 'cases',
       kind: 'display',
       id: '',
-      content: 'cases(#CURSOR "if" #CURSOR, #CURSOR "else",)',
+      content: 'cases(#CURSOR "if" #CURSOR, #CURSOR "else")',
       script: false,
     },
     {
@@ -178,8 +178,9 @@ export const DEFAULT_SETTINGS: Settings = {
       name: 'casesn',
       kind: 'display',
       id: '',
-      content: 'cases(#CURSOR "if" #CURSOR, #CURSOR "else",)',
-      script: true, // TODO
+      content:
+        'const n = Number(input); return `cases(\\n${(`  #CURSOR "if" #CURSOR,\\n`).repeat(n-1)}  #CURSOR "else"\\n)`',
+      script: true,
     },
   ],
   complementSymbol: true,

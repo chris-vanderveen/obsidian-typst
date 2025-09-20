@@ -2,7 +2,7 @@
 
 ## What is a Processor?
 
-A Processor is a collection of options that customize the rendering results, including code shortcuts, rendering modes, styling, and more.
+A Processor is a collection of options that customize the rendering results, including code templates, rendering modes, styling, and more.
 
 ## Why are Processors needed?
 
@@ -26,7 +26,7 @@ Works with *inline math* (`$...$`).
 To specify a processor, place the ID at the beginning followed by a colon and then the code, like `id:code`.
 
 The `inline-middle` styling option vertically centers inline math so it lines up naturally with the surrounding text. Since it may be offset from regular text input, please use it appropriately depending on the situation.
-[![Screenshot](https://raw.githubusercontent.com/azyarashi/obsidian-typst-mate/main/assets/inline.png)](#inline)
+[![Screenshot](assets/inline.png)](#inline)
 
 ### Display Processor
 

@@ -1,6 +1,8 @@
 import SYMBOLS_BY_NAME from '@/data/symbols.json';
 
-const SYMBOLS_BY_LATEX = Object.fromEntries(Object.entries(SYMBOLS_BY_NAME).map(([_, v]) => [v.latexName, v]));
+const SYMBOLS_BY_LATEX = Object.fromEntries(
+  Object.entries(SYMBOLS_BY_NAME).map(([_, v]) => [v.latexName.replace(/\\/g, ''), v]),
+);
 
 // ? サジェストの体験向上のために, 短い順でソート
 const NAMES = Object.keys(SYMBOLS_BY_NAME).sort((a, b) => a.length - b.length);

@@ -6,15 +6,15 @@
 
 Render math expressions in [Obsidian](https://obsidian.md) using [Typst](https://typst.app/) instead of MathJax.
 
-[![TypstMate](https://raw.githubusercontent.com/azyarashi/obsidian-typst-mate/main/assets/demo.png)](#demo)
+[![TypstMate](assets/demo.png)](#demo)
 
-<!-- TODO
-Symbol completion        | Snippet / Script
+[![SymbolSuggest](assets/symbol.gif)](#symbol)
+
+Snippet                  | Script
 :-----------------------:|:------------------------:
-![Symbol completion]() | ![Snippet / Script]()
--->
+[![Snippet](assets/snippet.gif)](#snippet) | [![Script](assets/script.gif)](#script)
 
-For details about the processor, see [Processor.md](https://github.com/azyarashi/obsidian-typst-mate/blob/main/Processor.md).
+For details about the processor / snippet, see [Processor.md](Processor.md) / [Snippet.md](Snippet.md).
 
 ---
 
@@ -22,10 +22,9 @@ For details about the processor, see [Processor.md](https://github.com/azyarashi
 
 - Support *inline math*, *display math*, and *code blocks*
 - Support **preamble** and **templates** (called processors)
-<!-- TODO
-- **Snippets** / **Scripts** (coming soon)
-- **Symbol completion** (coming soon)
--->
+- **Snippets** / **Scripts**
+- **Symbol completion**
+  - type a leading backslash `/` to make the search look for LaTeX commands
 - **Inline math preview**
 - **Available on mobile app**
 - Offer **background rendering**
@@ -57,7 +56,7 @@ Turned OFF               | Turned ON
 Currently, it's under review for the official plugin list. This process may take several months.
 Until then, please install using the official plugin [BRAT](https://tfthacker.com/brat-quick-guide).
 
-[![Screenshot](https://raw.githubusercontent.com/azyarashi/obsidian-typst-mate/main/assets/brat.png)](#brat)
+[![Screenshot](assets/brat.png)](#brat)
 
 ## Compatibility
 

@@ -33,16 +33,15 @@
 /*
  * LaTeX には base と variant の区別がないため substring を variant として扱う
  */
-.typstmate-symbols .item.variant,
-.typstmate-symbols .item.substring.latex {
+.typstmate-symbols .item.variant:not(.selected),
+.typstmate-symbols .item.substring.latex:not(.selected) {
   opacity: 0.5;
 }
 
-.typstmate-symbols .item.substring.typst {
+.typstmate-symbols .item.substring.typst:not(.selected) {
   opacity: 0.2;
 }
 
 .typstmate-symbols .item.selected {
-  opacity: 1;
   background-color: var(--nav-item-background-selected);
 }
