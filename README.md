@@ -13,6 +13,7 @@ Render math expressions in [Obsidian](https://obsidian.md) using [Typst](https:/
 Snippet                  | Script
 :-----------------------:|:------------------------:
 [![Snippet](assets/snippet.gif)](#snippet) | [![Script](assets/script.gif)](#script)
+`c@`, `Enter`, `1`, `Tab`, `i=j`, `Tab`, `0`. | `m@`, `Enter`, `3,3`, `Enter`, `1`, `Tab`, `2`, `Tab`, `3`, `Tab`, `4`, `Tab`, ...
 
 For details about the processor / snippet, see [Processor.md](Processor.md) / [Snippet.md](Snippet.md).
 

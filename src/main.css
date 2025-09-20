@@ -13,3 +13,7 @@
 .typstmate__symbol {
   font-family: "NewComputerModernMath", "MJXZERO", "MJXTEX-S1", "MJXTEX-S4", "MJXTEX", "MJXTEX-A", monospace;
 }
+
+.cm-math {
+  font-family: "NewComputerModernMath", var(--font-family), monospace;
+}
