@@ -55,12 +55,16 @@ export class TypstToolsView extends ItemView {
           content.createEl('iframe').src = 'https://typst.app/universe/search/';
           break;
         case 'snippets': {
+          // メニューの設定
           const dropdown = new DropdownComponent(content);
-          const options = this.plugin.settings.snippets?.map((snippet) => snippet.category) ?? [];
-          dropdown.addOption('', 'ALL');
+          const options = (this.plugin.settings.snippets?.map((snippet) => snippet.category) ?? []).filter(
+            (category) => category !== 'No Category',
+          );
+          dropdown.addOption('No Category', 'No Category');
+          dropdown.setValue('No Category');
           dropdown.addOptions(Object.fromEntries(options.map((name) => [name, name])));
-          dropdown.setValue('');
 
+          // snippets
           const snippetsEl = content.createEl('div');
           const renderSnippets = () => {
             snippetsEl.empty();
@@ -87,7 +91,7 @@ export class TypstToolsView extends ItemView {
                   case 'display':
                     content = `${snippet.id}\n${snippet.content}\n`;
                     break;
-                  case 'codeblock':
+                  default:
                     content = snippet.content;
                     break;
                 }

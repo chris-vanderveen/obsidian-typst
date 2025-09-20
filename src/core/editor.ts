@@ -153,7 +153,8 @@ export class EditorHelper {
     if (!inDisplay && (lastDollarBefore === -1 || firstDollarAfter === -1)) return null;
 
     // snippet / symbol
-    if (textBeforeCursor.endsWith('@') && !textBeforeCursor.startsWith('#import')) {
+    if (this.plugin.typstManager.beforeProcessor?.noSuggest) {
+    } else if (textBeforeCursor.endsWith('@') && !textBeforeCursor.startsWith('#import')) {
       this.removePreview();
       this.symbolSuggestEl.close();
 
@@ -213,28 +214,44 @@ export class EditorHelper {
     const position = calculatePosition(editor, this.startWordIndex!, this.startWordIndex! + this.word!.length + 1);
     if (!position) return;
 
+    this.editor?.addHighlights(
+      [
+        {
+          from: {
+            line: this.wordLine!,
+            ch: this.startWordIndex! + this.word!.length + (this.value?.length ?? 0),
+          },
+          to: {
+            line: this.wordLine!,
+            ch: this.startWordIndex! + this.word!.length + (this.value?.length ?? 0) + 1,
+          },
+        },
+      ],
+      // @ts-expect-error
+      'typstmate-atmode',
+      true,
+    );
     this.snippetSuggestEl.render(position, editor);
   }
 
   complementSnippet(editor: Editor, snippet: Snippet) {
     this.removePreview();
-    if (this.value) return;
-    this.snippetSuggestEl.close();
 
     this.replaceLength(
       editor,
-      `${snippet.name}@`,
+      `${snippet.name + (this.value ? this.value : '')}@`,
       {
         line: this.wordLine!,
         ch: this.startWordIndex!,
       },
-      this.word!.length + 1,
+      this.word!.length + (this.value?.length ?? 0) + 1,
     );
   }
 
   applySnippet(editor: Editor, snippet: Snippet) {
     this.removePreview();
     this.snippetSuggestEl.close();
+
     let content = snippet.content;
     if (snippet.script) content = new Function('input', content)(this.value?.slice(1, -1));
 
@@ -259,6 +276,8 @@ export class EditorHelper {
   }
 
   private suggestSymbols(editor: Editor, name: string) {
+    this.removePreview();
+
     const symbols = searchSymbols(name);
     if (!symbols.length) return this.symbolSuggestEl.close();
 
@@ -293,7 +312,7 @@ export class EditorHelper {
     if (this.plugin.settings.complementSymbolWithUnicode) content = symbol.sym;
     else content = symbol.name;
 
-    if (symbol.mathClass !== 'Large') content = `${content} `; // ? よく attach するため
+    if (!['op', 'Large'].includes(symbol.mathClass)) content = `${content} `;
 
     const line = editor.getCursor().line;
 

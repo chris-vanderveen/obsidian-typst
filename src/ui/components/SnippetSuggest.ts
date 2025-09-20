@@ -164,6 +164,7 @@ export default class SnippetSuggestElement extends HTMLElement {
             line: cursor.line,
             ch: cursor.ch - 1,
           });
+          return;
         } else if (e.key.length === 1) {
           if (e.key === ' ' && this.plugin.editorHelper.value === undefined) {
             this.prevEl?.focus();
@@ -208,6 +209,8 @@ export default class SnippetSuggestElement extends HTMLElement {
   }
 
   close() {
+    this.editor?.removeHighlights('typstmate-atmode');
+
     this.isOpen = false;
     this.addClass('typstmate-hidden');
     document.removeEventListener('mousedown', this.outsideListener, { capture: true });

@@ -23,6 +23,15 @@ export class ProcessorModal extends Modal {
       });
     });
 
+    new Setting(this.contentEl).setName(`No suggest`).addToggle((toggle) => {
+      toggle.setValue(processor.noSuggest ?? false);
+
+      toggle.onChange(() => {
+        processor.noSuggest = !processor.noSuggest;
+        plugin.saveSettings();
+      });
+    });
+
     // Width 自動調整
     new Setting(this.contentEl)
       .setName('Fit to parent width')

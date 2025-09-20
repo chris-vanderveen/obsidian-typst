@@ -15,6 +15,7 @@ export interface InlineProcessor {
   renderingEngine: RenderingEngine;
   format: string;
   styling: InlineStyling;
+  noSuggest?: boolean;
   noPreamble?: boolean;
   fitToParentWidth?: boolean;
 }
@@ -23,6 +24,7 @@ export interface DisplayProcessor {
   renderingEngine: RenderingEngine;
   format: string;
   styling: DisplayStyling;
+  noSuggest?: boolean;
   noPreamble?: boolean;
   fitToParentWidth?: boolean;
 }
@@ -31,6 +33,7 @@ export interface CodeblockProcessor {
   renderingEngine: RenderingEngine;
   format: string;
   styling: CodeblockStyling;
+  noSuggest?: boolean;
   noPreamble?: boolean;
   fitToParentWidth?: boolean;
 }
@@ -39,6 +42,7 @@ export interface ExcalidrawProcessor {
   renderingEngine: RenderingEngine;
   format: string;
   styling: ExcalidrawStyling;
+  noSuggest?: boolean;
   noPreamble?: boolean;
   fitToParentWidth?: boolean;
 }
@@ -53,6 +57,7 @@ export const DefaultNewInlineProcessor: InlineProcessor = {
   renderingEngine: 'typst-svg',
   format: '${CODE}$',
   styling: 'inline',
+  noSuggest: false,
   noPreamble: false,
   fitToParentWidth: false,
 };
@@ -61,6 +66,7 @@ export const DefaultNewDisplayProcessor: DisplayProcessor = {
   renderingEngine: 'typst-svg',
   format: '$\n{CODE}\n$',
   styling: 'block-center',
+  noSuggest: false,
   noPreamble: false,
   fitToParentWidth: false,
 };
@@ -69,6 +75,7 @@ export const DefaultNewCodeblockProcessor: CodeblockProcessor = {
   renderingEngine: 'typst-svg',
   format: '{CODE}',
   styling: 'block',
+  noSuggest: false,
   noPreamble: false,
   fitToParentWidth: false,
 };
@@ -77,6 +84,7 @@ export const DefaultNewExcalidrawProcessor: ExcalidrawProcessor = {
   renderingEngine: 'typst-svg',
   format: '#set page(margin: 0.25em)\n${CODE}$',
   styling: 'default',
+  noSuggest: false,
   noPreamble: false,
   fitToParentWidth: false,
 };

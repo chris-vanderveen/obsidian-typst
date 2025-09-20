@@ -51,8 +51,8 @@ export interface SymbolData {
   latexName: string;
   // ? サジェストの優位度をつけるためで, データにはない. TS 側で付与する.
   kind?:
-    | 'bookmark' // お気に入り // TODO
-    | 'user' // ユーザー定義 // TODO
+    | 'bookmark' // お気に入り // TODO 実装
+    | 'user' // ユーザー定義 // TODO 実装
     | 'base' // `.` を含まない
     | 'variant' // `.` を含む
     | 'substring'; // 含むだけ

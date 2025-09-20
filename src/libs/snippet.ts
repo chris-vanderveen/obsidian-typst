@@ -8,10 +8,10 @@ export interface Snippet {
 }
 
 export const DefaultNewSnippet: Snippet = {
-  category: 'NoCategory',
+  category: 'No Category',
   name: 'new',
   kind: 'display',
   id: '',
-  content: '',
+  content: '#CURSOR',
   script: false,
 };

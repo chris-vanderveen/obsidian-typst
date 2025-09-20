@@ -70,8 +70,7 @@ export default class TypstElement extends HTMLElement {
       '#000000',
       this.plugin.settings.autoBaseColor ? this.plugin.baseColor : this.plugin.settings.baseColor,
     );
-    this.plugin.typstManager.beforeId = this.processor.id;
-    this.plugin.typstManager.beforeKind = this.kind;
+    this.plugin.typstManager.beforeProcessor = this.processor;
     this.plugin.typstManager.beforeSVG = svg;
 
     this.innerHTML = svg;
@@ -90,7 +89,7 @@ export default class TypstElement extends HTMLElement {
 
       diagEl.textContent = `${err[0]?.message}${err[0]?.hints.length !== 0 ? ` [${err[0]?.hints.length} hints]` : ''}`;
 
-      // TODO:
+      // TODO: エラー箇所を表示する
       if (err[0]?.hints.length !== 0)
         diagEl.addEventListener('click', () => new DiagnosticModal(this.plugin.app, err).open());
 

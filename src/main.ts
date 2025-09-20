@@ -332,7 +332,6 @@ export default class ObsidianTypstMate extends Plugin {
   }
 
   override async onunload() {
-    // TODO: 要素を削除
     const temporaryElements = document.querySelectorAll('.typstmate-temporary');
     for (const el of temporaryElements) el.remove();
 

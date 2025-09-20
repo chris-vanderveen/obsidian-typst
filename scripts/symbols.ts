@@ -48,7 +48,7 @@ for (const button of buttons) {
 // 処理
 await browser.close();
 
-const ops = await import('./op');
+const ops = await import('./ops');
 symbols = [...symbols, ...ops.ops];
 
 type typstName = string;

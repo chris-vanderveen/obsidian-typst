@@ -35,7 +35,6 @@ export interface Settings {
     };
   };
   snippets?: Snippet[];
-  complementSymbol?: boolean;
   complementSymbolWithUnicode?: boolean;
 }
 export const DEFAULT_SETTINGS: Settings = {
@@ -158,11 +157,11 @@ export const DEFAULT_SETTINGS: Settings = {
     },
     {
       category: 'Matrix',
-      name: 'matf',
-      kind: 'display',
+      name: 'matInline',
+      kind: 'inline',
       id: '',
       content:
-        'const parts = input.split(",").map(s => s.trim()); const x = Number(parts[0]); const y = Number(parts[1]); const rowText = `${("#CURSOR, ".repeat(x)).slice(0, -2)} ; `; const contentText = `  ${rowText}`.repeat(y); return `mat(\\n${contentText})`;',
+        'const parts = input.split(",").map(s => s.trim()); const x = Number(parts[0]); const y = Number(parts[1]); const rowText = `${("#CURSOR, ".repeat(x)).slice(0, -2)} ; `; const contentText = `${rowText}`.repeat(y); return `mat(${contentText})`;',
       script: true,
     },
     {
@@ -183,7 +182,6 @@ export const DEFAULT_SETTINGS: Settings = {
       script: true,
     },
   ],
-  complementSymbol: true,
   complementSymbolWithUnicode: true,
 };
 
@@ -550,14 +548,6 @@ export class SettingTab extends PluginSettingTab {
         });
       });
 
-    new Setting(containerEl).setName('Complement Symbol').addToggle((toggle) => {
-      toggle.setValue(this.plugin.settings.complementSymbol ?? DEFAULT_SETTINGS.complementSymbol!);
-      toggle.onChange((value) => {
-        this.plugin.settings.complementSymbol = value;
-        this.plugin.saveSettings();
-      });
-    });
-
     new Setting(containerEl).setName('Complement Symbol with Unicode').addToggle((toggle) => {
       toggle.setValue(
         this.plugin.settings.complementSymbolWithUnicode ?? DEFAULT_SETTINGS.complementSymbolWithUnicode!,
@@ -567,7 +557,5 @@ export class SettingTab extends PluginSettingTab {
         this.plugin.saveSettings();
       });
     });
-
-    // TODO
   }
 }
