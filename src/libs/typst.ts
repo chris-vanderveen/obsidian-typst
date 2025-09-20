@@ -16,6 +16,10 @@ export default class TypstManager {
   plugin: ObsidianTypstMate;
   ready = false;
 
+  beforeId?: string;
+  beforeKind?: string;
+  beforeSVG = '';
+
   constructor(plugin: ObsidianTypstMate) {
     this.plugin = plugin;
   }
@@ -194,6 +198,8 @@ export default class TypstManager {
     t.processor = processor;
     containerEl.appendChild(t);
     t.render();
+
+    if (kind === this.beforeKind && processor.id === this.beforeId) t.innerHTML = this.beforeSVG;
 
     return containerEl as HTMLElement;
   }

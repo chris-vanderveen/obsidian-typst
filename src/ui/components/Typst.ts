@@ -66,10 +66,15 @@ export default class TypstElement extends HTMLElement {
   postProcess(result: SVGResult) {
     if (this.plugin.settings.failOnWarning && result.diags.length !== 0) throw result.diags;
 
-    this.innerHTML = result.svg.replaceAll(
+    const svg = result.svg.replaceAll(
       '#000000',
       this.plugin.settings.autoBaseColor ? this.plugin.baseColor : this.plugin.settings.baseColor,
     );
+    this.plugin.typstManager.beforeId = this.processor.id;
+    this.plugin.typstManager.beforeKind = this.kind;
+    this.plugin.typstManager.beforeSVG = svg;
+
+    this.innerHTML = svg;
   }
 
   handleError(err: Diagnostic[]) {
