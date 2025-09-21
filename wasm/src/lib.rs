@@ -15,12 +15,13 @@ use typst::{
     },
     text::FontInfo,
 };
+use typst_pdf::PdfOptions;
 
 mod serde;
 mod vfs;
 mod world;
 
-use crate::serde::{diagnostic, font, package, processor, svg};
+use crate::serde::{diagnostic, font, package, pdf, processor, svg};
 use crate::world::WasmWorld;
 
 #[wasm_bindgen]
@@ -144,7 +145,7 @@ impl Typst {
         }
     }
 
-    pub fn svg(&mut self, code: &str, kind: &str, id: &str) -> Result<JsValue, JsValue> {
+    fn update_source(&mut self, code: &str, kind: &str, id: &str) {
         if self.last_kind == kind && self.last_id == id {
             self.world.replace(code);
         } else {
@@ -166,7 +167,10 @@ impl Typst {
                 }
             }
         }
+    }
 
+    pub fn svg(&mut self, code: &str, kind: &str, id: &str) -> Result<JsValue, JsValue> {
+        self.update_source(code, kind, id);
         let Warned { output, warnings } = typst::compile::<PagedDocument>(&mut self.world);
 
         match output {
@@ -180,6 +184,30 @@ impl Typst {
                     .replace("<svg class", "<svg style=\"overflow: visible;\" class");
 
                 svg::svg(svg, warnings)
+            }
+            Err(errs) => {
+                let diags: Vec<diagnostic::SourceDiagnosticSer> =
+                    errs.iter().map(|d| d.into()).collect();
+                Err(to_value(&diags).unwrap())
+            }
+        }
+    }
+
+    pub fn pdf(&mut self, code: &str, kind: &str, id: &str) -> Result<JsValue, JsValue> {
+        self.update_source(code, kind, id);
+        let Warned { output, warnings } = typst::compile::<PagedDocument>(&mut self.world);
+
+        match output {
+            Ok(document) => {
+                let options = PdfOptions::default();
+                match typst_pdf::pdf(&document, &options) {
+                    Ok(pdf_data) => pdf::pdf(pdf_data, warnings),
+                    Err(errs) => {
+                        let diags: Vec<diagnostic::SourceDiagnosticSer> =
+                            errs.iter().map(|d| d.into()).collect();
+                        Err(to_value(&diags).unwrap())
+                    }
+                }
             }
             Err(errs) => {
                 let diags: Vec<diagnostic::SourceDiagnosticSer> =
