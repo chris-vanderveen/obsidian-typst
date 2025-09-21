@@ -100,4 +100,4 @@ Typst Mate leverages the following open-source projects:
 - [MiTex](https://github.com/mitex-rs/mitex) – a fast, lightweight LaTeX to Typst converter with **high compatibility**
 - [tex2typst](https://github.com/qwinsi/tex2typst) – a fast, lightweight bidirectional converter between TeX/LaTeX and Typst with **readable output**
 
-I'm grateful to the developers for making this plugin possible.
+I'm grateful to the developers for making this plugin possible!
