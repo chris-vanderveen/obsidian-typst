@@ -1,4 +1,4 @@
-import { type App, Modal, Setting } from 'obsidian';
+import { type App, Modal, Notice, Setting } from 'obsidian';
 
 import type ObsidianTypstMate from '@/main';
 
@@ -11,6 +11,7 @@ export class SnippetEditModal extends Modal {
   content: string;
   script: boolean;
   previewEl: HTMLDivElement;
+  previewContentEl: HTMLDivElement;
   plugin: ObsidianTypstMate;
   render: (id: string, kind: 'inline' | 'display' | 'codeblock', content: string, script: boolean) => void;
 
@@ -82,6 +83,7 @@ export class SnippetEditModal extends Modal {
         this.script = isScript;
         plugin.saveSettings();
         this.previewEl.empty();
+        this.previewContentEl = this.previewEl.createEl('div');
         if (!isScript) return this.renderPreview();
 
         const scriptSetting = new Setting(this.previewEl);
@@ -98,14 +100,19 @@ export class SnippetEditModal extends Modal {
             .setButtonText('Preview')
             .setTooltip('Preview')
             .onClick(() => {
-              const content = new Function('input', this.content)(value);
-              this.renderPreview(content);
+              try {
+                const content = new Function('input', this.content)(value);
+                this.renderPreview(content);
+              } catch (e) {
+                new Notice(String(e));
+              }
             });
         });
       });
     });
     this.previewEl = this.contentEl.createEl('div');
     this.previewEl.className = 'typstmate-leaf-snippetext-preview';
+    this.previewContentEl = this.previewEl.createEl('div');
     if (this.script) {
       const scriptSetting = new Setting(this.previewEl);
       let value = '';
@@ -121,8 +128,12 @@ export class SnippetEditModal extends Modal {
           .setButtonText('Preview')
           .setTooltip('Preview')
           .onClick(() => {
-            const content = new Function('input', this.content)(value);
-            this.renderPreview(content);
+            try {
+              const content = new Function('input', this.content)(value);
+              this.renderPreview(content);
+            } catch (e) {
+              new Notice(String(e));
+            }
           });
       });
     }
@@ -132,7 +143,6 @@ export class SnippetEditModal extends Modal {
 
   renderPreview(content?: string) {
     if (content ?? !this.script) {
-      console.log(content);
       switch (this.kind) {
         case 'inline':
           content = `${this.id}${this.id === '' ? '' : ':'}${content ?? this.content}`;
@@ -143,8 +153,8 @@ export class SnippetEditModal extends Modal {
         default:
           content = content ?? this.content;
       }
-      console.log(content, this.content);
-      this.plugin.typstManager.render(content, this.previewEl, this.kind);
+      this.previewContentEl.empty();
+      this.plugin.typstManager.render(content, this.previewContentEl, this.kind);
     }
   }
 

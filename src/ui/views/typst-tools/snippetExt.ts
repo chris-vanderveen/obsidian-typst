@@ -14,7 +14,7 @@ export class SnippetExtModal extends Modal {
     new Setting(this.contentEl).setName(`Category`).addDropdown((dropdown) => {
       dropdown.addOptions(Object.fromEntries(categories.map((name) => [name, name])));
       dropdown.addOption('New', 'New');
-      dropdown.setValue('New');
+      dropdown.setValue(plugin.settings.snippets![snippetIndex]!.category);
 
       dropdown.onChange((value) => {
         if (value === 'New') {

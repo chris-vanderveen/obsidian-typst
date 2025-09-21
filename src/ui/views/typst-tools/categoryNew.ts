@@ -13,7 +13,7 @@ export class CategoryNewModal extends Modal {
     this.category = plugin.settings.snippets![snippetIndex]!.category;
 
     new Setting(this.contentEl).setName(`New Category`).addText((text) => {
-      text.setValue('');
+      text.setValue(this.category);
 
       text.onChange((value) => {
         this.category = value;
