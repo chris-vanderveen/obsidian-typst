@@ -16,7 +16,7 @@ export default class TypstElement extends HTMLElement {
     const input = this.format();
 
     try {
-      const result = this.plugin.typst.render(input, this.kind, this.processor.id, this.renderingFormat);
+      const result = this.plugin.typst.svg(input, this.kind, this.processor.id);
 
       if (result instanceof Promise) {
         if (this.kind !== 'inline' && this.processor.fitToParentWidth && !this.source.includes('<br>'))
@@ -27,12 +27,7 @@ export default class TypstElement extends HTMLElement {
                 `#let WIDTH = ${(entry.contentRect.width * 3) / 4}pt\n` +
                 this.format().replace('width: auto', 'width: WIDTH');
 
-              const result = this.plugin.typst.render(
-                input,
-                this.kind,
-                this.processor.id,
-                this.renderingFormat,
-              ) as Promise<SVGResult>;
+              const result = this.plugin.typst.svg(input, this.kind, this.processor.id) as Promise<SVGResult>;
 
               result
                 .then((result: SVGResult) => this.postProcess(result))

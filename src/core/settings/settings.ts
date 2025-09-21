@@ -3,11 +3,12 @@ import { type App, debounce, Notice, Platform, PluginSettingTab, Setting } from 
 import type { CodeblockProcessor, DisplayProcessor, ExcalidrawProcessor, InlineProcessor } from '@/libs/processor';
 import type { Snippet } from '@/libs/snippet';
 import type ObsidianTypstMate from '@/main';
-import type { TypstToolsView } from '@/ui/views/typstTools';
+import type { TypstToolsView } from '@/ui/views/typst-tools/typstTools';
 import { CustomFragment } from '@/utils/customFragment';
-import { FontList } from './settings/font';
-import { PackagesList } from './settings/package';
-import { ProcessorList } from './settings/processor';
+
+import { FontList } from './components/font';
+import { PackagesList } from './components/package';
+import { ProcessorList } from './components/processor';
 
 import './settings.css';
 
@@ -453,7 +454,7 @@ export class SettingTab extends PluginSettingTab {
 
         button.setTooltip('Open Fonts Directory');
         button.onClick(() => {
-          window.open(`file://${this.plugin.app.vault.adapter.basePath}/${this.plugin.fontsDirPath}`);
+          window.open(`file://${this.plugin.app.vault.adapter.basePath}/${this.plugin.fontsDirNPath}`);
         });
       });
     }

@@ -136,7 +136,7 @@ export class FontList {
   async displayImportedFontList() {
     this.importedFontTableEl.empty();
 
-    const fontPaths = (await this.plugin.app.vault.adapter.list(this.plugin.fontsDirPath)).files.filter((f) =>
+    const fontPaths = (await this.plugin.app.vault.adapter.list(this.plugin.fontsDirNPath)).files.filter((f) =>
       f.endsWith('.font'),
     );
 
@@ -163,20 +163,20 @@ export class FontList {
     const fontArrayBuffer = await (await fontData.blob()).arrayBuffer();
 
     // フォントの読み込み
-    await this.plugin.app.vault.adapter.writeBinary(`${this.plugin.fontsDirPath}/${basename}`, fontArrayBuffer);
+    await this.plugin.app.vault.adapter.writeBinary(`${this.plugin.fontsDirNPath}/${basename}`, fontArrayBuffer);
     await this.plugin.typst.store({
       fonts: [fontArrayBuffer],
     });
 
     // 表示
-    this.addImportedFontSetting(`${this.plugin.fontsDirPath}/${basename}`);
+    this.addImportedFontSetting(`${this.plugin.fontsDirNPath}/${basename}`);
 
     new Notice('Imported successfully!');
   }
 
   async removeFont(basename: string) {
     // フォントの削除
-    await this.plugin.app.vault.adapter.remove(`${this.plugin.fontsDirPath}/${basename}`);
+    await this.plugin.app.vault.adapter.remove(`${this.plugin.fontsDirNPath}/${basename}`);
 
     // 表示
     this.importedFontTableEl.children.namedItem(basename)?.remove();

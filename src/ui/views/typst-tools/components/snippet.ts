@@ -2,9 +2,10 @@ import { ButtonComponent, DropdownComponent, Setting } from 'obsidian';
 
 import { DefaultNewSnippet } from '@/libs/snippet';
 import type ObsidianTypstMate from '@/main';
-import { CategoryRenameModal } from './categoryRename';
-import { SnippetEditModal } from './snippetEdit';
-import { SnippetExtModal } from './snippetExt';
+
+import { CategoryRenameModal } from '../modals/categoryRename';
+import { SnippetEditModal } from '../modals/snippetEdit';
+import { SnippetExtModal } from '../modals/snippetExt';
 
 export class SnippetView {
   containerEl: HTMLElement;

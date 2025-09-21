@@ -16,7 +16,7 @@ export class PackagesList {
   constructor(plugin: ObsidianTypstMate, containerEl: HTMLElement) {
     this.plugin = plugin;
 
-    // システムパッケージ
+    // ローカルパッケージ
     if (Platform.isDesktopApp) {
       new Setting(containerEl)
         .setName('Import Local Package')
@@ -44,7 +44,7 @@ export class PackagesList {
     const packageSpecs: PackageSpecWithRPath[] = [];
 
     const { fs, path } = this.plugin;
-    for (let p of this.plugin.packagesDirPaths) {
+    for (let p of this.plugin.localPackagesDirPaths) {
       if (!path!.isAbsolute(p)) p = `${this.plugin.baseDirPath}/${p}`;
 
       const namespaces = fs!.readdirSync(p);
@@ -99,7 +99,7 @@ export class PackagesList {
   async displayPackageList() {
     this.packageTableEl.empty();
 
-    const specs = (await this.plugin.app.vault.adapter.list(this.plugin.cachesDirPath)).files
+    const specs = (await this.plugin.app.vault.adapter.list(this.plugin.cachesDirNPath)).files
       .filter((f) => f.endsWith('.cache'))
       .map((f) => {
         const [namespace, name, version] = f.replace('.cache', '').split('/').pop()!.split('_');
@@ -152,7 +152,7 @@ export class PackagesList {
 
   async removePackage(spec: PackageSpec) {
     await this.plugin.app.vault.adapter.remove(
-      `${this.plugin.cachesDirPath}/${spec.namespace}_${spec.name}_${spec.version}.cache`,
+      `${this.plugin.cachesDirNPath}/${spec.namespace}_${spec.name}_${spec.version}.cache`,
     );
 
     this.packageTableEl.children.namedItem(`${spec.namespace}/${spec.name}:${spec.version}`)?.remove();

@@ -17,14 +17,14 @@ export default class $ {
   wasm: ArrayBuffer;
   module!: InitOutput;
   typst!: Typst;
-  packagesDirPaths: string[];
+  localPackagesDirPaths: string[];
   fs?: typeof fsModule;
   path?: typeof pathModule;
   baseDirPath: string;
 
-  constructor(wasm: ArrayBuffer, packagesDirPaths: string[], baseDirPath: string, isDesktopApp: boolean) {
+  constructor(wasm: ArrayBuffer, localPackagesDirPaths: string[], baseDirPath: string, isDesktopApp: boolean) {
     this.wasm = wasm;
-    this.packagesDirPaths = packagesDirPaths;
+    this.localPackagesDirPaths = localPackagesDirPaths;
     this.baseDirPath = baseDirPath;
     if (isDesktopApp) {
       this.fs = require('node:fs');
@@ -32,7 +32,7 @@ export default class $ {
     }
   }
 
-  async init(fontsize = 16): Promise<void> {
+  async init(fontsize: number): Promise<void> {
     if (this.typst) this.typst.free();
     this.module = await init({
       module_or_path: await WebAssembly.compile(this.wasm),
@@ -41,27 +41,31 @@ export default class $ {
   }
 
   store(args: Args): void {
-    this.typst!.store(args.fonts ?? [], args.sources ?? [], args.processors ?? []);
+    this.typst.store(args.fonts ?? [], args.sources ?? [], args.processors ?? []);
   }
 
-  render(code: string, kind: string, id: string, format: 'svg'): SVGResult {
-    return this.typst![format](code, kind, id);
+  svg(code: string, kind: string, id: string): SVGResult {
+    return this.typst.svg(code, kind, id);
+  }
+
+  pdf(code: string, kind: string, id: string): PDFResult {
+    return this.typst.pdf(code, kind, id);
   }
 
   listFonts(): FontInfo[] {
-    return this.typst!.list_fonts();
+    return this.typst.list_fonts();
   }
 
   parseFont(font: ArrayBuffer): FontInfo[] {
-    return this.typst!.get_font_info(font);
+    return this.typst.get_font_info(font);
   }
 
   listPackages(): PackageSpec[] {
-    return this.typst!.list_packages();
+    return this.typst.list_packages();
   }
 
   mitex(code: string): string {
-    return this.typst!.mitex(code);
+    return this.typst.mitex(code);
   }
 
   fetch(path: string) {
@@ -104,7 +108,7 @@ export default class $ {
       if (namespace === 'preview') {
         if (this.fs) {
           try {
-            return readBinary(`@${path}`, `${this.packagesDirPaths[0]}/${p}/${vpath}`);
+            return readBinary(`@${path}`, `${this.localPackagesDirPaths[0]}/${p}/${vpath}`);
           } catch {}
         }
 
@@ -151,9 +155,9 @@ export default class $ {
     }
 
     if (isPackage) {
-      for (const packagesDirPath of this.packagesDirPaths) {
+      for (const localPackagesDirPath of this.localPackagesDirPaths) {
         try {
-          return readBinary(`@${path}`, `${packagesDirPath}/${path}`);
+          return readBinary(`@${path}`, `${localPackagesDirPath}/${path}`);
         } catch {}
       }
     } else {
@@ -220,6 +224,11 @@ export interface Diagnostic {
 
 export interface SVGResult {
   svg: string;
+  diags: Diagnostic[];
+}
+
+export interface PDFResult {
+  pdf: Uint8Array;
   diags: Diagnostic[];
 }
 

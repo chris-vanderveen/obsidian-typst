@@ -29,7 +29,7 @@
     #d3b7ff 90%,
     #ff9fb3 100%
   );
-  animation: typstmate-rainbow 2s linear infinite;
+  animation: typstmate-rainbow 1s linear infinite;
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -38,9 +38,9 @@
 
 @keyframes typstmate-rainbow {
   0% {
-    background-position: 200% center;
+    background-position: 100% center;
   }
   100% {
-    background-position: -200% center;
+    background-position: -100% center;
   }
 }

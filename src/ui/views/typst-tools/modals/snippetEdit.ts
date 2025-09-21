@@ -2,7 +2,7 @@ import { type App, Modal, Notice, Setting } from 'obsidian';
 
 import type ObsidianTypstMate from '@/main';
 
-import './snippet.css';
+import './snippet-edit.css';
 
 export class SnippetEditModal extends Modal {
   kind: 'inline' | 'display' | 'codeblock';

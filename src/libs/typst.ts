@@ -1,12 +1,15 @@
 import { Notice } from 'obsidian';
-import { DEFAULT_SETTINGS } from '@/core/settings';
+
+import { DEFAULT_FONT_SIZE } from '@/constants';
+import InlinePreviewElement from '@/core/editor/elements/InlinePreview';
+import SnippetSuggestElement from '@/core/editor/elements/SnippetSuggest';
+import SymbolSuggestElement from '@/core/editor/elements/SymbolSuggest';
+import { DEFAULT_SETTINGS } from '@/core/settings/settings';
 import type ObsidianTypstMate from '@/main';
-import InlinePreviewElement from '@/ui/components/InlinePreview';
-import SnippetSuggestElement from '@/ui/components/SnippetSuggest';
-import TypstSVGElement from '@/ui/components/SVG';
-import SymbolSuggestElement from '@/ui/components/SymbolSuggest';
+import TypstSVGElement from '@/ui/elements/SVG';
 import { overwriteCustomElements } from '@/utils/custromElementRegistry';
 import { unzip, zip } from '@/utils/packageCompressor';
+
 import type { Processor, ProcessorKind } from './processor';
 import type { PackageSpec } from './worker';
 
@@ -25,9 +28,9 @@ export default class TypstManager {
 
   async init() {
     this.ready = false;
-    await this.plugin.typst.init(this.plugin.app.vault.config.baseFontSize);
+    await this.plugin.typst.init(this.plugin.app.vault.config.baseFontSize ?? DEFAULT_FONT_SIZE);
 
-    const fontPaths = (await this.plugin.app.vault.adapter.list(this.plugin.fontsDirPath)).files.filter((file) =>
+    const fontPaths = (await this.plugin.app.vault.adapter.list(this.plugin.fontsDirNPath)).files.filter((file) =>
       file.endsWith('.font'),
     );
     const fonts = (
@@ -59,7 +62,7 @@ export default class TypstManager {
     // キャッシュ
     const sources: Map<string, Uint8Array> = new Map();
     if (!this.plugin.settings.disablePackageCache) {
-      const cachePaths = (await this.plugin.app.vault.adapter.list(this.plugin.cachesDirPath)).files.filter((file) =>
+      const cachePaths = (await this.plugin.app.vault.adapter.list(this.plugin.cachesDirNPath)).files.filter((file) =>
         file.endsWith('.cache'),
       );
       for (const cachePath of cachePaths) {
@@ -233,7 +236,7 @@ export default class TypstManager {
   async createCache(packageSpec: PackageSpec, store: boolean, targetDirPaths?: string[]) {
     const map = new Map<string, Uint8Array>();
 
-    const baseDirPaths = targetDirPaths ?? this.plugin.packagesDirPaths;
+    const baseDirPaths = targetDirPaths ?? this.plugin.localPackagesDirPaths;
     for (const baseDirPath of baseDirPaths) {
       try {
         await this.collectFiles(
@@ -245,7 +248,7 @@ export default class TypstManager {
     }
 
     await this.plugin.app.vault.adapter.writeBinary(
-      `${this.plugin.cachesDirPath}/${packageSpec.namespace}_${packageSpec.name}_${packageSpec.version}.cache`,
+      `${this.plugin.cachesDirNPath}/${packageSpec.namespace}_${packageSpec.name}_${packageSpec.version}.cache`,
       zip(map).slice().buffer,
     );
 

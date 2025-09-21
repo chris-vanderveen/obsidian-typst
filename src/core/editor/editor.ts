@@ -1,11 +1,12 @@
 import { type Editor, type EditorPosition, type MarkdownView, Notice } from 'obsidian';
+
 import { DEFAULT_FONT_SIZE } from '@/constants';
 import type { Snippet } from '@/libs/snippet';
 import type ObsidianTypstMate from '@/main';
-import type InlinePreviewElement from '@/ui/components/InlinePreview';
-import type SnippetSuggestElement from '@/ui/components/SnippetSuggest';
-import type SymbolSuggestElement from '@/ui/components/SymbolSuggest';
 import { type SymbolData, searchSymbols } from '@/utils/symbolSearcher';
+import type InlinePreviewElement from './elements/InlinePreview';
+import type SnippetSuggestElement from './elements/SnippetSuggest';
+import type SymbolSuggestElement from './elements/SymbolSuggest';
 
 export interface Position {
   x: number;

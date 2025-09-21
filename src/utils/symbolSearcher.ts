@@ -8,6 +8,17 @@ const SYMBOLS_BY_LATEX = Object.fromEntries(
 const NAMES = Object.keys(SYMBOLS_BY_NAME).sort((a, b) => a.length - b.length);
 const LATEXES = Object.keys(SYMBOLS_BY_LATEX).sort((a, b) => a.length - b.length);
 
+export function searchSymbols(rawQuery: string): SymbolData[] {
+  switch (rawQuery.at(0)) {
+    // LaTeX で検索
+    case '\\':
+      return searchSymbolInternal(rawQuery.replace(/\\/g, ''), LATEXES, SYMBOLS_BY_LATEX);
+    // Typst で検索
+    default:
+      return searchSymbolInternal(rawQuery, NAMES, SYMBOLS_BY_NAME);
+  }
+}
+
 function searchSymbolInternal(query: string, keys: string[], dict: SymbolsDict): SymbolData[] {
   // 含んでいるものでフィルターする.
   const includes = keys.filter((key) => key.includes(query));
@@ -29,17 +40,6 @@ function searchSymbolInternal(query: string, keys: string[], dict: SymbolsDict):
     .map((key) => ({ ...dict[key]!, kind: 'substring' }));
 
   return [...bases, ...variants, ...substrings] as SymbolData[];
-}
-
-export function searchSymbols(rawQuery: string): SymbolData[] {
-  switch (rawQuery.at(0)) {
-    // LaTeX で検索
-    case '\\':
-      return searchSymbolInternal(rawQuery.replace(/\\/g, ''), LATEXES, SYMBOLS_BY_LATEX);
-    // Typst で検索
-    default:
-      return searchSymbolInternal(rawQuery, NAMES, SYMBOLS_BY_NAME);
-  }
 }
 
 export interface SymbolData {

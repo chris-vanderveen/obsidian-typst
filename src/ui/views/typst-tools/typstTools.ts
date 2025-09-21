@@ -1,9 +1,10 @@
 import { ButtonComponent, DropdownComponent, ItemView, Platform, type WorkspaceLeaf } from 'obsidian';
 import { tex2typst, typst2tex } from 'tex2typst';
 
-import { ProcessorList } from '@/core/settings/processor';
+import { ProcessorList } from '@/core/settings/components/processor';
 import type ObsidianTypstMate from '@/main';
-import { SnippetView } from './typst-tools/snippet';
+
+import { SnippetView } from './components/snippet';
 
 import './typst-tools.css';
 
