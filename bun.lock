@@ -22,12 +22,12 @@
         "obsidian-excalidraw-plugin": "github:zsviczian/obsidian-excalidraw-plugin#master",
         "obsidian-typings": "latest",
         "postcss": "latest",
-        "puppeteer": "latest",
         "vite": "latest",
         "vite-plugin-static-copy": "latest",
         "vite-tsconfig-paths": "latest",
       },
       "peerDependencies": {
+        "puppeteer": "latest",
         "typescript": "latest",
       },
     },
@@ -991,7 +991,7 @@
 
     "obsidian": ["obsidian@1.8.7", "", { "dependencies": { "@types/codemirror": "5.60.8", "moment": "2.29.4" }, "peerDependencies": { "@codemirror/state": "^6.0.0", "@codemirror/view": "^6.0.0" } }, "sha512-h4bWwNFAGRXlMlMAzdEiIM2ppTGlrh7uGOJS6w4gClrsjc+ei/3YAtU2VdFUlCiPuTHpY4aBpFJJW75S1Tl/JA=="],
 
-    "obsidian-excalidraw-plugin": ["obsidian-excalidraw-plugin@github:zsviczian/obsidian-excalidraw-plugin#b976a5d", { "dependencies": { "@popperjs/core": "^2.11.8", "@zsviczian/colormaster": "^1.2.2", "@zsviczian/excalidraw": "0.18.0-37", "chroma-js": "^3.1.2", "clsx": "^2.0.0", "es6-promise-pool": "2.5.0", "gl-matrix": "^3.4.3", "js-yaml": "^4.1.0", "lucide-react": "^0.479.0", "mathjax-full": "^3.2.2", "monkey-around": "^2.3.0", "nanoid": "^4.0.2", "opentype.js": "^1.3.4", "polybooljs": "^1.2.0", "react": "^18.2.0", "react-dom": "^18.2.0", "roughjs": "^4.5.2", "woff2sfnt-sfnt2woff": "^1.0.0" } }, "zsviczian-obsidian-excalidraw-plugin-b976a5d"],
+    "obsidian-excalidraw-plugin": ["obsidian-excalidraw-plugin@github:zsviczian/obsidian-excalidraw-plugin#537b01f", { "dependencies": { "@popperjs/core": "^2.11.8", "@zsviczian/colormaster": "^1.2.2", "@zsviczian/excalidraw": "0.18.0-37", "chroma-js": "^3.1.2", "clsx": "^2.0.0", "es6-promise-pool": "2.5.0", "gl-matrix": "^3.4.3", "js-yaml": "^4.1.0", "lucide-react": "^0.479.0", "mathjax-full": "^3.2.2", "monkey-around": "^2.3.0", "nanoid": "^4.0.2", "opentype.js": "^1.3.4", "polybooljs": "^1.2.0", "react": "^18.2.0", "react-dom": "^18.2.0", "roughjs": "^4.5.2", "woff2sfnt-sfnt2woff": "^1.0.0" } }, "zsviczian-obsidian-excalidraw-plugin-537b01f"],
 
     "obsidian-typings": ["obsidian-typings@4.51.0", "", { "dependencies": { "@antfu/utils": "9.2.0", "@capacitor/core": "5.7.8", "@codemirror/language": "6.11.2", "@codemirror/search": "6.5.11", "@codemirror/state": "6.5.2", "@lezer/common": "1.2.3", "@pixi/color": "7.2.4", "@pixi/events": "7.2.4", "@pixi/settings": "7.2.4", "@types/codemirror": "5.60.16", "@types/css-font-loading-module": "0.0.14", "@types/dompurify": "3.0.1", "@types/node": "^18.17.0 || >=20.1.0", "@types/prismjs": "1.26.5", "@types/turndown": "5.0.5", "colord": "2.9.3", "electron": ">=1.6.10", "i18next": "25.2.1", "mermaid": "11.4.1", "moment": "2.29.4", "obsidian": "1.8.7", "pdfjs-dist": "5.3.31", "pixi.js": "7.2.4", "scrypt-js": "3.0.1", "style-mod": "4.1.2" }, "peerDependencies": { "typescript": ">=4.8.0" } }, "sha512-gPqkYsMpwMJG1wJ/pUrw6z0Q4Hi9DNzW/akyO6xwSljGI8rBpyt0zomqLSlCBQZVUcuYd7yZZUtWXKPJl1NUGg=="],
 
