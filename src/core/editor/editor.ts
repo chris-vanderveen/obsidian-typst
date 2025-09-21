@@ -64,8 +64,9 @@ export class EditorHelper {
 
   private onKeyDown(e: KeyboardEvent) {
     if (e.key === 'Tab') {
-      if (this.snippetSuggestEl.isOpen || this.symbolSuggestEl.isOpen) return;
-      if (!isCursorMath()) return;
+      if (this.snippetSuggestEl.isOpen || this.symbolSuggestEl.isOpen) return; // サジェストが開いている
+      if (!getSelection()!.isCollapsed) return; // 選択されている
+      if (!isCursorMath()) return; // 数式内にいない
 
       const cursor = this.editor?.getCursor();
       if (!cursor) return;
@@ -369,6 +370,7 @@ function isCursorDisplayMath(): boolean {
   return document.body.querySelector('span.cm-formatting-math.cm-math-block') !== null;
 }
 
+// ? インライン数式にいるかどうかはこれと isCursorDisplayMath を組み合わせる
 function isCursorMath(): boolean {
   return document.body.querySelector('span.cm-formatting-math') !== null;
 }
