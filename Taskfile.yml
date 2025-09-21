@@ -49,7 +49,7 @@ tasks:
         sh: "bun scripts/version.ts --type {{.TYPE}}"
     cmds:
       - git add manifest.json versions.json
-      - git commit -m "update version {{.tag}}"
+      - git commit -m "release {{.tag}}"
       - git tag "{{.tag}}"
       - git push
       - git push origin "{{.tag}}"

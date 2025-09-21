@@ -4,9 +4,9 @@ Snippets can only be used in *inline math* or *display math*.
 
 ## How to Use
 
-Enter @ mode by typing `@` after an alphabet character.
+Enter @-mode by typing `@` after a-zA-Z character(s).
 In this mode, `@` turns rainbow-colored and the input method changes.
-In this state, keyboard input will enter characters before the @ (or inside parentheses).
+In this state, keyboard input will enter characters before the `@` (or inside parentheses).
 For operations like completion and execution, refer to the following:
 
 |Role|Command|
