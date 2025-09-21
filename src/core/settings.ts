@@ -149,6 +149,7 @@ export const DEFAULT_SETTINGS: Settings = {
     {
       category: 'Matrix',
       name: 'mat',
+      description: 'e.g. mat(3,3)@',
       kind: 'display',
       id: '',
       content:
@@ -158,6 +159,7 @@ export const DEFAULT_SETTINGS: Settings = {
     {
       category: 'Matrix',
       name: 'matInline',
+      description: 'e.g. mat(3,3)@',
       kind: 'inline',
       id: '',
       content:
@@ -167,6 +169,7 @@ export const DEFAULT_SETTINGS: Settings = {
     {
       category: 'Cases',
       name: 'cases',
+      description: '',
       kind: 'display',
       id: '',
       content: 'cases(#CURSOR "if" #CURSOR, #CURSOR "else")',
@@ -175,6 +178,7 @@ export const DEFAULT_SETTINGS: Settings = {
     {
       category: 'Cases',
       name: 'casesn',
+      description: 'e.g. casesn(3)@',
       kind: 'display',
       id: '',
       content:

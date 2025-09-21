@@ -52,24 +52,26 @@ export class SnippetView {
       .onClick(() => {
         new CategoryRenameModal(this.plugin.app, this.plugin, this.currentCategory!, this).open();
       });
-
-    // スニペットの作成
-    new ButtonComponent(this.menuEl)
-      .setButtonText('New')
-      .setTooltip('New')
-      .onClick(() => {
-        const defaultSnippet = Object.assign({}, DefaultNewSnippet);
-        defaultSnippet.category = this.currentCategory ?? 'Uncategorized';
-
-        this.plugin.settings.snippets?.push(defaultSnippet);
-        this.plugin.saveSettings();
-        this.buildSnippets();
-      });
   }
 
   buildSnippets() {
     this.snippetsEl.empty();
     const category = this.dropdown.getValue();
+
+    // スニペットの作成
+    new Setting(this.snippetsEl).addButton((button) => {
+      button
+        .setButtonText('New')
+        .setTooltip('New')
+        .onClick(() => {
+          const defaultSnippet = Object.assign({}, DefaultNewSnippet);
+          defaultSnippet.category = this.currentCategory ?? 'Uncategorized';
+
+          this.plugin.settings.snippets?.push(defaultSnippet);
+          this.plugin.saveSettings();
+          this.buildSnippets();
+        });
+    });
 
     this.plugin.settings.snippets?.forEach((snippet, index) => {
       if (snippet.category !== category) return;

@@ -62,7 +62,7 @@ export class SnippetEditModal extends Modal {
     });
 
     // コード
-    new Setting(this.contentEl).setName('Code').addTextArea((area) => {
+    new Setting(this.contentEl).addTextArea((area) => {
       area.setValue(this.content);
       area.inputEl.addClass('typstmate-snippet-code');
 
@@ -83,8 +83,10 @@ export class SnippetEditModal extends Modal {
         this.script = isScript;
         plugin.saveSettings();
         this.previewEl.empty();
-        this.previewContentEl = this.previewEl.createEl('div');
-        if (!isScript) return this.renderPreview();
+        if (!isScript) {
+          this.previewContentEl = this.previewEl.createEl('div');
+          return this.renderPreview();
+        }
 
         const scriptSetting = new Setting(this.previewEl);
         let value = '';
@@ -108,11 +110,11 @@ export class SnippetEditModal extends Modal {
               }
             });
         });
+        this.previewContentEl = this.previewEl.createEl('div');
       });
     });
     this.previewEl = this.contentEl.createEl('div');
     this.previewEl.className = 'typstmate-leaf-snippetext-preview';
-    this.previewContentEl = this.previewEl.createEl('div');
     if (this.script) {
       const scriptSetting = new Setting(this.previewEl);
       let value = '';
@@ -137,6 +139,7 @@ export class SnippetEditModal extends Modal {
           });
       });
     }
+    this.previewContentEl = this.previewEl.createEl('div');
 
     this.renderPreview();
   }
