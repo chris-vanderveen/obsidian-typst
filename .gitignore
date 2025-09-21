@@ -1,8 +1,7 @@
-node_modules
-
 pkg
 dist
 wasm/target
+node_modules
 
 .env
 .idea
