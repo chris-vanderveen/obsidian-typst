@@ -3,7 +3,8 @@ import { ButtonComponent, DropdownComponent, Setting } from 'obsidian';
 import { DefaultNewSnippet } from '@/libs/snippet';
 import type ObsidianTypstMate from '@/main';
 import { SnippetEditModal } from '@/ui/modals/snippetEdit';
-import { SnippetExtModal } from '@/ui/modals/snippetExt';
+import { SnippetExtModal } from './snippetExt';
+import { CategoryRenameModal } from './categoryRename';
 
 export class SnippetView {
   containerEl: HTMLElement;
@@ -11,7 +12,7 @@ export class SnippetView {
   currentCategory?: string;
 
   menuEl: HTMLElement;
-  dropdownEl!: DropdownComponent;
+  dropdown!: DropdownComponent;
 
   snippetsEl: HTMLElement;
 
@@ -31,18 +32,26 @@ export class SnippetView {
 
   buildMenu() {
     // カテゴリーの選択
-    this.dropdownEl = new DropdownComponent(this.menuEl);
+    this.dropdown = new DropdownComponent(this.menuEl);
     const categories = (this.plugin.settings.snippets?.map((snippet) => snippet.category) ?? []).filter(
       (category) => category !== 'Uncategorized',
     );
-    this.dropdownEl.addOption('Uncategorized', 'Uncategorized');
-    this.dropdownEl.addOptions(Object.fromEntries(categories.map((name) => [name, name])));
+    this.dropdown.addOption('Uncategorized', 'Uncategorized');
+    this.dropdown.addOptions(Object.fromEntries(categories.map((name) => [name, name])));
 
-    this.dropdownEl.setValue(this.currentCategory ?? 'Uncategorized');
-    this.dropdownEl.onChange((category) => {
+    this.dropdown.setValue(this.currentCategory ?? 'Uncategorized');
+    this.dropdown.onChange((category) => {
       this.currentCategory = category;
       this.buildSnippets();
     });
+
+    // カテゴリー名の変更
+    new ButtonComponent(this.menuEl)
+      .setIcon('pencil')
+      .setTooltip('Rename')
+      .onClick(() => {
+        new CategoryRenameModal(this.plugin.app, this.plugin, this.currentCategory!, this).open();
+      });
 
     // スニペットの作成
     new ButtonComponent(this.menuEl)
@@ -60,7 +69,7 @@ export class SnippetView {
 
   buildSnippets() {
     this.snippetsEl.empty();
-    const category = this.dropdownEl.getValue();
+    const category = this.dropdown.getValue();
 
     this.plugin.settings.snippets?.forEach((snippet, index) => {
       if (snippet.category !== category) return;
