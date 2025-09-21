@@ -4,7 +4,7 @@ Snippets can only be used in *inline math* or *display math*.
 
 ## How to Use
 
-Enter @-mode by typing `@` after a-zA-Z character(s).
+Enter @-mode by typing `@` after one or more alphabetic characters.
 In this mode, `@` turns rainbow-colored and the input method changes.
 In this state, keyboard input will enter characters before the `@` (or inside parentheses).
 For operations like completion and execution, refer to the following:
@@ -22,7 +22,7 @@ For operations like completion and execution, refer to the following:
 When a snippet is executed, the first `#CURSOR` is removed and the cursor moves there.
 Also, pressing the Tab key moves to the next `#CURSOR`.
 
-## Script Mode
+## Script
 
 The value inside parentheses before `@` is passed as a string to `value`.
 Additionally, the `window` object is also passed.
