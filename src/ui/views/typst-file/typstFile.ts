@@ -1,4 +1,4 @@
-import { ItemView, type TFile, type WorkspaceLeaf } from 'obsidian';
+import { ItemView, type WorkspaceLeaf } from 'obsidian';
 
 import type ObsidianTypstMate from '@/main';
 
@@ -19,7 +19,9 @@ export class TypstFileView extends ItemView {
     return 'Typst File';
   }
 
-  override async onOpen(): Promise<void> {}
+  override async onOpen(): Promise<void> {
+    // TODO:
+  }
 
   override async onClose(): Promise<void> {}
 }

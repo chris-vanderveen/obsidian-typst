@@ -89,6 +89,7 @@ export default class TypstManager {
 
           const waitingElements = document.querySelectorAll('.typstmate-waiting');
           for (const el of waitingElements) {
+            el.empty();
             this.render(el.textContent!, el, el.getAttribute('kind')!);
           }
         });
@@ -193,15 +194,16 @@ export default class TypstManager {
     containerEl.addClass(`typstmate-${kind}`, `typstmate-style-${processor.styling}`, `typstmate-id-${processor.id}`);
 
     // レンダリング
-    const t = document.createElement('typstmate-svg') as TypstSVGElement;
-    t.plugin = this.plugin;
-    t.kind = kind as ProcessorKind;
-    t.source = code;
-    t.processor = processor;
-    containerEl.appendChild(t);
-    t.render();
+    const typstSVGEl = document.createElement('typstmate-svg') as TypstSVGElement;
+    typstSVGEl.plugin = this.plugin;
+    typstSVGEl.kind = kind as ProcessorKind;
+    typstSVGEl.source = code;
+    typstSVGEl.processor = processor;
+    containerEl.appendChild(typstSVGEl);
+    typstSVGEl.render();
 
-    if (processor === this.beforeProcessor) t.innerHTML = this.beforeSVG;
+    // ちらつき防止(仮)
+    if (processor === this.beforeProcessor) typstSVGEl.innerHTML = this.beforeSVG;
 
     return containerEl as HTMLElement;
   }

@@ -13,7 +13,6 @@ import {
   Plugin,
   renderMath,
   requestUrl,
-  type TFile,
   TFolder,
   type WorkspaceLeaf,
 } from 'obsidian';
