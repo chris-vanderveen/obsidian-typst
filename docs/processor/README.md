@@ -26,7 +26,7 @@ Works with *inline math* (`$...$`).
 To specify a processor, place the ID at the beginning followed by a colon and then the code, like `id:code`.
 
 The `inline-middle` styling option vertically centers inline math so it lines up naturally with the surrounding text. Since it may be offset from regular text input, please use it appropriately depending on the situation.
-[![Screenshot](assets/inline.png)](#inline)
+[![Screenshot](assets/inline-styling.png)](#inline-styling)
 
 ### Display Processor
 

@@ -8,11 +8,11 @@ Render math expressions in [Obsidian](https://obsidian.md) using [Typst](https:/
 
 [![TypstMate](assets/demo.png)](#demo)
 
-[![SymbolSuggest](assets/symbol.gif)](#symbol)
+[![SymbolSuggest](assets/symbol-suggest.gif)](#symbol-suggest)
 
 Snippet                  | Script
 :-----------------------:|:------------------------:
-[![Snippet](assets/snippet.gif)](#snippet) | [![Script](assets/script.gif)](#script)
+[![Snippet](assets/snippet.gif)](#snippet) | [![Script](assets/script-snippet.gif)](#script-snippet)
 
 For details about the processor / snippet(script), see [Processor.md](docs/processor/) / [Snippet.md](docs/snippet/).
 
@@ -58,7 +58,7 @@ Turned OFF               | Turned ON
 Currently, it's under review for the official plugin list. This process may take several months.
 Until then, please install using the official plugin [BRAT](https://tfthacker.com/brat-quick-guide).
 
-[![Screenshot](assets/brat.png)](#brat)
+[![Screenshot](assets/install-with-brat.png)](#install-with-brat)
 
 ## Compatibility
 
