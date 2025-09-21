@@ -46,14 +46,6 @@
       "quoteStyle": "single"
     }
   },
-  "assist": {
-    "enabled": true,
-    "actions": {
-      "source": {
-        "organizeImports": "on"
-      }
-    }
-  },
   "files": {
     "ignoreUnknown": false,
     "includes": ["src/**", "scripts/*", "vite.config.ts", "postcss.config.cjs"]
