@@ -1,7 +1,9 @@
 import type { Editor } from 'obsidian';
-import type { Position } from '@/core/editor';
+
 import type { Snippet } from '@/libs/snippet';
 import type ObsidianTypstMate from '@/main';
+
+import type { Position } from '../editor';
 
 import './snippet-suggest.css';
 

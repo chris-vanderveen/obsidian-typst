@@ -1,8 +1,9 @@
 import type { Editor } from 'obsidian';
 
-import type { Position } from '@/core/editor/editor';
 import type ObsidianTypstMate from '@/main';
 import type { SymbolData } from '@/utils/symbolSearcher';
+
+import type { Position } from '../editor';
 
 import './symbol-suggest.css';
 

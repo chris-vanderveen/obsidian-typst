@@ -56,10 +56,7 @@ export class EditorHelper {
     this.symbolSuggestEl.appendChild(this.symbolSuggestEl.container);
 
     document.addEventListener('keydown', this.keyListener, { capture: true });
-  }
 
-  appendChildren(): void {
-    document.body.setAttribute('typstmate-loaded', 'true');
     this.plugin.app.workspace.containerEl.appendChild(this.inlinePreviewEl);
     this.plugin.app.workspace.containerEl.appendChild(this.snippetSuggestEl);
     this.plugin.app.workspace.containerEl.appendChild(this.symbolSuggestEl);

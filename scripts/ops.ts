@@ -5,7 +5,7 @@ const difs = ['dif', 'Dif'].map((name) => ({
   unicName: '',
   name: name,
   shorthand: null,
-  mathClass: 'op',
+  mathClass: 'Op',
   latexName: '',
 })) as SymbolData[];
 

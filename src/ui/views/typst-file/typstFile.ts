@@ -1,6 +1,8 @@
-import { ItemView, type WorkspaceLeaf } from 'obsidian';
+import { ItemView, type Menu, type WorkspaceLeaf } from 'obsidian';
 
 import type ObsidianTypstMate from '@/main';
+
+// TODO
 
 export class TypstFileView extends ItemView {
   static viewtype = 'typst-file';
@@ -20,8 +22,16 @@ export class TypstFileView extends ItemView {
   }
 
   override async onOpen(): Promise<void> {
-    // TODO:
+    this.addAction('text', 'Open as markdown', async (_eventType) => {});
   }
 
   override async onClose(): Promise<void> {}
+
+  override onPaneMenu(menu: Menu, source: string) {
+    menu.addItem((item) => {
+      item.setTitle('Open as markdown').setIcon('lucide-file-text');
+    });
+
+    super.onPaneMenu(menu, source);
+  }
 }

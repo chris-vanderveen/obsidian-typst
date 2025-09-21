@@ -103,7 +103,6 @@ export default class ObsidianTypstMate extends Plugin {
 
       // EditorHelper を初期化
       this.editorHelper = new EditorHelper(this);
-      if (document.body.getAttribute('typstmate-loaded') === 'true') this.editorHelper.appendChildren();
 
       // Typst Tools を登録
       this.registerView(TypstToolsView.viewtype, (leaf) => new TypstToolsView(leaf, this));
@@ -259,7 +258,6 @@ export default class ObsidianTypstMate extends Plugin {
       this.app.workspace.on('css-change', this.applyBaseColor.bind(this)),
       this.app.workspace.on('editor-change', this.editorHelper.onEditorChange.bind(this.editorHelper)),
       this.app.workspace.on('active-leaf-change', this.editorHelper.removePreview.bind(this)),
-      this.app.workspace.on('layout-ready', this.editorHelper.appendChildren.bind(this.editorHelper)),
       this.app.workspace.on('file-menu', (menu: Menu, fileOrFolder) => {
         if (fileOrFolder instanceof TFolder) {
           menu.addItem(async (item) => {

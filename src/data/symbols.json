@@ -4944,7 +4944,7 @@
     "latexName": "\\mdblklozenge"
   },
   "lrm": {
-    "sym": "‎",
+    "sym": "lrm",
     "unicName": "Left To Right Mark",
     "name": "lrm",
     "shorthand": null,
@@ -6432,7 +6432,7 @@
     "latexName": "\\mupvarrho"
   },
   "rlm": {
-    "sym": "‏",
+    "sym": "rlm",
     "unicName": "Right To Left Mark",
     "name": "rlm",
     "shorthand": null,
@@ -6736,7 +6736,7 @@
     "latexName": "\\smte"
   },
   "space.nobreak.narrow": {
-    "sym": " ",
+    "sym": "nnbsp",
     "unicName": "Narrow No Break Space",
     "name": "space.nobreak.narrow",
     "shorthand": null,
@@ -8143,8 +8143,8 @@
     "mathClass": "Space",
     "latexName": "\\mupzeta"
   },
-  "dif": { "sym": "dif", "unicName": "", "name": "dif", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "Dif": { "sym": "Dif", "unicName": "", "name": "Dif", "shorthand": null, "mathClass": "op", "latexName": "" },
+  "dif": { "sym": "dif", "unicName": "", "name": "dif", "shorthand": null, "mathClass": "Op", "latexName": "" },
+  "Dif": { "sym": "Dif", "unicName": "", "name": "Dif", "shorthand": null, "mathClass": "Op", "latexName": "" },
   "det": { "sym": "det", "unicName": "", "name": "det", "shorthand": null, "mathClass": "op", "latexName": "" },
   "gcd": { "sym": "gcd", "unicName": "", "name": "gcd", "shorthand": null, "mathClass": "op", "latexName": "" },
   "lcm": { "sym": "lcm", "unicName": "", "name": "lcm", "shorthand": null, "mathClass": "op", "latexName": "" },

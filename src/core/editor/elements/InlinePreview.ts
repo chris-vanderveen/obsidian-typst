@@ -1,6 +1,5 @@
-import type { Position } from '@/core/editor';
-
 import type ObsidianTypstMate from '@/main';
+import type { Position } from '../editor';
 
 import './inline-preview.css';
 
