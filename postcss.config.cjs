@@ -1,7 +1,8 @@
 module.exports = {
   plugins: {
     autoprefixer: {
-      overrideBrowserslist: ['Electron >= 29', 'iOS >= 14.5', 'Android >= 5.1'],
+      // Obsidian 1.0.0
+      overrideBrowserslist: ['Electron >= 21', 'iOS >= 14.5', 'Android >= 5.1'],
     },
   },
 };
