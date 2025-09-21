@@ -34,12 +34,12 @@ jobs:
             sccache-${{ runner.os }}-${{ hashFiles('wasm/Cargo.lock') }}
             sccache-${{ runner.os }}-
 
+      - name: Use Bun
+        uses: oven-sh/setup-bun@v2
+
       - name: Install wasm-pack
         run: |
           curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-
-      - name: Use Bun
-        uses: oven-sh/setup-bun@v2
 
       - name: Build Wasm
         run: |
