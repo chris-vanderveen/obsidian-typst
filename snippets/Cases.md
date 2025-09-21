@@ -7,7 +7,7 @@
 cases(#CURSOR "if" #CURSOR, #CURSOR "else")
 ```
 
-## casesn / display (script)
+## casesn (script)
 
 `e.g. 3`
 

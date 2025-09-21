@@ -14,7 +14,7 @@ Snippet                  | Script
 :-----------------------:|:------------------------:
 [![Snippet](assets/snippet.gif)](#snippet) | [![Script](assets/script.gif)](#script)
 
-For details about the processor / snippet(script), see [Processor.md](Processor.md) / [Snippet.md](snippets/README.md).
+For details about the processor / snippet(script), see [Processor.md](Processor.md) / [Snippet.md](snippets/).
 
 I welcome pull requests featuring your wonderful snippets!
 
