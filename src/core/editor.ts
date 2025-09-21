@@ -1,4 +1,4 @@
-import { Notice, type Editor, type EditorPosition, type MarkdownView } from 'obsidian';
+import { type Editor, type EditorPosition, type MarkdownView, Notice } from 'obsidian';
 import { DEFAULT_FONT_SIZE } from '@/constants';
 import type { Snippet } from '@/libs/snippet';
 import type ObsidianTypstMate from '@/main';
@@ -255,8 +255,7 @@ export class EditorHelper {
     let content = snippet.content;
     if (snippet.script) {
       try {
-        content = new Function('input', content)(this.value?.slice(1, -1));
-        console.log(content);
+        content = new Function('input', 'window', content)(this.value?.slice(1, -1), window);
       } catch (e) {
         new Notice(String(e));
         return;

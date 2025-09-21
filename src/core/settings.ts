@@ -3,6 +3,7 @@ import { type App, debounce, Notice, Platform, PluginSettingTab, Setting } from 
 import type { CodeblockProcessor, DisplayProcessor, ExcalidrawProcessor, InlineProcessor } from '@/libs/processor';
 import type { Snippet } from '@/libs/snippet';
 import type ObsidianTypstMate from '@/main';
+import type { TypstToolsView } from '@/ui/views/typstTools';
 import { CustomFragment } from '@/utils/customFragment';
 import { FontList } from './settings/font';
 import { PackagesList } from './settings/package';
@@ -567,7 +568,9 @@ export class SettingTab extends PluginSettingTab {
     const a = div.createEl('a', { text: 'Leaf' });
     a.addEventListener('click', async () => {
       const leaf = await this.plugin.activateLeaf();
-      if (leaf) await this.app.workspace.revealLeaf(leaf);
+      if (!leaf) return;
+      await this.app.workspace.revealLeaf(leaf);
+      (leaf.view as TypstToolsView).openContent('snippets');
       this.app.setting.close();
     });
   }

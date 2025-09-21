@@ -103,7 +103,7 @@ export class SnippetEditModal extends Modal {
             .setTooltip('Preview')
             .onClick(() => {
               try {
-                const content = new Function('input', this.content)(value);
+                const content = new Function('input', 'window', this.content)(value, window);
                 this.renderPreview(content);
               } catch (e) {
                 new Notice(String(e));
@@ -131,7 +131,7 @@ export class SnippetEditModal extends Modal {
           .setTooltip('Preview')
           .onClick(() => {
             try {
-              const content = new Function('input', this.content)(value);
+              const content = new Function('input', 'window', this.content)(value, window);
               this.renderPreview(content);
             } catch (e) {
               new Notice(String(e));

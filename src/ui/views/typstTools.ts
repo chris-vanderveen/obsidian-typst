@@ -12,6 +12,9 @@ export class TypstToolsView extends ItemView {
 
   plugin: ObsidianTypstMate;
 
+  dropdown!: DropdownComponent;
+  onChangeHandler!: (value: string) => void;
+
   constructor(leaf: WorkspaceLeaf, plugin: ObsidianTypstMate) {
     super(leaf);
     this.plugin = plugin;
@@ -37,16 +40,16 @@ export class TypstToolsView extends ItemView {
     // メニュー
     const menuEl = container.createEl('div');
     menuEl.className = 'typstmate-menu';
-    const dropdown = new DropdownComponent(menuEl);
+    this.dropdown = new DropdownComponent(menuEl);
     if (Platform.isDesktop) {
-      dropdown.addOption('symbols', 'Symbols').addOption('packages', 'Packages');
+      this.dropdown.addOption('symbols', 'Symbols').addOption('packages', 'Packages');
     }
-    dropdown
+    this.dropdown
       .addOption('snippets', 'Snippets')
       .addOption('converter', 'Converter')
       .addOption('processors', 'Processors');
 
-    const onChangeHandler = (value: string) => {
+    this.onChangeHandler = (value: string) => {
       contentEl.empty();
       switch (value) {
         case 'symbols':
@@ -127,13 +130,13 @@ export class TypstToolsView extends ItemView {
           break;
       }
     };
-    dropdown.onChange(onChangeHandler);
+    this.dropdown.onChange(this.onChangeHandler);
 
     new ButtonComponent(menuEl)
       .setIcon('refresh-ccw')
       .setTooltip('再読み込み')
       .onClick(() => {
-        switch (dropdown.getValue()) {
+        switch (this.dropdown.getValue()) {
           case 'symbols':
             contentEl.createEl('iframe').src = 'https://typst.app/docs/reference/symbols/sym/';
             break;
@@ -148,7 +151,12 @@ export class TypstToolsView extends ItemView {
     contentEl.className = 'typstmate-content';
 
     // 初期表示
-    dropdown.setValue('converter');
-    onChangeHandler('converter');
+    this.dropdown.setValue('converter');
+    this.onChangeHandler('converter');
+  }
+
+  openContent(content: string) {
+    this.dropdown.setValue(content);
+    this.onChangeHandler(content);
   }
 }

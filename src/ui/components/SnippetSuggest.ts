@@ -157,7 +157,7 @@ export default class SnippetSuggestElement extends HTMLElement {
       }
 
       default: {
-        if (e.key === '(') {
+        if (e.key === '(' && this.plugin.editorHelper.value === undefined) {
           e.preventDefault();
           const cursor = this.editor!.getCursor();
           this.editor?.replaceRange('()', {
