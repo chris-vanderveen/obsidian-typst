@@ -9,7 +9,7 @@ use typst::{
     Library, World,
     diag::{FileError, FileResult, PackageError},
     foundations::{Bytes, Content, Datetime, Style, Value},
-    layout::{Abs, Length},
+    layout::Abs,
     syntax::{FileId, Source, VirtualPath, package::PackageSpec},
     text::{Font, FontBook, TextElem},
     utils::LazyHash,
@@ -32,10 +32,12 @@ pub struct WasmWorld {
 
 impl WasmWorld {
     pub fn new(read: js_sys::Function, fontsize: f64) -> Self {
+        // ファイルシステムを設定
         let main = FileId::new(None, VirtualPath::new("main.typ"));
         let mut slots = FxHashMap::default();
         slots.insert(main, FileSlot::new_from_text(main, "".into()));
 
+        // フォントを登録
         let mut book = LazyHash::new(FontBook::new());
         let mut fonts = Vec::new();
         for data in typst_assets::fonts() {
@@ -45,16 +47,17 @@ impl WasmWorld {
             }
         }
 
+        // ライブラリを設定
         let mut library = Library::default();
-
+        // 値 `fontsize` を定義
         let fontsize_abs = Abs::pt(fontsize / 1.25);
         let fontsize_val = Value::Length(fontsize_abs.into());
-
+        // 値 `CURSOR` を定義
         let cursor_elem = TextElem::new("▮".into());
-        let cursor_paint = Paint::Solid(Color::from_str("#00f").unwrap());
+        let cursor_paint = Paint::Solid(Color::from_str("#44f").unwrap());
         let cursor_style = Style::Property(TextElem::set_fill(cursor_paint));
         let cursor_val = Value::Content(Content::new(cursor_elem).styled(cursor_style));
-
+        // グローバル定義に追加
         library.global.scope_mut().define("fontsize", fontsize_val);
         library.global.scope_mut().define("CURSOR", cursor_val);
 
@@ -71,14 +74,6 @@ impl WasmWorld {
         }
     }
 
-    pub fn set_fontsize(&mut self, fontsize: f64) {
-        let fontsize_val = Value::Length(Length::from(Abs::pt(fontsize)));
-        self.library
-            .global
-            .scope_mut()
-            .define("fontsize", fontsize_val);
-    }
-
     pub fn set_main(&mut self, new: Source) {
         self.slots
             .lock()
@@ -88,6 +83,7 @@ impl WasmWorld {
             .set_source_result(Ok(new));
     }
 
+    // ? 差分コンパイルのため
     pub fn replace(&mut self, new: &str) {
         self.slots
             .lock()
@@ -111,9 +107,8 @@ impl WasmWorld {
         m.insert(file_id, FileSlot::new_from_bytes(file_id, bytes));
     }
 
-    pub fn add_package(&mut self, spec: PackageSpec, vpath: &str, bytes: Vec<u8>) {
+    pub fn add_package_file(&mut self, spec: PackageSpec, vpath: &str, bytes: Vec<u8>) {
         let mut m = self.slots.lock().unwrap();
-
         let file_id = FileId::new(Some(spec.clone()), VirtualPath::new(vpath));
         m.insert(file_id, FileSlot::new_from_bytes(file_id, bytes));
 
@@ -231,7 +226,7 @@ impl World for WasmWorld {
     }
 
     fn today(&self, offset: Option<i64>) -> Option<Datetime> {
-        let with_offset = match offset {
+        let local_datetime = match offset {
             None => self.now.with_timezone(&Local).fixed_offset(),
             Some(hours) => {
                 let seconds = i32::try_from(hours).ok()?.checked_mul(3600)?;
@@ -239,11 +234,11 @@ impl World for WasmWorld {
             }
         };
 
+        let year = local_datetime.year();
+        let month = local_datetime.month().try_into().ok()?;
+        let day = local_datetime.day().try_into().ok()?;
+
         // ? 起動時の値に固定するので，hms は不要。
-        Datetime::from_ymd(
-            with_offset.year(),
-            with_offset.month().try_into().ok()?,
-            with_offset.day().try_into().ok()?,
-        )
+        Datetime::from_ymd(year, month, day)
     }
 }

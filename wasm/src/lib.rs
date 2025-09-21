@@ -47,10 +47,6 @@ impl Typst {
         }
     }
 
-    pub fn set_fontsize(&mut self, fontsize: f64) {
-        self.world.set_fontsize(fontsize);
-    }
-
     pub fn store(
         &mut self,
         fonts: Vec<ArrayBuffer>,
@@ -97,7 +93,7 @@ impl Typst {
                     },
                 };
 
-                self.world.add_package(spec, vpath, bytes);
+                self.world.add_package_file(spec, vpath, bytes);
             } else {
                 self.world.add_file_bytes(&rpath, bytes);
             }
