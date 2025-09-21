@@ -192,7 +192,7 @@ export default class ObsidianTypstMate extends Plugin {
     new Notice('Wasm downloaded!');
   }
 
-  private async activateLeaf() {
+  async activateLeaf() {
     let leaf: WorkspaceLeaf | null | undefined;
     [leaf] = this.app.workspace.getLeavesOfType(TypstToolsView.viewtype);
 

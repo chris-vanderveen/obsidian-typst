@@ -8,7 +8,7 @@ import {
   type Styling,
 } from '@/libs/processor';
 import type ObsidianTypstMate from '@/main';
-import { ProcessorModal } from '@/ui/modals/processorExt';
+import { ProcessorExtModal } from '@/ui/modals/processorExt';
 
 export class ProcessorList {
   plugin: ObsidianTypstMate;
@@ -69,10 +69,10 @@ export class ProcessorList {
     if (!this.simple) {
       setting
         .addButton((button) => {
-          button.setButtonText('ext');
+          button.setIcon('pencil');
           button.setTooltip('Open more settings');
           button.onClick(() => {
-            new ProcessorModal(this.plugin.app, this.plugin, this.kind, processor.id).open();
+            new ProcessorExtModal(this.plugin.app, this.plugin, this.kind, processor.id).open();
           });
         })
         .addDropdown((renderingEngineDropdown) => {

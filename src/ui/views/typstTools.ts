@@ -3,6 +3,7 @@ import { tex2typst, typst2tex } from 'tex2typst';
 
 import { ProcessorList } from '@/core/settings/processor';
 import type ObsidianTypstMate from '@/main';
+import { SnippetView } from './typst-tools/snippet';
 
 import './typst-tools.css';
 
@@ -46,81 +47,20 @@ export class TypstToolsView extends ItemView {
       .addOption('processors', 'Processors');
 
     const onChangeHandler = (value: string) => {
-      content.empty();
+      contentEl.empty();
       switch (value) {
         case 'symbols':
-          content.createEl('iframe').src = 'https://typst.app/docs/reference/symbols/sym/';
+          contentEl.createEl('iframe').src = 'https://typst.app/docs/reference/symbols/sym/';
           break;
         case 'packages':
-          content.createEl('iframe').src = 'https://typst.app/universe/search/';
+          contentEl.createEl('iframe').src = 'https://typst.app/universe/search/';
           break;
         case 'snippets': {
-          // メニューの設定
-          const dropdown = new DropdownComponent(content);
-          const options = (this.plugin.settings.snippets?.map((snippet) => snippet.category) ?? []).filter(
-            (category) => category !== 'No Category',
-          );
-          dropdown.addOption('No Category', 'No Category');
-          dropdown.setValue('No Category');
-          dropdown.addOptions(Object.fromEntries(options.map((name) => [name, name])));
-
-          // snippets
-          const snippetsEl = content.createEl('div');
-          const renderSnippets = () => {
-            snippetsEl.empty();
-            const category = dropdown.getValue();
-            const snippets =
-              category === ''
-                ? (this.plugin.settings.snippets ?? [])
-                : (this.plugin.settings.snippets?.filter((snippet) => snippet.category === category) ?? []);
-            snippets.forEach((snippet) => {
-              const snippetEl = snippetsEl.createEl('div');
-              snippetEl.className = 'typstmate-snippet';
-              snippetEl.createEl('div', { text: `${snippet.name}` });
-              snippetEl.createEl('div', { text: `${snippet.kind}` });
-
-              const preview = snippetEl.createEl('div');
-              let content: string;
-              if (snippet.script) {
-                preview.textContent = snippet.content;
-              } else {
-                switch (snippet.kind) {
-                  case 'inline':
-                    content = `${snippet.id}${snippet.id === '' ? '' : ':'}${snippet.content}`;
-                    break;
-                  case 'display':
-                    content = `${snippet.id}\n${snippet.content}\n`;
-                    break;
-                  default:
-                    content = snippet.content;
-                    break;
-                }
-                this.plugin.typstManager.render(content, preview, snippet.kind);
-              }
-
-              preview.onClickEvent(() => {
-                switch (snippet.kind) {
-                  case 'inline':
-                    navigator.clipboard.writeText(`$${content}$`);
-                    break;
-                  case 'display':
-                    navigator.clipboard.writeText(`$$${content}$$`);
-                    break;
-                  case 'codeblock':
-                    navigator.clipboard.writeText(content);
-                    break;
-                }
-              });
-
-              snippetEl.createEl('hr');
-            });
-          };
-          renderSnippets();
-          dropdown.onChange(renderSnippets);
+          new SnippetView(contentEl, this.plugin);
           break;
         }
         case 'converter': {
-          const dropdown = new DropdownComponent(content);
+          const dropdown = new DropdownComponent(contentEl);
           dropdown.addOption('tex2typst', 'tex2typst').addOption('mitex', 'MiTex');
 
           const updatePreview = () => {
@@ -128,7 +68,7 @@ export class TypstToolsView extends ItemView {
             this.plugin.typstManager.render(output.value, preview, 'inline');
           };
 
-          const input = content.createEl('textarea');
+          const input = contentEl.createEl('textarea');
           input.placeholder = '(La)Tex';
           input.addClass('typstmate-form-control');
           input.addEventListener('input', async () => {
@@ -147,7 +87,7 @@ export class TypstToolsView extends ItemView {
             }
           });
 
-          const output = content.createEl('textarea');
+          const output = contentEl.createEl('textarea');
           output.placeholder = 'Typst';
           output.addClass('typstmate-form-control');
           output.addEventListener('input', async () => {
@@ -165,10 +105,10 @@ export class TypstToolsView extends ItemView {
             }
           });
 
-          const preview = content.createEl('div');
+          const preview = contentEl.createEl('div');
           preview.addClass('typstmate-settings-preview-preview');
 
-          const button = content.createEl('button');
+          const button = contentEl.createEl('button');
           button.setText('Copy');
           button.addClass('typstmate-button');
           button.onClickEvent(async () => {
@@ -178,11 +118,11 @@ export class TypstToolsView extends ItemView {
           break;
         }
         case 'processors':
-          new ProcessorList(this.plugin, 'inline', content, 'Inline($...$) Processors', true);
-          new ProcessorList(this.plugin, 'display', content, 'Display($$...$$) Processors', true);
-          new ProcessorList(this.plugin, 'codeblock', content, 'CodeBlock(```...```) Processors', true);
+          new ProcessorList(this.plugin, 'inline', contentEl, 'Inline($...$) Processors', true);
+          new ProcessorList(this.plugin, 'display', contentEl, 'Display($$...$$) Processors', true);
+          new ProcessorList(this.plugin, 'codeblock', contentEl, 'CodeBlock(```...```) Processors', true);
           if (this.plugin.excalidrawPluginInstalled) {
-            new ProcessorList(this.plugin, 'excalidraw', content, 'Excalidraw Processors', true);
+            new ProcessorList(this.plugin, 'excalidraw', contentEl, 'Excalidraw Processors', true);
           }
           break;
       }
@@ -195,23 +135,20 @@ export class TypstToolsView extends ItemView {
       .onClick(() => {
         switch (dropdown.getValue()) {
           case 'symbols':
-            content.createEl('iframe').src = 'https://typst.app/docs/reference/symbols/sym/';
+            contentEl.createEl('iframe').src = 'https://typst.app/docs/reference/symbols/sym/';
             break;
           case 'packages':
-            content.createEl('iframe').src = 'https://typst.app/universe/search/';
+            contentEl.createEl('iframe').src = 'https://typst.app/universe/search/';
             break;
         }
       });
 
     // content
-    const content = container.createEl('div');
-    content.className = 'typstmate-content';
-    if (Platform.isDesktop) {
-      dropdown.setValue('symbols');
-      onChangeHandler('symbols');
-    } else {
-      dropdown.setValue('converter');
-      onChangeHandler('converter');
-    }
+    const contentEl = container.createEl('div');
+    contentEl.className = 'typstmate-content';
+
+    // 初期表示
+    dropdown.setValue('converter');
+    onChangeHandler('converter');
   }
 }

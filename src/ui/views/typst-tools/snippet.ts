@@ -1,0 +1,130 @@
+import { ButtonComponent, DropdownComponent, Setting } from 'obsidian';
+
+import { DefaultNewSnippet } from '@/libs/snippet';
+import type ObsidianTypstMate from '@/main';
+import { SnippetEditModal } from '@/ui/modals/snippetEdit';
+import { SnippetExtModal } from '@/ui/modals/snippetExt';
+
+export class SnippetView {
+  containerEl: HTMLElement;
+
+  currentCategory?: string;
+
+  menuEl: HTMLElement;
+  dropdownEl!: DropdownComponent;
+
+  snippetsEl: HTMLElement;
+
+  plugin: ObsidianTypstMate;
+
+  constructor(containerEl: HTMLElement, plugin: ObsidianTypstMate) {
+    this.containerEl = containerEl;
+
+    this.menuEl = containerEl.createEl('div');
+    this.menuEl.className = 'typstmate-menu';
+    this.plugin = plugin;
+    this.buildMenu();
+
+    this.snippetsEl = containerEl.createEl('div');
+    this.buildSnippets();
+  }
+
+  buildMenu() {
+    // カテゴリーの選択
+    this.dropdownEl = new DropdownComponent(this.menuEl);
+    const categories = (this.plugin.settings.snippets?.map((snippet) => snippet.category) ?? []).filter(
+      (category) => category !== 'Uncategorized',
+    );
+    this.dropdownEl.addOption('Uncategorized', 'Uncategorized');
+    this.dropdownEl.addOptions(Object.fromEntries(categories.map((name) => [name, name])));
+
+    this.dropdownEl.setValue(this.currentCategory ?? 'Uncategorized');
+    this.dropdownEl.onChange((category) => {
+      this.currentCategory = category;
+      this.buildSnippets();
+    });
+
+    // スニペットの作成
+    new ButtonComponent(this.menuEl)
+      .setButtonText('New')
+      .setTooltip('New')
+      .onClick(() => {
+        const defaultSnippet = Object.assign({}, DefaultNewSnippet);
+        defaultSnippet.category = this.currentCategory ?? 'Uncategorized';
+
+        this.plugin.settings.snippets?.push(defaultSnippet);
+        this.plugin.saveSettings();
+        this.buildSnippets();
+      });
+  }
+
+  buildSnippets() {
+    this.snippetsEl.empty();
+    const category = this.dropdownEl.getValue();
+
+    this.plugin.settings.snippets?.forEach((snippet, index) => {
+      if (snippet.category !== category) return;
+
+      const snippetEl = this.snippetsEl.createEl('div');
+      snippetEl.className = 'typstmate-leaf-snippet';
+
+      new Setting(snippetEl)
+        // スニペット名
+        .addText((text) => {
+          text.setPlaceholder('name');
+          text.setValue(snippet.name);
+          text.onChange((value) => {
+            this.plugin.settings.snippets![index]!.name = value;
+            this.plugin.saveSettings();
+          });
+        })
+        // 詳細
+        .addButton((button) => {
+          button
+            .setButtonText('Detail')
+            .setIcon('pencil')
+            .onClick(() => {
+              new SnippetExtModal(this.plugin.app, this.plugin, index, this).open();
+            });
+        })
+        // 削除
+        .addButton((button) => {
+          button
+            .setButtonText('Remove')
+            .setIcon('trash')
+            .onClick(() => {
+              this.plugin.settings.snippets?.splice(index, 1);
+              this.plugin.saveSettings();
+              this.buildSnippets();
+            })
+            .buttonEl.addClasses(['typstmate-button', 'typstmate-button-danger']);
+        });
+
+      // プレビュー
+      const preview = snippetEl.createEl('div');
+      preview.className = 'typstmate-leaf-snippet-preview';
+      const render = (id: string, kind: 'inline' | 'display' | 'codeblock', content: string, script: boolean) => {
+        preview.empty();
+        if (script) {
+          preview.textContent = `${content.slice(0, 50)}...`;
+        } else {
+          switch (kind) {
+            case 'inline':
+              content = `${id}${id === '' ? '' : ':'}${content}`;
+              break;
+            case 'display':
+              content = `${id}\n${content}\n`;
+              break;
+          }
+          this.plugin.typstManager.render(content, preview, kind);
+        }
+      };
+
+      render(snippet.id, snippet.kind, snippet.content, snippet.script);
+
+      preview.onClickEvent(() => {
+        new SnippetEditModal(this.plugin.app, this.plugin, index, render).open();
+      });
+    });
+  }
+}

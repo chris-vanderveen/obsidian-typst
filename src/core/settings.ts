@@ -152,7 +152,7 @@ export const DEFAULT_SETTINGS: Settings = {
       kind: 'display',
       id: '',
       content:
-        'const parts = input.split(",").map(s => s.trim()); const x = Number(parts[0]); const y = Number(parts[1]); const rowText = `${("#CURSOR, ".repeat(x)).slice(0, -2)} ;\\n`; const contentText = `  ${rowText}`.repeat(y); return `mat(\\n${contentText})`;',
+        'const parts = input.split(",").map(s => s.trim());\n\nconst [x, y] = parts.map(Number)\n\nconst rowText = `${("#CURSOR, ".repeat(x)).slice(0, -2)} ;\\n`;\nconst contentText = `  ${rowText}`.repeat(y);\n\nreturn `mat(\\n${contentText})`;',
       script: true,
     },
     {
@@ -161,7 +161,7 @@ export const DEFAULT_SETTINGS: Settings = {
       kind: 'inline',
       id: '',
       content:
-        'const parts = input.split(",").map(s => s.trim()); const x = Number(parts[0]); const y = Number(parts[1]); const rowText = `${("#CURSOR, ".repeat(x)).slice(0, -2)} ; `; const contentText = `${rowText}`.repeat(y); return `mat(${contentText})`;',
+        'const parts = input.split(",").map(s => s.trim());\n\nconst [x, y] = parts.map(Number)\n\nconst rowText = `${("#CURSOR, ".repeat(x)).slice(0, -2)} ;`;\nconst contentText = `${rowText}`.repeat(y);\n\nreturn `mat(${contentText})`;',
       script: true,
     },
     {
@@ -178,7 +178,7 @@ export const DEFAULT_SETTINGS: Settings = {
       kind: 'display',
       id: '',
       content:
-        'const n = Number(input); return `cases(\\n${(`  #CURSOR "if" #CURSOR,\\n`).repeat(n-1)}  #CURSOR "else"\\n)`',
+        'const n = Number(input);\nreturn `cases(\\n${(`  #CURSOR "if" #CURSOR,\\n`).repeat(n-1)}  #CURSOR "else"\\n)`',
       script: true,
     },
   ],
@@ -556,6 +556,15 @@ export class SettingTab extends PluginSettingTab {
         this.plugin.settings.complementSymbolWithUnicode = value;
         this.plugin.saveSettings();
       });
+    });
+
+    const div = containerEl.createDiv();
+    div.textContent = 'Are you looking for the snippet settings? It is in ';
+    const a = div.createEl('a', { text: 'Leaf' });
+    a.addEventListener('click', async () => {
+      const leaf = await this.plugin.activateLeaf();
+      if (leaf) await this.app.workspace.revealLeaf(leaf);
+      this.app.setting.close();
     });
   }
 }

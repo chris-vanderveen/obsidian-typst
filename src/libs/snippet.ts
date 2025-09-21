@@ -8,7 +8,7 @@ export interface Snippet {
 }
 
 export const DefaultNewSnippet: Snippet = {
-  category: 'No Category',
+  category: 'Uncategorized',
   name: 'new',
   kind: 'display',
   id: '',

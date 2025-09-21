@@ -14,7 +14,7 @@ Snippet                  | Script
 :-----------------------:|:------------------------:
 [![Snippet](assets/snippet.gif)](#snippet) | [![Script](assets/script.gif)](#script)
 
-For details about the processor / snippet, see [Processor.md](Processor.md) / [Snippet.md](Snippet.md).
+For details about the processor / snippet(script), see [Processor.md](Processor.md) / [Snippet.md](Snippet.md).
 
 ---
 

@@ -153,7 +153,7 @@ export class EditorHelper {
     if (!inDisplay && (lastDollarBefore === -1 || firstDollarAfter === -1)) return null;
 
     // snippet / symbol
-    if (this.plugin.typstManager.beforeProcessor?.noSuggest) {
+    if (this.plugin.typstManager.beforeProcessor?.disableSuggest) {
     } else if (textBeforeCursor.endsWith('@') && !textBeforeCursor.startsWith('#import')) {
       this.removePreview();
       this.symbolSuggestEl.close();

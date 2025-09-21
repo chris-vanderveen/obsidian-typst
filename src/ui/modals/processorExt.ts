@@ -4,7 +4,7 @@ import type { ProcessorKind } from '@/libs/processor';
 import type ObsidianTypstMate from '@/main';
 import { CustomFragment } from '@/utils/customFragment';
 
-export class ProcessorModal extends Modal {
+export class ProcessorExtModal extends Modal {
   constructor(app: App, plugin: ObsidianTypstMate, kind: ProcessorKind, id: string) {
     super(app);
 
@@ -23,11 +23,11 @@ export class ProcessorModal extends Modal {
       });
     });
 
-    new Setting(this.contentEl).setName(`No suggest`).addToggle((toggle) => {
-      toggle.setValue(processor.noSuggest ?? false);
+    new Setting(this.contentEl).setName(`Disable symbol suggest`).addToggle((toggle) => {
+      toggle.setValue(processor.disableSuggest ?? false);
 
       toggle.onChange(() => {
-        processor.noSuggest = !processor.noSuggest;
+        processor.disableSuggest = !processor.disableSuggest;
         plugin.saveSettings();
       });
     });
