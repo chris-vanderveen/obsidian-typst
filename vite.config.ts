@@ -10,14 +10,14 @@ export default defineConfig(async ({ mode }) => {
   return {
     plugins: [
       tsconfigPaths(),
-      prod
-        ? viteStaticCopy({
-            targets: [
+      viteStaticCopy({
+        targets: prod
+          ? [
               { src: `typst.wasm`, rename: `typst-${version}.wasm`, dest: '' },
               { src: 'manifest.json', rename: 'manifest.json', dest: '' },
-            ],
-          })
-        : undefined,
+            ]
+          : [],
+      }),
     ],
     build: {
       lib: {
