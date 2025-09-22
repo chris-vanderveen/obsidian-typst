@@ -101,3 +101,15 @@ Typst Mate leverages the following open-source projects:
 - [tex2typst](https://github.com/qwinsi/tex2typst) – a fast, lightweight bidirectional converter between TeX/LaTeX and Typst with **readable output**
 
 I'm grateful to the developers for making this plugin possible!
+
+---
+
+## TODO
+
+- 深さに応じて括弧をハイライト
+- カーソルの隣にある括弧のペアをハイライト
+- 次の括弧に移動するショートカット
+- LateX Suite の Visual snippets 機能
+- 記号のお気に入り機能とユーザー定義
+- `.typ` ファイルの編集
+- フォーマット機能
