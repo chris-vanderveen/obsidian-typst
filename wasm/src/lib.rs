@@ -95,14 +95,16 @@ impl Typst {
 
                 self.world.add_package_file(spec, vpath, bytes);
             } else {
-                self.world.add_file_bytes(&rpath, bytes);
+                self.world.add_file_bytes(VirtualPath::new(rpath), bytes);
             }
         }
 
         // プロセッサー
         for p in procs_serde {
-            self.world
-                .add_file_text(&format!("{}--{}.typ", p.kind, p.id), p.format);
+            self.world.add_file_text(
+                VirtualPath::new(format!("{}--{}.typ", p.kind, p.id)),
+                p.format,
+            );
         }
 
         Ok(())
@@ -141,32 +143,32 @@ impl Typst {
         }
     }
 
-    fn update_source(&mut self, code: &str, kind: &str, id: &str) {
+    fn update_source(&mut self, vpath: VirtualPath, code: &str) {
+        let result = self.world.source(FileId::new(None, vpath.clone()));
+
+        match result {
+            Ok(mut source) => {
+                source.replace(code);
+                self.world.set_main(source);
+            }
+            Err(_e) => {
+                self.world.add_file_text(vpath.clone(), code.into());
+                self.world
+                    .set_main(self.world.source(FileId::new(None, vpath)).unwrap());
+            }
+        }
+    }
+
+    pub fn svg(&mut self, code: &str, kind: &str, id: &str) -> Result<JsValue, JsValue> {
         if self.last_kind == kind && self.last_id == id {
             self.world.replace(code);
         } else {
             self.last_kind = kind.to_string();
             self.last_id = id.to_string();
 
-            let result = self.world.source(FileId::new(
-                None,
-                VirtualPath::new(&format!("{}--{}.typ", kind, id)),
-            ));
-
-            match result {
-                Ok(mut source) => {
-                    source.replace(code);
-                    self.world.set_main(source);
-                }
-                Err(_e) => {
-                    self.world.replace(code);
-                }
-            }
+            self.update_source(VirtualPath::new(format!("{}--{}.typ", kind, id)), code);
         }
-    }
 
-    pub fn svg(&mut self, code: &str, kind: &str, id: &str) -> Result<JsValue, JsValue> {
-        self.update_source(code, kind, id);
         let Warned { output, warnings } = typst::compile::<PagedDocument>(&mut self.world);
 
         match output {
@@ -189,13 +191,15 @@ impl Typst {
         }
     }
 
-    pub fn pdf(&mut self, code: &str, kind: &str, id: &str) -> Result<JsValue, JsValue> {
-        self.update_source(code, kind, id);
+    pub fn pdf(&mut self, filename: &str, code: &str) -> Result<JsValue, JsValue> {
+        self.update_source(VirtualPath::new(filename), code);
         let Warned { output, warnings } = typst::compile::<PagedDocument>(&mut self.world);
 
         match output {
-            Ok(document) => {
+            Ok(mut document) => {
+                document.info.title.get_or_insert_with(|| filename.into());
                 let options = PdfOptions::default();
+
                 match typst_pdf::pdf(&document, &options) {
                     Ok(pdf_data) => pdf::pdf(pdf_data, warnings),
                     Err(errs) => {

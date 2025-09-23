@@ -93,16 +93,16 @@ impl WasmWorld {
             .replace(new);
     }
 
-    pub fn add_file_text(&self, vpath: &str, text: String) {
+    pub fn add_file_text(&self, vpath: VirtualPath, text: String) {
         let mut m = self.slots.lock().unwrap();
-        let file_id = FileId::new(None, VirtualPath::new(vpath));
+        let file_id = FileId::new(None, vpath);
 
         m.insert(file_id, FileSlot::new_from_text(file_id, text));
     }
 
-    pub fn add_file_bytes(&self, vpath: &str, bytes: Vec<u8>) {
+    pub fn add_file_bytes(&self, vpath: VirtualPath, bytes: Vec<u8>) {
         let mut m = self.slots.lock().unwrap();
-        let file_id = FileId::new(None, VirtualPath::new(vpath));
+        let file_id = FileId::new(None, vpath);
 
         m.insert(file_id, FileSlot::new_from_bytes(file_id, bytes));
     }
