@@ -1,3 +1,4 @@
+pub mod bracket;
 pub mod diagnostic;
 pub mod font;
 pub mod package;

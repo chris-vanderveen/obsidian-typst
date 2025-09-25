@@ -15,6 +15,7 @@ use typst::{
     utils::LazyHash,
     visualize::{Color, Paint},
 };
+use typst_ide::IdeWorld;
 
 use crate::vfs::FileSlot;
 
@@ -240,5 +241,19 @@ impl World for WasmWorld {
 
         // ? 起動時の値に固定するので，hms は不要。
         Datetime::from_ymd(year, month, day)
+    }
+}
+
+impl IdeWorld for WasmWorld {
+    fn upcast(&self) -> &dyn World {
+        self
+    }
+
+    fn packages(&self) -> &[(PackageSpec, Option<typst::ecow::EcoString>)] {
+        &[]
+    }
+
+    fn files(&self) -> Vec<FileId> {
+        std::vec![]
     }
 }

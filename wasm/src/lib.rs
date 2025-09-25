@@ -17,6 +17,8 @@ use typst::{
 };
 use typst_pdf::PdfOptions;
 
+mod lexer;
+mod parser;
 mod serde;
 mod vfs;
 mod world;
@@ -136,6 +138,17 @@ impl Typst {
         to_value(&infos).unwrap()
     }
 
+    pub fn find_bracket_pairs(&mut self, code: &str) -> JsValue {
+        let tokens = lexer::bracket::bracket_lexer(code);
+        let pairs = parser::bracket::paren_parse(&tokens);
+
+        let pairs_ser: Vec<serde::bracket::BracketPairSer> = pairs.iter().map(Into::into).collect();
+
+        to_value(&pairs_ser).unwrap()
+    }
+
+    // ? ちらつき防止のためカーソルの親括弧の計算は TS 側でする
+
     pub fn mitex(&mut self, code: &str) -> Result<JsValue, JsValue> {
         match convert_math(code, None) {
             Ok(result) => Ok(JsValue::from_str(&result)),
@@ -181,11 +194,13 @@ impl Typst {
                 let svg = typst_svg::svg_frame(&document.pages[0].frame)
                     .replace("<svg class", "<svg style=\"overflow: visible;\" class");
 
-                svg::svg(svg, warnings)
+                svg::svg(svg, warnings, &self.world)
             }
             Err(errs) => {
-                let diags: Vec<diagnostic::SourceDiagnosticSer> =
-                    errs.iter().map(|d| d.into()).collect();
+                let diags: Vec<diagnostic::SourceDiagnosticSer> = errs
+                    .iter()
+                    .map(|d| diagnostic::SourceDiagnosticSer::from_diag(d, &self.world))
+                    .collect();
                 Err(to_value(&diags).unwrap())
             }
         }
@@ -201,17 +216,21 @@ impl Typst {
                 let options = PdfOptions::default();
 
                 match typst_pdf::pdf(&document, &options) {
-                    Ok(pdf_data) => pdf::pdf(pdf_data, warnings),
+                    Ok(pdf_data) => pdf::pdf(pdf_data, warnings, &self.world),
                     Err(errs) => {
-                        let diags: Vec<diagnostic::SourceDiagnosticSer> =
-                            errs.iter().map(|d| d.into()).collect();
+                        let diags: Vec<diagnostic::SourceDiagnosticSer> = errs
+                            .iter()
+                            .map(|d| diagnostic::SourceDiagnosticSer::from_diag(d, &self.world))
+                            .collect();
                         Err(to_value(&diags).unwrap())
                     }
                 }
             }
             Err(errs) => {
-                let diags: Vec<diagnostic::SourceDiagnosticSer> =
-                    errs.iter().map(|d| d.into()).collect();
+                let diags: Vec<diagnostic::SourceDiagnosticSer> = errs
+                    .iter()
+                    .map(|d| diagnostic::SourceDiagnosticSer::from_diag(d, &self.world))
+                    .collect();
                 Err(to_value(&diags).unwrap())
             }
         }

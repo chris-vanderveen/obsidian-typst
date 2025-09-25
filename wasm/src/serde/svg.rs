@@ -6,6 +6,7 @@ use wasm_bindgen::JsValue;
 use typst::{diag::SourceDiagnostic, ecow};
 
 use crate::serde::diagnostic::SourceDiagnosticSer;
+use crate::world::WasmWorld;
 
 #[derive(Serialize)]
 struct SvgResultSer {
@@ -13,10 +14,17 @@ struct SvgResultSer {
     diags: Vec<SourceDiagnosticSer>,
 }
 
-pub fn svg(svg: String, diags: EcoVec<SourceDiagnostic>) -> Result<JsValue, JsValue> {
+pub fn svg(
+    svg: String,
+    diags: EcoVec<SourceDiagnostic>,
+    world: &WasmWorld,
+) -> Result<JsValue, JsValue> {
     let result = SvgResultSer {
         svg,
-        diags: diags.iter().map(|d| d.into()).collect(),
+        diags: diags
+            .iter()
+            .map(|d| SourceDiagnosticSer::from_diag(d, world))
+            .collect(),
     };
     Ok(to_value(&result)?)
 }
