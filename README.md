@@ -14,9 +14,11 @@ Snippet                  | Script
 :-----------------------:|:------------------------:
 [![Snippet](assets/snippet.gif)](#snippet) | [![Script](assets/script-snippet.gif)](#script-snippet)
 
-For details about the processor / snippet(script), see [Processor.md](docs/processor/) / [Snippet.md](docs/snippet/).
+For details about the processor / snippet(script) / shortcut, see [Processor.md](docs/processor/) / [Snippet.md](docs/snippet/) / [Shortcut.md](docs/shortcut/).
 
 I welcome pull requests featuring your wonderful snippets!
+
+Are you an Obsidian LateX Suite user? Check out [this guide](docs/obsidian-latex-suite-migration.md).
 
 ---
 
@@ -24,7 +26,10 @@ I welcome pull requests featuring your wonderful snippets!
 
 - Support *inline math*, *display math*, and *code blocks*
 - Support **preamble** and **templates** (called processors)
+- **`.typ` View**
+- **Typst Shortcut**
 - **Snippets** / **Scripts**
+- **Bracket highlights**
 - **Symbol completion**
   - type a leading backslash `/` to make the search look for LaTeX commands
 - **Inline math preview**
@@ -106,10 +111,11 @@ I'm grateful to the developers for making this plugin possible!
 
 ## TODO
 
-- 深さに応じて括弧をハイライト
-- カーソルの隣にある括弧のペアをハイライト
 - 次の括弧に移動するショートカット
-- LateX Suite の Visual snippets 機能
 - 記号のお気に入り機能とユーザー定義
 - `.typ` ファイルの編集
 - フォーマット機能
+- OCR
+- スニペットの充実・検索
+- モバイルで頻繁にクラッシュする問題の解決
+- Excalidrawプラグインへのレンダリングの利便性の向上
