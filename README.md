@@ -109,13 +109,23 @@ I'm grateful to the developers for making this plugin possible!
 
 ---
 
+## NEXT
+
+- OCR
+- Obsidian LateX Suite関連
+  - Tabout(次の括弧に移動するショートカット)
+  - Matrix shortcuts
+  - Editor commands
+- モジュールや定義した変数や関数の補完, シグネチャのTooltip
+
 ## TODO
 
-- 次の括弧に移動するショートカット
 - 記号のお気に入り機能とユーザー定義
 - `.typ` ファイルの編集
 - フォーマット機能
-- OCR
 - スニペットの充実・検索
 - モバイルで頻繁にクラッシュする問題の解決
 - Excalidrawプラグインへのレンダリングの利便性の向上
+- 諸々における設定のハイライト, UI改善
+- パッケージの更新の確認
+- Typst Universe外, Githubからの手動パッケージインストール
