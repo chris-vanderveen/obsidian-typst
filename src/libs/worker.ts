@@ -48,8 +48,12 @@ export default class $ {
     return this.typst.svg(code, kind, id);
   }
 
-  pdf(code: string, kind: string, id: string): PDFResult {
-    return this.typst.pdf(code, kind, id);
+  pdf(filename: string, code: string): PDFResult {
+    return this.typst.pdf(filename, code);
+  }
+
+  findBracketPairs(code: string): BracketPair[] {
+    return this.typst.find_bracket_pairs(code);
   }
 
   listFonts(): FontInfo[] {
@@ -230,6 +234,17 @@ export interface SVGResult {
 export interface PDFResult {
   pdf: Uint8Array;
   diags: Diagnostic[];
+}
+
+export interface BracketPair {
+  kind: 'paren' | 'bracket' | 'brace';
+  depth: number;
+  open_byte: number;
+  open_line: number;
+  open_column: number;
+  close_byte: number;
+  close_line: number;
+  close_column: number;
 }
 
 export interface Main {
