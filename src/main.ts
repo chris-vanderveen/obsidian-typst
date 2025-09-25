@@ -27,8 +27,8 @@ import { TypstPDFView } from './ui/views/typst-pdf/typstPDF';
 import { TypstTextView } from './ui/views/typst-text/typstText';
 import { TypstToolsView } from './ui/views/typst-tools/typstTools';
 import { type MathSegment, replaceMathSegments } from './utils/findMathSegments';
-import { zip } from './utils/packageCompressor';
 import { Observer } from './utils/observer';
+import { zip } from './utils/packageCompressor';
 
 import './main.css';
 
