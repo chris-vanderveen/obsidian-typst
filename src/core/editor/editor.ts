@@ -463,6 +463,7 @@ export class EditorHelper {
 
     const cursor = editor.getCursor()!;
     if (this.trySuggest(cursor)) return this.hideInlinePreview();
+    this.hideSuggests();
 
     if (isActiveDisplayMathExists()) return this.hideInlinePreview();
     this.updateInlinePreview();
