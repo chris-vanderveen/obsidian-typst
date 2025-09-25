@@ -7,16 +7,14 @@ import {
   debounce,
   type EventRef,
   loadMathJax,
-  type Menu,
   Notice,
   Platform,
   Plugin,
   renderMath,
   requestUrl,
-  TFolder,
   type WorkspaceLeaf,
 } from 'obsidian';
-
+import { tex2typst, typst2tex } from 'tex2typst';
 import { EditorHelper } from './core/editor/editor';
 import { DEFAULT_SETTINGS, type Settings, SettingTab } from './core/settings/settings';
 import ExcalidrawPlugin from './extensions/excalidraw';
@@ -25,10 +23,12 @@ import type $ from './libs/worker';
 import Typst from './libs/worker';
 import TypstWorker from './libs/worker?worker&inline';
 import { ExcalidrawModal } from './ui/modals/excalidraw';
-import { TypstFileView } from './ui/views/typst-file/typstFile';
+import { TypstPDFView } from './ui/views/typst-pdf/typstPDF';
+import { TypstTextView } from './ui/views/typst-text/typstText';
 import { TypstToolsView } from './ui/views/typst-tools/typstTools';
+import { type MathSegment, replaceMathSegments } from './utils/findMathSegments';
 import { zip } from './utils/packageCompressor';
-import { ParentResizeService } from './utils/parentWidthObserver';
+import { Observer } from './utils/observer';
 
 import './main.css';
 
@@ -47,7 +47,7 @@ export default class ObsidianTypstMate extends Plugin {
   typst!: $ | Remote<$>;
   worker?: Worker;
   typstManager!: TypstManager;
-  observer!: ParentResizeService;
+  observer!: Observer;
 
   baseColor = '#000000';
   listeners: EventRef[] = [];
@@ -106,8 +106,9 @@ export default class ObsidianTypstMate extends Plugin {
 
       // Typst Tools を登録
       this.registerView(TypstToolsView.viewtype, (leaf) => new TypstToolsView(leaf, this));
-      this.registerView(TypstFileView.viewtype, (leaf) => new TypstFileView(leaf, this));
-      this.registerExtensions(['typ'], TypstFileView.viewtype);
+      this.registerView(TypstTextView.viewtype, (leaf) => new TypstTextView(leaf));
+      this.registerView(TypstPDFView.viewtype, (leaf) => new TypstPDFView(leaf, this));
+      this.registerExtensions(['typ'], TypstPDFView.viewtype);
       this.activateLeaf();
 
       // コマンドを登録する
@@ -163,7 +164,7 @@ export default class ObsidianTypstMate extends Plugin {
   }
 
   private async prepareTypst(wasmPath: string) {
-    this.observer = new ParentResizeService();
+    this.observer = new Observer();
     this.typstManager = new TypstManager(this);
     await this.init(wasmPath).catch((err) => {
       console.error(err);
@@ -242,6 +243,39 @@ export default class ObsidianTypstMate extends Plugin {
       },
     });
 
+    this.addCommand({
+      id: 'typst-tex2typ',
+      name: 'Replace tex in markdown content or selection to typst',
+      editorCallback: async (editor) => {
+        const selection = editor.getSelection();
+        const tex2typ = async (seg: MathSegment) => {
+          try {
+            // ? typst から tex に変換できればその数式は typst ではない
+            typst2tex(seg.content);
+            return seg.raw;
+          } catch {
+            try {
+              return seg.raw.replace(seg.content, tex2typst(seg.content));
+            } catch {
+              return seg.raw.replace(seg.content, await this.typst.mitex(seg.content));
+            }
+          }
+        };
+        if (selection) {
+          const replaced = await replaceMathSegments(selection, tex2typ);
+          editor.replaceSelection(replaced);
+        } else {
+          const content = editor.getDoc().getValue();
+          const replaced = await replaceMathSegments(content, tex2typ);
+          editor.replaceRange(
+            replaced,
+            { line: 0, ch: 0 },
+            { line: editor.lineCount(), ch: editor.getLine(editor.lineCount() - 1).length },
+          );
+        }
+      },
+    });
+
     if (this.excalidrawPluginInstalled) {
       this.addCommand({
         id: 'typst-render-to-excalidraw',
@@ -257,31 +291,17 @@ export default class ObsidianTypstMate extends Plugin {
     this.listeners.push(
       this.app.workspace.on('css-change', this.applyBaseColor.bind(this)),
       this.app.workspace.on('editor-change', this.editorHelper.onEditorChange.bind(this.editorHelper)),
-      this.app.workspace.on('active-leaf-change', this.editorHelper.removePreview.bind(this)),
-      this.app.workspace.on('file-menu', (menu: Menu, fileOrFolder) => {
-        if (fileOrFolder instanceof TFolder) {
-          menu.addItem(async (item) => {
-            item
-              .setTitle('New Typst file')
-              .setIcon('file-plus')
-              .onClick(async () => {
-                const newFileName = 'Untitled.typ';
-                const folderPath = fileOrFolder.path;
-                const filePath = `${folderPath}/${newFileName}`;
-
-                let uniquePath = filePath;
-                let i = 1;
-                while (await this.app.vault.exists(uniquePath)) {
-                  uniquePath = `${folderPath}/Untitled ${i}.typ`;
-                  i++;
-                }
-
-                const file = await this.app.vault.create(uniquePath, '% Typst file\n');
-                const leaf = this.app.workspace.getLeaf(true);
-                await leaf.openFile(file);
-              });
+      this.app.workspace.on('active-leaf-change', this.editorHelper.hideAll.bind(this.editorHelper)),
+      this.app.workspace.on('leaf-menu', (menu, leaf) => {
+        if (leaf.view.getViewType() !== TypstTextView.viewtype) return;
+        menu.addItem(async (item) => {
+          item.setTitle('Open as PDF').onClick(async () => {
+            await leaf.setViewState({
+              type: TypstPDFView.viewtype,
+              state: { file: (leaf.view as TypstTextView).file },
+            });
           });
-        }
+        });
       }),
     );
   }
@@ -372,7 +392,7 @@ export default class ObsidianTypstMate extends Plugin {
     // 監視を終了
     this.observer.stopAll();
     this.listeners.forEach(this.app.workspace.offref.bind(this.app.workspace));
-    document.removeEventListener('keydown', this.editorHelper.keyListener, { capture: true });
+    this.editorHelper.close();
 
     // Worker を終了
     this.worker?.terminate();
@@ -382,10 +402,12 @@ export default class ObsidianTypstMate extends Plugin {
 
     // MarkdownCodeBlockProcessor のオーバーライドは自動で解除
 
+    // TODO: anti-pattern らしい
     // 登録した Leaf を閉じる
     const leafs = [
       ...this.app.workspace.getLeavesOfType(TypstToolsView.viewtype),
-      ...this.app.workspace.getLeavesOfType(TypstFileView.viewtype),
+      ...this.app.workspace.getLeavesOfType(TypstTextView.viewtype),
+      ...this.app.workspace.getLeavesOfType(TypstPDFView.viewtype),
     ];
     for (const leaf of leafs) leaf.detach();
   }

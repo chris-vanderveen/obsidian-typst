@@ -2,7 +2,7 @@ import { debounce } from 'obsidian';
 
 type Callback = (entry: ResizeObserverEntry) => void;
 
-export class ParentResizeService {
+export class Observer {
   private ro: ResizeObserver;
   private mo: MutationObserver;
   private pollId: number | null = null;
