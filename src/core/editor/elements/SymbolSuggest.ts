@@ -117,7 +117,10 @@ export default class SymbolSuggestElement extends HTMLElement {
         e.preventDefault();
         this.prevEl?.focus();
         if (this.selectedIndex >= 0)
-          this.plugin.editorHelper.complementSymbol(this.editor!, this.symbols[this.selectedIndex]!);
+          this.plugin.editorHelper.complementSymbol(
+            this.editor!,
+            this.symbols[this.selectedIndex]! ?? this.symbols[0]!,
+          );
         else this.plugin.editorHelper.complementSymbol(this.editor!, this.symbols[0]!);
         return;
       }
@@ -125,7 +128,7 @@ export default class SymbolSuggestElement extends HTMLElement {
         this.prevEl?.focus();
         e.preventDefault();
         if (this.selectedIndex >= 0) {
-          this.plugin.editorHelper.applySymbol(this.editor!, this.symbols[this.selectedIndex]!);
+          this.plugin.editorHelper.applySymbol(this.editor!, this.symbols[this.selectedIndex]! ?? this.symbols[0]!);
         } else if (e.key === 'Enter' || e.key === 'Tab') {
           this.plugin.editorHelper.applySymbol(this.editor!, this.symbols[0]!);
         }
