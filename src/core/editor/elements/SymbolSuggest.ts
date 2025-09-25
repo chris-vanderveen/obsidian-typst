@@ -71,7 +71,7 @@ export default class SymbolSuggestElement extends HTMLElement {
     if (this.isOpen) return;
     this.isOpen = true;
     this.selectedIndex = -1;
-    this.removeClass('typstmate-hidden');
+    this.show();
     this.setAttribute('tabindex', '0');
     document.addEventListener('mousedown', this.outsideListener, { capture: true });
     window.addEventListener('keydown', this.keyListener, { capture: true });
@@ -140,7 +140,7 @@ export default class SymbolSuggestElement extends HTMLElement {
 
   close() {
     this.isOpen = false;
-    this.addClass('typstmate-hidden');
+    this.hide();
     document.removeEventListener('mousedown', this.outsideListener, { capture: true });
     window.removeEventListener('keydown', this.keyListener, { capture: true });
   }

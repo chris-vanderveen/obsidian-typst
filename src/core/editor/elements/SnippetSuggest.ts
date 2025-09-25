@@ -42,7 +42,7 @@ export default class SnippetSuggestElement extends HTMLElement {
       item.dataset.index = index.toString();
       item.addEventListener('click', () => {
         this.prevEl?.focus();
-        this.plugin.editorHelper.applySnippet(editor, snippet);
+        this.plugin.editorHelper.applySnippet(snippet);
         this.close();
       });
       item.addEventListener('mouseover', () => {
@@ -80,7 +80,7 @@ export default class SnippetSuggestElement extends HTMLElement {
     if (this.isOpen) return;
     this.isOpen = true;
     this.selectedIndex = -1;
-    this.removeClass('typstmate-hidden');
+    this.show();
     this.setAttribute('tabindex', '0');
     document.addEventListener('mousedown', this.outsideListener, { capture: true });
     window.addEventListener('keydown', this.keyListener, { capture: true });
@@ -89,9 +89,7 @@ export default class SnippetSuggestElement extends HTMLElement {
   private onOutsideMouseDown(e: MouseEvent) {
     const target = e.target as Node | null;
     if (!target) return;
-    if (!this.contains(target)) {
-      this.close();
-    }
+    if (!this.contains(target)) this.close();
   }
 
   private onKeyDown(e: KeyboardEvent) {
@@ -126,28 +124,26 @@ export default class SnippetSuggestElement extends HTMLElement {
         e.preventDefault();
         this.prevEl?.focus();
         if (this.selectedIndex >= 0)
-          this.plugin.editorHelper.complementSnippet(this.editor!, this.snippets[this.selectedIndex]!);
-        else this.plugin.editorHelper.complementSnippet(this.editor!, this.snippets[0]!);
+          this.plugin.editorHelper.complementSnippet(this.snippets[this.selectedIndex]! ?? this.snippets[0]!);
+        else this.plugin.editorHelper.complementSnippet(this.snippets[0]!);
         return;
       }
       case 'Enter': {
         e.preventDefault();
         this.prevEl?.focus();
         let snippet: Snippet;
-        if (this.selectedIndex >= 0) {
-          snippet = this.snippets[this.selectedIndex]!;
-        } else {
-          snippet = this.snippets[0]!;
-        }
+        if (this.selectedIndex >= 0) snippet = this.snippets[this.selectedIndex]! ?? this.snippets[0]!;
+        else snippet = this.snippets[0]!;
+
         if (snippet.script && this.plugin.editorHelper.value === undefined) {
-          this.plugin.editorHelper.complementSnippet(this.editor!, snippet);
+          this.plugin.editorHelper.complementSnippet(snippet);
           const cursor = this.editor!.getCursor();
           this.editor?.replaceRange('()', {
             line: cursor.line,
             ch: cursor.ch - 1,
           });
         } else {
-          this.plugin.editorHelper.applySnippet(this.editor!, snippet);
+          this.plugin.editorHelper.applySnippet(snippet);
           this.close();
         }
         return;
@@ -189,7 +185,6 @@ export default class SnippetSuggestElement extends HTMLElement {
           e.preventDefault();
           const cursor = this.editor!.getCursor();
           this.plugin.editorHelper.replaceLength(
-            this.editor!,
             '',
             {
               line: cursor.line,
@@ -214,7 +209,7 @@ export default class SnippetSuggestElement extends HTMLElement {
     this.editor?.removeHighlights('typstmate-atmode');
 
     this.isOpen = false;
-    this.addClass('typstmate-hidden');
+    this.hide();
     document.removeEventListener('mousedown', this.outsideListener, { capture: true });
     window.removeEventListener('keydown', this.keyListener, { capture: true });
   }
