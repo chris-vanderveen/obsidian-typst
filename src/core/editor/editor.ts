@@ -10,9 +10,9 @@ import type SnippetSuggestElement from './elements/SnippetSuggest';
 import type SymbolSuggestElement from './elements/SymbolSuggest';
 
 import './editor.css';
-import VISUAL_SNIPPETS_DATA from './visualSnippetsData.json';
+import SHORTCUTS_DATA from '@/data/shortcuts.json';
 
-const VISULA_SNIPPETS_KEYS = Object.keys(VISUAL_SNIPPETS_DATA);
+const SHORTCUTS_KEYS = Object.keys(SHORTCUTS_DATA);
 
 export class EditorHelper {
   private plugin: ObsidianTypstMate;
@@ -46,12 +46,14 @@ export class EditorHelper {
     this.inlinePreviewEl = document.createElement('typstmate-inline-preview') as InlinePreviewElement;
     this.inlinePreviewEl.plugin = this.plugin;
     this.inlinePreviewEl.addClasses(['typstmate-inline-preview', 'typstmate-temporary']);
+    this.inlinePreviewEl.hide();
 
     this.snippetSuggestEl = document.createElement('typstmate-snippets') as SnippetSuggestElement;
     this.snippetSuggestEl.plugin = this.plugin;
     this.snippetSuggestEl.container = document.createElement('div');
     this.snippetSuggestEl.addClasses(['typstmate-snippets', 'typstmate-temporary']);
     this.snippetSuggestEl.appendChild(this.snippetSuggestEl.container);
+    this.snippetSuggestEl.hide();
 
     this.symbolSuggestEl = document.createElement('typstmate-symbols') as SymbolSuggestElement;
     this.symbolSuggestEl.plugin = this.plugin;
@@ -59,6 +61,7 @@ export class EditorHelper {
     this.symbolSuggestEl.container.addClass('container');
     this.symbolSuggestEl.addClasses(['typstmate-symbols', 'typstmate-temporary']);
     this.symbolSuggestEl.appendChild(this.symbolSuggestEl.container);
+    this.symbolSuggestEl.hide();
 
     document.addEventListener('keydown', this.keyListener, { capture: true });
     document.addEventListener('mousedown', this.mouseListener, { capture: true });
@@ -142,13 +145,13 @@ export class EditorHelper {
         }, 0);
         break;
       }
-      // Visual Snippets
+      // Shortcuts
       default: {
-        if (VISULA_SNIPPETS_KEYS.includes(e.key) && !e.ctrlKey && !e.metaKey) {
+        if (SHORTCUTS_KEYS.includes(e.key) && !e.ctrlKey && !e.metaKey) {
           const selection = this.editor?.getSelection();
           if (!selection) break;
           e.preventDefault();
-          const data = (VISUAL_SNIPPETS_DATA as { [key: string]: VisualSnippetData })[e.key]!;
+          const data = SHORTCUTS_DATA[e.key]!;
           this.editor?.replaceSelection(data.content.replaceAll('$1', selection));
           if (data.offset) {
             this.editor?.setCursor({
@@ -253,67 +256,25 @@ export class EditorHelper {
     return shortest;
   }
 
-  private calc_byte_pos(src: string, target_line: number, target_column: number) {
-    if (target_line < 0 || target_column < 0) return 0;
-
+  private calc_byte_pos(src: string, target_line: number, target_column: number): number {
     const lines = src.split('\n');
-    if (target_line >= lines.length) return src.length;
 
-    // 対象行までのバイト数
-    let byteIndex = 0;
+    if (lines.length <= target_line || target_line < 0) return 0;
+
+    let bytePos = 0;
+
     for (let i = 0; i < target_line; i++) {
       const line = lines[i];
-      if (line === undefined) continue;
-      byteIndex += this.calculateUtf8Bytes(line) + 1;
+      if (line !== undefined) bytePos += line.length + 1;
     }
 
-    // 対象行内の対象カラムまでのバイト数
-    const targetLine = lines[target_line];
-    if (!targetLine || target_column >= targetLine.length) {
-      return byteIndex + this.calculateUtf8Bytes(targetLine || '');
-    }
+    const currentLine = lines[target_line];
+    if (currentLine === undefined) return bytePos;
 
-    // 対象カラムまでのバイト数
-    let currentColumn = 0;
-    let currentByteIndex = 0;
+    const column = Math.min(target_column, currentLine.length);
+    bytePos += column;
 
-    for (let i = 0; i < targetLine.length; i++) {
-      if (currentColumn >= target_column) break;
-
-      const codePoint = targetLine.codePointAt(i);
-      if (codePoint === undefined) break;
-
-      const byteLength = this.getUtf8ByteLength(codePoint);
-
-      if (currentColumn + 1 > target_column) break;
-
-      currentColumn++;
-      currentByteIndex += byteLength;
-
-      if (codePoint > 0xffff) {
-        i++;
-      }
-    }
-
-    return byteIndex + currentByteIndex;
-  }
-
-  private calculateUtf8Bytes(str: string): number {
-    let totalBytes = 0;
-    for (let i = 0; i < str.length; i++) {
-      const codePoint = str.codePointAt(i);
-      if (codePoint === undefined) break;
-      totalBytes += this.getUtf8ByteLength(codePoint);
-      if (codePoint > 0xffff) i++;
-    }
-    return totalBytes;
-  }
-
-  private getUtf8ByteLength(codePoint: number): number {
-    if (codePoint <= 0x7f) return 1;
-    if (codePoint <= 0x7ff) return 2;
-    if (codePoint <= 0xffff) return 3;
-    return 4;
+    return bytePos;
   }
 
   async highlightBracketPairs(display: boolean) {
@@ -844,12 +805,6 @@ export interface Rect {
   readonly right: number;
   readonly top: number;
   readonly bottom: number;
-}
-
-interface VisualSnippetData {
-  content: string;
-  category: string;
-  offset?: number;
 }
 
 export interface Position {
