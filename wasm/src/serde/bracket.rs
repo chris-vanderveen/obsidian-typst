@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use crate::lexer::bracket::CharPos;
 use crate::parser::bracket::BracketPair;
 
 #[derive(Serialize)]
@@ -8,13 +9,11 @@ pub struct BracketPairSer {
 
     pub depth: usize,
 
-    pub open_byte: usize,
-    pub open_line: usize,
-    pub open_column: usize,
+    pub open_offset: usize,
+    pub open_pos: CharPos,
 
-    pub close_byte: usize,
-    pub close_line: usize,
-    pub close_column: usize,
+    pub close_offset: usize,
+    pub close_pos: CharPos,
 }
 
 impl From<&BracketPair> for BracketPairSer {
@@ -29,13 +28,11 @@ impl From<&BracketPair> for BracketPairSer {
 
             depth: pair.depth,
 
-            open_byte: pair.open.byte,
-            open_line: pair.open.line,
-            open_column: pair.open.column,
+            open_offset: pair.open.offset,
+            open_pos: pair.open.pos,
 
-            close_byte: pair.close.byte,
-            close_line: pair.close.line,
-            close_column: pair.close.column,
+            close_offset: pair.close.offset,
+            close_pos: pair.close.pos,
         }
     }
 }

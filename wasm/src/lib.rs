@@ -20,6 +20,7 @@ use typst_pdf::PdfOptions;
 mod lexer;
 mod parser;
 mod serde;
+mod utils;
 mod vfs;
 mod world;
 
