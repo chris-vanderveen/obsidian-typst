@@ -21,6 +21,8 @@
 		"noUnusedParameters": false,
 		"noPropertyAccessFromIndexSignature": false,
 
+		"resolveJsonModule": true,
+
 		"types": ["vite/client", "obsidian-typings"],
 		"paths": {
       "@/*": ["./src/*"]
