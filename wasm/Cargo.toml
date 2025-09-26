@@ -15,9 +15,6 @@ typst-assets = { version = "0.13.1", features = ["fonts"] }
 typst-timing = "0.13.1"
 comemo = "^0"
 unscanny = "^0.1"
-unicode-ident = "^1.0"
-unicode-script = "^0.5"
-unicode-segmentation = "^1.12"
 
 mitex = "^0.2"
 
@@ -34,6 +31,7 @@ rustc-hash = "^2.1"
 
 chrono = "^0.4"
 send_wrapper = "^0.6"
+
 
 [features]
 default = []
