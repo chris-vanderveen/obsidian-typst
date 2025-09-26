@@ -9,7 +9,46 @@ pub struct BracketToken {
     pub column: usize,
 }
 
+#[derive(Debug, Clone)]
+struct CharPosition {
+    line: usize,
+    column: usize,
+    utf16_offset: usize,
+}
+
+fn precompute_char_positions(src: &str) -> Vec<CharPosition> {
+    let mut positions = Vec::new();
+    let mut line = 0;
+    let mut column = 0;
+    let mut utf16_offset = 0;
+
+    for c in src.chars() {
+        let utf16_len = c.len_utf16();
+        let utf8_len = c.len_utf8();
+
+        for _ in 0..utf8_len {
+            positions.push(CharPosition {
+                line,
+                column,
+                utf16_offset,
+            });
+        }
+
+        if c == '\n' {
+            line += 1;
+            column = 0;
+        } else {
+            column += utf16_len;
+        }
+
+        utf16_offset += utf16_len;
+    }
+
+    positions
+}
+
 pub fn bracket_lexer(src: &str) -> Vec<BracketToken> {
+    let positions = precompute_char_positions(src);
     let mut ret = Vec::new();
     let mut chars = src.char_indices().peekable();
     let mut in_str = false;
@@ -89,43 +128,15 @@ pub fn bracket_lexer(src: &str) -> Vec<BracketToken> {
                 SyntaxKind::LeftParen | SyntaxKind::LeftBracket | SyntaxKind::LeftBrace
             );
 
-            let (line, column, utf16_offset) = calc_line_col_utf16(src, i);
-
+            let pos = &positions[i];
             ret.push(BracketToken {
                 kind,
                 open,
-                byte: utf16_offset,
-                line,
-                column,
+                byte: pos.utf16_offset,
+                line: pos.line,
+                column: pos.column,
             });
         }
     }
     ret
-}
-
-fn calc_line_col_utf16(src: &str, utf8_byte: usize) -> (usize, usize, usize) {
-    let mut line = 0;
-    let mut col = 0;
-    let mut utf16_offset = 0;
-    let mut current_byte = 0;
-
-    for c in src.chars() {
-        if current_byte >= utf8_byte {
-            break;
-        }
-
-        let utf16_len = c.len_utf16();
-
-        if c == '\n' {
-            line += 1;
-            col = 0;
-        } else {
-            col += utf16_len;
-        }
-
-        utf16_offset += utf16_len;
-        current_byte += c.len_utf8();
-    }
-
-    (line, col, utf16_offset)
 }
