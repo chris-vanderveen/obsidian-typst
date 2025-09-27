@@ -65,9 +65,10 @@ export default class TypstElement extends HTMLElement {
       '#000000',
       this.plugin.settings.autoBaseColor ? this.plugin.baseColor : this.plugin.settings.baseColor,
     );
-    this.plugin.typstManager.beforeProcessor = this.processor;
-    this.plugin.typstManager.beforeSVG = svg;
 
+    this.plugin.typstManager.beforeKind = this.kind;
+    this.plugin.typstManager.beforeId = this.processor.id;
+    this.plugin.typstManager.beforeContent = svg;
     this.innerHTML = svg;
   }
 
@@ -88,6 +89,9 @@ export default class TypstElement extends HTMLElement {
       if (err[0]?.hints.length !== 0)
         diagEl.addEventListener('click', () => new DiagnosticModal(this.plugin.app, err).open());
 
+      this.plugin.typstManager.beforeKind = this.kind;
+      this.plugin.typstManager.beforeId = this.processor.id;
+      this.plugin.typstManager.beforeContent = diagEl.outerHTML;
       this.replaceChildren(diagEl);
     }
   }
