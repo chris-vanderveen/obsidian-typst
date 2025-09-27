@@ -14,7 +14,7 @@ Snippet                  | Script
 :-----------------------:|:------------------------:
 [![Snippet](assets/snippet.gif)](#snippet) | [![Script](assets/script-snippet.gif)](#script-snippet)
 
-For details about the processor / snippet(script) / shortcut, see [Processor.md](docs/processor/) / [Snippet.md](docs/snippet/) / [Shortcut.md](docs/shortcut/).
+For details about the processor / snippet(script) / shortcut / tab jump, see [Processor](docs/processor/) / [Snippet](docs/snippet/) / [Shortcut](docs/Shortcut.md) / [TabJump](docs/TabJump.md).
 
 I welcome pull requests featuring your wonderful snippets!
 
@@ -123,6 +123,7 @@ I'm grateful to the developers for making this plugin possible!
 
 ## TODO
 
+- RTL の対応
 - 記号のお気に入り機能とユーザー定義
 - `.typ` ファイルの編集
 - フォーマット機能

@@ -23,15 +23,15 @@ Combined with this plugin's unique Tabout feature, matrix editing becomes fast.
 Typst accepts Unicode characters directly, so concealment is unnecessary.
 Additionally, this plugin provides symbol suggestions & completion.
 
-### ❌ Tabout
+### ✅ Tabout
 
-Planned for a future implementation after improving usability.
-At the moment only a snippet-specific feature that jumps to the next `#CURSOR` is implemented.
+Additionally, jumping with the <key>Shift + Tab</key> key is also supported.
+See [here](/docs/TabJump.md) for details.
 
 ### ✅ Visual snippets
 
 Supports a wider variety of snippet types.
-See [here](/docs/shortcut/README.md) for details.
+See [here](/docs/Shortcut.md) for details.
 
 ### ✅ Auto-enlarge brackets
 
@@ -43,10 +43,10 @@ If you want to customize this, use [Left/Right](https://typst.app/docs/reference
 Instead of coloring the bracket adjacent to the cursor, this highlights the parent bracket at the cursor's position.
 This makes nesting relationships easier to understand.
 
-### ❌ Editor commands
+### ✅ Editor commands
 
-Low priority, but planned for the future.
-There are (or will be) commands for converting LaTeX to Typst and for rendering to Excalidraw.
+Additionally, this plugin has its own unique commands.
+See [here](/docs/Commands.md) for details.
 
 ### ✅ Snippets
 
