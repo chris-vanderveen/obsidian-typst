@@ -20,7 +20,6 @@ export class EditorHelper {
   editor?: Editor;
   plugin: ObsidianTypstMate;
 
-  hasFocus = false;
   mathObject?: MathObject;
   bracketPairs?: BracketPair[];
   cursorEnclosingBracketPair?: BracketPair;
@@ -50,7 +49,7 @@ export class EditorHelper {
         const sel = update.state.selection.main;
 
         // サジェストやプレビューの非表示
-        if (update.focusChanged) this.focusChanged();
+        if (update.focusChanged) this.focusChanged(update.view.hasFocus);
         // サジェストの開始, インラインプレビューの更新
         if (update.docChanged && sel.empty) await this.docChanged(sel.head);
         // 親括弧のハイライト, MathObject の更新 & 変更あれば括弧のハイライト, なければインラインプレビュー
@@ -180,8 +179,9 @@ export class EditorHelper {
   /* focus changed
    */
 
-  private focusChanged() {
-    console.log('focus changed');
+  private focusChanged(hasFocus: boolean) {
+    if (hasFocus) return;
+    this.close();
   }
 
   /* key down
@@ -325,14 +325,11 @@ export class EditorHelper {
     }
 
     // カーソルが数式の範囲外
-    let relativeOffset = offset - this.mathObject.startOffset;
+    const relativeOffset = offset - this.mathObject.startOffset;
     if (relativeOffset <= 0 || this.mathObject.content.length <= relativeOffset) {
       this.hideAllPopup();
       this.updateMathObject(offset);
       if (!this.mathObject) return null;
-
-      relativeOffset = offset - this.mathObject.startOffset;
-      if (relativeOffset <= 0 || this.mathObject.content.length <= relativeOffset) return null;
 
       await this.updateBracketPairsInMathObject();
       this.updateHighlightsOnBracketPairs();
@@ -558,7 +555,10 @@ export class EditorHelper {
 
   // TODO: これは先頭の $$ にしかない. ビューポートから外れると認識されない
   isActiveDisplayMathExists() {
-    return this.editor?.containerEl.querySelector('span.cm-formatting-math.cm-math-block');
+    return (
+      this.editor?.containerEl.querySelector('span.cm-formatting-math.cm-math-block') ||
+      this.editor?.containerEl.querySelector('span.cm-formatting-math-end')?.textContent === '$$'
+    );
   }
 
   isCursorInCodeBlock() {
@@ -594,7 +594,7 @@ export class EditorHelper {
     if (!startCoords || !endCoords) throw new Error();
 
     const x =
-      startCoords.top !== endCoords.top
+      Math.abs(startCoords.top - endCoords.top) > 8
         ? this.editor.coordsAtPos({ line: startPos.line, ch: 0 }, false).left
         : startCoords.left;
 

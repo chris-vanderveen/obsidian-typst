@@ -158,7 +158,7 @@ export default class SymbolSuggestElement extends HTMLElement {
   }
 
   private updateSelection(newIndex: number) {
-    if (newIndex === this.selectedIndex) return;
+    if (newIndex === this.selectedIndex) return this.items.children[newIndex]?.classList.add('selected');
     this.items.children[this.selectedIndex]?.classList.remove('selected');
     this.items.children[newIndex]?.classList.add('selected');
     this.selectedIndex = newIndex;
