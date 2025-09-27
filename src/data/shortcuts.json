@@ -62,12 +62,12 @@
   "^": {
     "content": "stretch($1)^\"\"",
     "category": "Stretch",
-    "offset": 1
+    "offset": -1
   },
   "_": {
     "content": "stretch($1)_\"\"",
     "category": "Stretch",
-    "offset": 1
+    "offset": -1
   },
   "u": {
     "content": "upright($1)",
@@ -80,12 +80,12 @@
   "U": {
     "content": "underbrace($1, \"\")",
     "category": "Under/Over",
-    "offset": 2
+    "offset": -2
   },
   "O": {
     "content": "overbrace($1, \"\")",
     "category": "Under/Over",
-    "offset": 2
+    "offset": -2
   },
   "s": {
     "content": "sans($1)",
