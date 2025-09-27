@@ -602,6 +602,32 @@ export class EditorHelper {
 
     return { x, y };
   }
+
+  /* Editor Commands
+   * Obsidian LaTeX Suite からの輸入
+   */
+
+  boxCurrentEquation(editor: Editor) {
+    if (!editor) return;
+    const inlineMathObject = this.extractInlineMathObjectInsideDollarOutsideCursor(
+      editor.posToOffset(editor.getCursor()),
+    );
+    if (!inlineMathObject) return;
+    this.replaceWithLength(
+      `box(${inlineMathObject.content})`,
+      inlineMathObject.startPos,
+      inlineMathObject.content.length,
+    );
+  }
+
+  selectCurrentEquation(editor: Editor) {
+    if (!editor) return;
+    const mathObject =
+      this.extractInlineMathObjectInsideDollarOutsideCursor(editor.posToOffset(editor.getCursor())) ??
+      this.extractDisplayMathObjectInsideTwoDollarsOutsideCursor(editor.posToOffset(editor.getCursor()));
+    if (!mathObject) return;
+    editor.setSelection(mathObject.startPos, mathObject.endPos);
+  }
 }
 
 interface MathObject {

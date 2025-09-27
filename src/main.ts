@@ -98,6 +98,13 @@ export default class ObsidianTypstMate extends Plugin {
 
     // ? Obsidian の起動時間を短縮するため setTimeout を使用
     this.app.workspace.onLayoutReady(() => {
+      const leafs = [
+        ...this.app.workspace.getLeavesOfType(TypstToolsView.viewtype),
+        ...this.app.workspace.getLeavesOfType(TypstTextView.viewtype),
+        ...this.app.workspace.getLeavesOfType(TypstPDFView.viewtype),
+      ];
+      for (const leaf of leafs) leaf.detach();
+
       // 設定タブを登録
       this.addSettingTab(new SettingTab(this.app, this));
 
@@ -274,6 +281,18 @@ export default class ObsidianTypstMate extends Plugin {
           );
         }
       },
+    });
+
+    this.addCommand({
+      id: 'typst-box-current-equation',
+      name: 'Box current equation',
+      editorCallback: this.editorHelper.boxCurrentEquation.bind(this.editorHelper),
+    });
+
+    this.addCommand({
+      id: 'typst-select-current-equation',
+      name: 'Select current equation',
+      editorCallback: this.editorHelper.selectCurrentEquation.bind(this.editorHelper),
     });
 
     if (this.excalidrawPluginInstalled) {
