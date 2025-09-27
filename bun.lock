@@ -4,31 +4,33 @@
     "": {
       "name": "typst-mate",
       "dependencies": {
-        "comlink": "latest",
-        "nanoid": "latest",
-        "pako": "latest",
-        "tex2typst": "latest",
-        "untar-sync": "latest",
+        "comlink": "^4.4.2",
+        "nanoid": "^5.1.6",
+        "pako": "^2.1.0",
+        "tex2typst": "^0.3.23",
+        "untar-sync": "^1.0.4",
       },
       "devDependencies": {
-        "@biomejs/biome": "latest",
-        "@types/bun": "latest",
-        "@types/pako": "latest",
-        "@zsviczian/excalidraw": "latest",
-        "autoprefixer": "latest",
-        "builtin-modules": "latest",
-        "i18next": "latest",
-        "obsidian": "latest",
+        "@biomejs/biome": "2.2.4",
+        "@codemirror/state": "^6.5.2",
+        "@codemirror/view": "^6.38.3",
+        "@types/bun": "^1.2.22",
+        "@types/pako": "^2.0.4",
+        "@zsviczian/excalidraw": "^0.18.0-37",
+        "autoprefixer": "^10.4.21",
+        "builtin-modules": "^5.0.0",
+        "i18next": "^25.5.2",
+        "obsidian": "^1.8.7",
         "obsidian-excalidraw-plugin": "github:zsviczian/obsidian-excalidraw-plugin#master",
-        "obsidian-typings": "latest",
-        "postcss": "latest",
-        "vite": "latest",
-        "vite-plugin-static-copy": "latest",
-        "vite-tsconfig-paths": "latest",
+        "obsidian-typings": "^4.51.0",
+        "postcss": "^8.5.6",
+        "vite": "^7.1.7",
+        "vite-plugin-static-copy": "^3.1.2",
+        "vite-tsconfig-paths": "^5.1.4",
       },
       "peerDependencies": {
-        "puppeteer": "latest",
-        "typescript": "latest",
+        "puppeteer": "^24.22.3",
+        "typescript": "^5.9.2",
       },
     },
   },
@@ -81,7 +83,7 @@
 
     "@codemirror/state": ["@codemirror/state@6.5.2", "", { "dependencies": { "@marijn/find-cluster-break": "^1.0.0" } }, "sha512-FVqsPqtPWKVVL3dPSxy8wEF/ymIEuVzF1PK3VbUgrxXpJUSHQWWZz4JMToquRxnkw+36LTamCZG2iua2Ptq0fA=="],
 
-    "@codemirror/view": ["@codemirror/view@6.38.2", "", { "dependencies": { "@codemirror/state": "^6.5.0", "crelt": "^1.0.6", "style-mod": "^4.1.0", "w3c-keyname": "^2.2.4" } }, "sha512-bTWAJxL6EOFLPzTx+O5P5xAO3gTqpatQ2b/ARQ8itfU/v2LlpS3pH2fkL0A3E/Fx8Y2St2KES7ZEV0sHTsSW/A=="],
+    "@codemirror/view": ["@codemirror/view@6.38.3", "", { "dependencies": { "@codemirror/state": "^6.5.0", "crelt": "^1.0.6", "style-mod": "^4.1.0", "w3c-keyname": "^2.2.4" } }, "sha512-x2t87+oqwB1mduiQZ6huIghjMt4uZKFEdj66IcXw7+a5iBEvv9lh7EWDRHI7crnD4BMGpnyq/RzmCGbiEZLcvQ=="],
 
     "@electron/get": ["@electron/get@2.0.3", "", { "dependencies": { "debug": "^4.1.1", "env-paths": "^2.2.0", "fs-extra": "^8.1.0", "got": "^11.8.5", "progress": "^2.0.3", "semver": "^6.2.0", "sumchecker": "^3.0.1" }, "optionalDependencies": { "global-agent": "^3.0.0" } }, "sha512-Qkzpg2s9GnVV2I2BjRksUi43U5e6+zaQMcjoJy0C+C5oxaKl+fmckGDQFtRpZpZV0NQekuZZ+tGz7EA9TVnQtQ=="],
 
@@ -1262,6 +1264,10 @@
     "zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
 
     "zustand": ["zustand@4.5.7", "", { "dependencies": { "use-sync-external-store": "^1.2.2" }, "peerDependencies": { "@types/react": ">=16.8", "immer": ">=9.0.6", "react": ">=16.8" }, "optionalPeers": ["@types/react", "immer", "react"] }, "sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw=="],
+
+    "@codemirror/language/@codemirror/view": ["@codemirror/view@6.38.2", "", { "dependencies": { "@codemirror/state": "^6.5.0", "crelt": "^1.0.6", "style-mod": "^4.1.0", "w3c-keyname": "^2.2.4" } }, "sha512-bTWAJxL6EOFLPzTx+O5P5xAO3gTqpatQ2b/ARQ8itfU/v2LlpS3pH2fkL0A3E/Fx8Y2St2KES7ZEV0sHTsSW/A=="],
+
+    "@codemirror/search/@codemirror/view": ["@codemirror/view@6.38.2", "", { "dependencies": { "@codemirror/state": "^6.5.0", "crelt": "^1.0.6", "style-mod": "^4.1.0", "w3c-keyname": "^2.2.4" } }, "sha512-bTWAJxL6EOFLPzTx+O5P5xAO3gTqpatQ2b/ARQ8itfU/v2LlpS3pH2fkL0A3E/Fx8Y2St2KES7ZEV0sHTsSW/A=="],
 
     "@electron/get/fs-extra": ["fs-extra@8.1.0", "", { "dependencies": { "graceful-fs": "^4.2.0", "jsonfile": "^4.0.0", "universalify": "^0.1.0" } }, "sha512-yhlQgA6mnOJUKOsRUFsgJdQCvkKhcz8tlZG5HBQfReYZy46OwLcY+Zia0mtdHsOo9y/hP+CxMN0TU9QxoOtG4g=="],
 

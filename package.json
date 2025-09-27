@@ -14,6 +14,8 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.4",
+		"@codemirror/state": "^6.5.2",
+		"@codemirror/view": "^6.38.3",
 		"@types/bun": "^1.2.22",
 		"@types/pako": "^2.0.4",
 		"@zsviczian/excalidraw": "^0.18.0-37",

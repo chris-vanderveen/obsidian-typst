@@ -1,646 +1,533 @@
-import { type Editor, type EditorPosition, MarkdownView, Notice } from 'obsidian';
+import { Prec } from '@codemirror/state';
+import { EditorView } from '@codemirror/view';
+import { type Editor, type EditorPosition, MarkdownView, type WorkspaceLeaf } from 'obsidian';
 
-import { DEFAULT_FONT_SIZE } from '@/constants';
-import type { Snippet } from '@/libs/snippet';
 import type { BracketPair } from '@/libs/worker';
 import type ObsidianTypstMate from '@/main';
-import { type SymbolData, searchSymbols } from '@/utils/symbolSearcher';
 import type InlinePreviewElement from './elements/InlinePreview';
 import type SnippetSuggestElement from './elements/SnippetSuggest';
 import type SymbolSuggestElement from './elements/SymbolSuggest';
 
 import './editor.css';
+
 import SHORTCUTS_DATA from '@/data/shortcuts.json';
+import { snippetRegex } from './elements/SnippetSuggest';
+import { symbolRegex } from './elements/SymbolSuggest';
 
 const SHORTCUTS_KEYS = Object.keys(SHORTCUTS_DATA);
 
 export class EditorHelper {
-  private plugin: ObsidianTypstMate;
+  editor?: Editor;
+  plugin: ObsidianTypstMate;
+
+  hasFocus = false;
+  mathObject?: MathObject;
+  bracketPairs?: BracketPair[];
+  cursorEnclosingBracketPair?: BracketPair;
 
   private inlinePreviewEl: InlinePreviewElement;
   private snippetSuggestEl: SnippetSuggestElement;
   private symbolSuggestEl: SymbolSuggestElement;
 
-  startWordIndex: number | null = null;
-  wordLine: number | null = null;
-  word?: string;
-  value?: string;
-
-  startDollarIndex: number | null = null;
-  startSymbolIndex: number | null = null;
-  symbolLine: number | null = null;
-  symbol?: string;
-
-  editor?: Editor;
-
-  beforeBracketPairs?: BracketPair[];
-  beforeInlineMathContent?: InlineMathContentResult;
-  beforeDisplayMathContent?: DisplayMathContentResult;
-
-  keyListener = (e: KeyboardEvent) => this.onKeyDown(e);
-  mouseListener = (e: MouseEvent) => this.onMouseDown(e);
-
   constructor(plugin: ObsidianTypstMate) {
     this.plugin = plugin;
 
     this.inlinePreviewEl = document.createElement('typstmate-inline-preview') as InlinePreviewElement;
-    this.inlinePreviewEl.plugin = this.plugin;
-    this.inlinePreviewEl.addClasses(['typstmate-inline-preview', 'typstmate-temporary']);
-    this.inlinePreviewEl.hide();
-
     this.snippetSuggestEl = document.createElement('typstmate-snippets') as SnippetSuggestElement;
-    this.snippetSuggestEl.plugin = this.plugin;
-    this.snippetSuggestEl.container = document.createElement('div');
-    this.snippetSuggestEl.addClasses(['typstmate-snippets', 'typstmate-temporary']);
-    this.snippetSuggestEl.appendChild(this.snippetSuggestEl.container);
-    this.snippetSuggestEl.hide();
-
     this.symbolSuggestEl = document.createElement('typstmate-symbols') as SymbolSuggestElement;
-    this.symbolSuggestEl.plugin = this.plugin;
-    this.symbolSuggestEl.container = document.createElement('div');
-    this.symbolSuggestEl.container.addClass('container');
-    this.symbolSuggestEl.addClasses(['typstmate-symbols', 'typstmate-temporary']);
-    this.symbolSuggestEl.appendChild(this.symbolSuggestEl.container);
-    this.symbolSuggestEl.hide();
-
-    document.addEventListener('keydown', this.keyListener, { capture: true });
-    document.addEventListener('mousedown', this.mouseListener, { capture: true });
-
+    this.inlinePreviewEl.startup(this.plugin);
+    this.snippetSuggestEl.startup(this.plugin);
+    this.symbolSuggestEl.startup(this.plugin);
     this.plugin.app.workspace.containerEl.appendChild(this.inlinePreviewEl);
     this.plugin.app.workspace.containerEl.appendChild(this.snippetSuggestEl);
     this.plugin.app.workspace.containerEl.appendChild(this.symbolSuggestEl);
+
+    // 拡張機能をセット
+    this.plugin.registerEditorExtension(
+      EditorView.updateListener.of(async (update) => {
+        if (!this.editor) this.editor = this.plugin.app.workspace.getActiveViewOfType(MarkdownView)?.editor;
+        if (!this.editor) return;
+        const sel = update.state.selection.main;
+
+        // サジェストやプレビューの非表示
+        if (update.focusChanged) this.focusChanged();
+        // サジェストの開始, インラインプレビューの更新
+        if (update.docChanged && sel.empty) await this.docChanged(sel.head);
+        // 親括弧のハイライト, MathObject の更新 & 変更あれば括弧のハイライト, なければインラインプレビュー
+        if (update.selectionSet) {
+          const result = await this.cursorMoved(sel.head);
+          if (result !== null) this.cursorMovedPostProcess(sel.empty, sel.head);
+        }
+      }),
+    );
+    this.plugin.registerEditorExtension(
+      Prec.high(
+        EditorView.domEventHandlers({
+          // TODO: Tooltip
+          /*mousemove: (e) => {},*/
+          // インラインプレビューの非表示
+          mousedown: (e) => {
+            if (this.inlinePreviewEl.style.display !== 'none') this.inlinePreviewEl.onClick(e);
+          },
+          // Suggest, CURSOR Jump, Tabout, Shortcut
+          keydown: (e) => {
+            if (this.symbolSuggestEl.style.display !== 'none') this.symbolSuggestEl.onKeyDown(e);
+            else if (this.snippetSuggestEl.style.display !== 'none') this.snippetSuggestEl.onKeyDown(e);
+            // CURSOR Jump, Tabout, Shortcut
+            else this.keyDown(e);
+          },
+        }),
+      ),
+    );
   }
 
   close() {
-    this.hideAll();
-    document.removeEventListener('keydown', this.keyListener, { capture: true });
-    document.removeEventListener('mousedown', this.mouseListener, { capture: true });
+    this.inlinePreviewEl.close();
+    this.symbolSuggestEl.close();
+    this.snippetSuggestEl.close();
+    this.removeHighlightsFromBracketPairs();
+    this.removeHighlightsFromBracketPairEnclosingCursor();
+    this.editor?.removeHighlights('typstmate-atmode');
   }
 
-  private async onKeyDown(e: KeyboardEvent) {
-    if (this.snippetSuggestEl.isOpen || this.symbolSuggestEl.isOpen) return; // サジェストが開いている
-    if (!isActiveMathExists()) return;
-    if (!this.editor) this.editor = this.plugin.app.workspace.getActiveViewOfType(MarkdownView)?.editor;
-    if (!this.editor) return;
-    switch (e.key) {
-      // Tabout
-      case 'Tab': {
-        if (!getSelection()!.isCollapsed) break; // 選択されている
+  hideAllPopup() {
+    this.inlinePreviewEl.close();
+    this.hideAllSuggest();
+  }
 
-        const cursor = this.editor?.getCursor();
-        if (!cursor) break;
-        let line = cursor.line;
+  hideAllSuggest() {
+    this.symbolSuggestEl.close();
+    this.snippetSuggestEl.close();
+  }
 
-        let lineText = this.editor?.getLine(line);
-        let cursorIndex = lineText?.indexOf('#CURSOR');
-        // ? 初めの #CURSOR は別で置き換わるので, cursorIndex === 0 は気にしなくていい
-        if (!cursorIndex) break;
+  onActiveLeafChange(leaf: WorkspaceLeaf | null) {
+    this.editor = leaf?.view.getViewType() === 'markdown' ? (leaf?.view as MarkdownView)?.editor : undefined;
+    if (this.editor) this.mathObject = undefined;
+  }
 
-        // ない場合は次の行も確認
-        if (cursorIndex === -1) {
-          line++;
+  /* doc changed
+   */
 
-          lineText = this.editor?.getLine(line);
-          cursorIndex = lineText?.indexOf('#CURSOR');
-          if (!cursorIndex) break;
+  private async docChanged(offset: number): Promise<void> {
+    if (!this.isActiveMathExists()) {
+      this.mathObject = undefined;
+      this.hideAllPopup();
+      return;
+    }
 
-          // なければ次の行に移動
-          if (cursorIndex === -1) {
-            e.preventDefault();
-            this.editor?.setCursor({
-              line,
-              ch: 0,
-            });
-            break;
-          }
-        }
+    this.updateMathObject(offset);
+    if (!this.mathObject) return;
 
-        // ある場合は置き換える
-        e.preventDefault();
-        this.replaceLength(
-          '',
-          {
-            line,
-            ch: cursorIndex,
-          },
-          7,
-        );
-        this.editor?.setCursor({
-          line,
-          ch: cursorIndex,
-        });
-        break;
+    await this.updateBracketPairsInMathObject();
+    this.updateHighlightsOnBracketPairs();
+
+    if (this.trySuggest(offset)) {
+      this.inlinePreviewEl.close();
+      return;
+    }
+    this.hideAllSuggest();
+    this.updateInlinePreview();
+  }
+
+  private updateInlinePreview() {
+    if (
+      this.mathObject?.kind !== 'inline' ||
+      this.symbolSuggestEl.style.display !== 'none' ||
+      this.snippetSuggestEl.style.display !== 'none'
+    ) {
+      this.inlinePreviewEl.close();
+      return;
+    }
+
+    const position = this.calculatePopupPosition(this.mathObject!.startPos, this.mathObject!.endPos);
+    this.inlinePreviewEl.render(position, this.mathObject!.content);
+  }
+
+  private trySuggest(offset: number): boolean {
+    if (!this.editor) return false;
+    const cursor = this.editor.offsetToPos(offset);
+    const line = this.editor.getLine(cursor.line);
+    const textBeforeCursor = line.slice(0, cursor.ch);
+
+    // symbol / snippet
+    if (textBeforeCursor.endsWith('@') && !textBeforeCursor.startsWith('#import')) {
+      this.symbolSuggestEl.close();
+
+      const match = textBeforeCursor.match(snippetRegex);
+      if (match) {
+        if (match.groups?.query === undefined) return true;
+
+        this.snippetSuggestEl.suggest(match.groups.query, cursor, match.groups.arg);
+        return true;
       }
-      case 'ArrowRight':
-      case 'ArrowDown':
-      case 'ArrowUp':
-      case 'ArrowLeft': {
-        setTimeout(async () => {
-          if (!getSelection()!.isCollapsed) return;
 
-          const display = isActiveDisplayMathExists();
-          if (display) await this.calcDisplayMathBracketPairs(this.editor!.getCursor());
-          else await this.calcInlineMathBracketPairs(this.editor!.getCursor());
-          this.highlightEnclosingBracketPair(this.editor!.getCursor()!, display);
-        }, 0);
-        break;
-      }
-      // Shortcuts
-      default: {
-        if (SHORTCUTS_KEYS.includes(e.key) && !e.ctrlKey && !e.metaKey) {
-          const selection = this.editor?.getSelection();
-          if (!selection) break;
-          e.preventDefault();
-          const data = SHORTCUTS_DATA[e.key]!;
-          this.editor?.replaceSelection(data.content.replaceAll('$1', selection));
-          if (data.offset) {
-            this.editor?.setCursor({
-              line: this.editor!.getCursor().line,
-              ch: this.editor!.getCursor().ch - data.offset,
-            });
-          }
-        }
+      this.snippetSuggestEl.close();
+    } else if (!textBeforeCursor.endsWith(' ')) {
+      this.snippetSuggestEl.close();
+
+      const match = textBeforeCursor.match(symbolRegex);
+      if (match) {
+        if (match.groups?.symbol === undefined) return true;
+
+        this.symbolSuggestEl.suggest(match.groups.symbol, cursor);
+        return true;
       }
     }
-    setTimeout(async () => {
-      if (!getSelection()!.isCollapsed) return;
 
-      const display = isActiveDisplayMathExists();
-      if (display) await this.calcDisplayMathBracketPairs(this.editor!.getCursor());
-      else await this.calcInlineMathBracketPairs(this.editor!.getCursor());
-      this.highlightBracketPairs(display);
-      this.highlightEnclosingBracketPair(this.editor!.getCursor()!, display);
-    }, 0);
+    return false;
   }
 
-  private async onMouseDown(_e: MouseEvent) {
-    if (!isActiveMathExists()) return;
+  /* focus changed
+   */
+
+  private focusChanged() {
+    console.log('focus changed');
+  }
+
+  /* key down
+   */
+
+  private keyDown(e: KeyboardEvent) {
+    switch (e.key) {
+      case 'Tab': {
+        // TabJump
+        this.jumpCursor(e.shiftKey ? 'backward' : 'forward', e.preventDefault.bind(e));
+        break;
+      }
+      default: {
+        // Shortcut
+        if (SHORTCUTS_KEYS.includes(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey) this.executeShortcut(e);
+        break;
+      }
+    }
+  }
+
+  async jumpCursor(direction: 'backward' | 'forward', preventDefault = () => {}) {
+    if (!this.mathObject) return;
+    if (!this.editor) return;
+
+    const pos = this.editor.getCursor();
+    const offset = this.editor.posToOffset(pos) - this.mathObject.startOffset;
+
+    let startOffset: number;
+    let targetContent: string;
+    if (direction === 'backward') {
+      if (offset === 0) {
+        const cursorPos = this.editor!.offsetToPos(this.mathObject.startOffset - 2);
+        preventDefault();
+        this.editor?.setCursor(cursorPos);
+        return;
+      }
+      // 前側
+      startOffset = this.mathObject.startOffset;
+      targetContent = this.mathObject.content.slice(0, offset);
+    } else {
+      if (offset === this.mathObject.content.length) {
+        const cursorPos = this.editor!.offsetToPos(this.mathObject.endOffset + 2);
+        preventDefault();
+        this.editor?.setCursor(cursorPos);
+        return;
+      }
+      // 後側
+      // ? 括弧の直前に Jump するので +1 が必要
+      startOffset = this.mathObject.startOffset + offset + 1;
+      targetContent = this.mathObject.content.slice(offset) + 1;
+    }
+
+    const cursorIndex = targetContent.indexOf('#CURSOR');
+    if (cursorIndex !== -1) {
+      // CURSOR Jump
+      preventDefault();
+      const cursorPos = this.editor!.offsetToPos(startOffset + cursorIndex - 1);
+      // ? こうしないとエラーが発生する
+      this.editor?.setSelection(cursorPos, {
+        line: cursorPos.line,
+        ch: cursorPos.ch + 7,
+      });
+      this.editor?.replaceSelection('');
+      return;
+    } else {
+      // Bracket Jump
+      let parenIndex: number, bracketIndex: number, braceIndex: number;
+
+      if (direction === 'backward') {
+        parenIndex = targetContent.lastIndexOf('(');
+        bracketIndex = targetContent.lastIndexOf('[');
+        braceIndex = targetContent.lastIndexOf('{');
+      } else {
+        parenIndex = targetContent.indexOf(')');
+        bracketIndex = targetContent.indexOf(']');
+        braceIndex = targetContent.indexOf('}');
+        parenIndex = parenIndex === -1 ? Infinity : parenIndex;
+        bracketIndex = bracketIndex === -1 ? Infinity : bracketIndex;
+        braceIndex = braceIndex === -1 ? Infinity : braceIndex;
+      }
+
+      let targetIndex =
+        direction === 'backward'
+          ? Math.max(parenIndex, bracketIndex, braceIndex)
+          : Math.min(parenIndex, bracketIndex, braceIndex);
+      targetIndex = targetIndex === Infinity ? -1 : targetIndex;
+      if (targetIndex === -1) {
+        // Content Jump
+        preventDefault();
+        const cursorPos =
+          direction === 'backward'
+            ? this.editor!.offsetToPos(this.mathObject.startOffset)
+            : this.editor!.offsetToPos(this.mathObject.endOffset);
+        this.editor?.setCursor(cursorPos);
+        return;
+      }
+      preventDefault();
+      const cursorPos = this.editor!.offsetToPos(startOffset + targetIndex);
+
+      this.editor?.setCursor(cursorPos);
+      return;
+    }
+  }
+
+  async executeShortcut(e: KeyboardEvent) {
+    if (!this.mathObject) return;
+    if (!this.editor) return;
+
+    const selection = this.editor.getSelection();
+    if (!selection) return;
+
+    e.preventDefault();
+    const data = SHORTCUTS_DATA[e.key]!;
+    this.editor.replaceSelection(data.content.replaceAll('$1', selection));
+
+    if (!data.offset) return;
+    const cursor = this.editor.getCursor();
+    this.editor.setCursor({
+      line: cursor.line,
+      ch: cursor.ch + data.offset,
+    });
+  }
+
+  /* cursor moved
+   */
+
+  private async cursorMoved(offset: number): Promise<null | undefined> {
+    if (!this.isActiveMathExists()) {
+      this.mathObject = undefined;
+      return null;
+    }
+
+    if (!this.mathObject) {
+      this.hideAllPopup();
+      this.updateMathObject(offset);
+      if (!this.mathObject) return null;
+
+      await this.updateBracketPairsInMathObject();
+      this.updateHighlightsOnBracketPairs();
+      return;
+    }
+
+    // カーソルが数式の範囲外
+    let relativeOffset = offset - this.mathObject.startOffset;
+    if (relativeOffset <= 0 || this.mathObject.content.length <= relativeOffset) {
+      this.hideAllPopup();
+      this.updateMathObject(offset);
+      if (!this.mathObject) return null;
+
+      relativeOffset = offset - this.mathObject.startOffset;
+      if (relativeOffset <= 0 || this.mathObject.content.length <= relativeOffset) return null;
+
+      await this.updateBracketPairsInMathObject();
+      this.updateHighlightsOnBracketPairs();
+      return;
+    }
+  }
+
+  private cursorMovedPostProcess(isSelEmpty: boolean, offset: number) {
+    if (isSelEmpty) {
+      this.updateBracketPairEnclosingCursorInMathObject(offset);
+      this.updateHighlightsOnBracketPairEnclosingCursor();
+    }
+    if (this.inlinePreviewEl.style.display === 'none') this.updateInlinePreview();
 
     let highlighted = false;
-    // 括弧の計算
-    const cursor = this.editor!.getCursor();
-    const display = isActiveDisplayMathExists();
-    if (display) await this.calcDisplayMathBracketPairs(cursor);
-    else await this.calcInlineMathBracketPairs(cursor);
-
-    // ? 特にインライン数式で, クリックすると要素が再生成されるため
     const observer = new MutationObserver(() => {
-      if (!isActiveMathExists()) return;
+      if (!this.isActiveMathExists()) return;
+
       observer.disconnect();
+      this.updateHighlightsOnBracketPairs();
+      this.updateHighlightsOnBracketPairEnclosingCursor();
       highlighted = true;
-      this.highlightBracketPairs(display);
-      this.highlightEnclosingBracketPair(this.editor!.getCursor()!, display);
     });
-    if (!this.editor) this.editor = this.plugin.app.workspace.getActiveViewOfType(MarkdownView)?.editor;
-    if (!this.editor) return;
-    observer.observe(this.editor.containerEl, {
+    observer.observe(this.editor!.containerEl, {
       childList: true,
       subtree: true,
     });
     setTimeout(() => {
       observer.disconnect();
-      if (!highlighted) {
-        this.highlightBracketPairs(display);
-        this.highlightEnclosingBracketPair(this.editor!.getCursor()!, display);
-      }
-    }, 500);
+
+      if (highlighted) return;
+      this.updateHighlightsOnBracketPairs();
+      this.updateHighlightsOnBracketPairEnclosingCursor();
+    }, 250);
   }
 
-  async calcInlineMathBracketPairs(cursor: EditorPosition) {
-    const inlineMathContent = this.extractInlineMathContentInsideDollarOutsideCursor(cursor);
-    if (inlineMathContent === this.beforeInlineMathContent) return;
-    this.beforeInlineMathContent = inlineMathContent;
-    if (!inlineMathContent) return this.removeBracketHighlights();
-    this.beforeBracketPairs = await this.plugin.typst.findBracketPairs(inlineMathContent.content);
-  }
+  updateHighlightsOnBracketPairs() {
+    if (!this.mathObject) return;
+    this.removeHighlightsFromBracketPairs();
 
-  async calcDisplayMathBracketPairs(cursor: EditorPosition) {
-    const displayMathContent = this.extractDisplayMathContentInsideTwoDollarsOutsideCursor(cursor);
-    if (displayMathContent === this.beforeDisplayMathContent) return;
-    this.beforeDisplayMathContent = displayMathContent;
-    if (!displayMathContent) return this.removeBracketHighlights();
-    this.beforeBracketPairs = await this.plugin.typst.findBracketPairs(displayMathContent.content);
-  }
+    if (!this.bracketPairs) return;
 
-  calcInlineMathCursorEnclosure(cursor: EditorPosition) {
-    if (!this.beforeBracketPairs) return;
-    if (!this.beforeInlineMathContent) return;
+    for (const pair of this.bracketPairs) {
+      let { ch: startCh, line: startLine } = pair.open_pos;
+      let { ch: endCh, line: endLine } = pair.close_pos;
+      if (pair.open_pos.line === 0) startCh += this.mathObject.startPos.ch;
+      if (pair.close_pos.line === 0) endCh += this.mathObject.startPos.ch;
+      startLine += this.mathObject.startPos.line;
+      endLine += this.mathObject.startPos.line;
 
-    const ch = cursor.ch - this.beforeInlineMathContent.startIndex;
-
-    const candidates = this.beforeBracketPairs.filter((pair) => pair.open_column < ch && ch <= pair.close_column);
-    if (!candidates.length) return;
-
-    const shortest = candidates.reduce((a, b) =>
-      a.open_column - a.close_column < b.open_column - b.close_column ? b : a,
-    );
-
-    return shortest;
-  }
-
-  calcDisplayMathCursorEnclosure(cursor: EditorPosition) {
-    if (!this.beforeBracketPairs) return;
-    if (!this.beforeDisplayMathContent) return;
-
-    let ch = cursor.ch;
-    if (cursor.line === this.beforeDisplayMathContent.startLine) ch -= this.beforeDisplayMathContent.startIndex;
-    const line = cursor.line - this.beforeDisplayMathContent.startLine;
-
-    const byte = this.calc_byte_pos(this.beforeDisplayMathContent.content, line, ch);
-
-    const candidates = this.beforeBracketPairs.filter((pair) => pair.open_byte < byte && byte <= pair.close_byte);
-    if (!candidates.length) return;
-
-    const shortest = candidates.reduce((a, b) => (a.open_byte - a.close_byte < b.open_byte - b.close_byte ? b : a));
-
-    return shortest;
-  }
-
-  private calc_byte_pos(src: string, target_line: number, target_column: number): number {
-    const lines = src.split('\n');
-
-    if (lines.length <= target_line || target_line < 0) return 0;
-
-    let bytePos = 0;
-
-    for (let i = 0; i < target_line; i++) {
-      const line = lines[i];
-      if (line !== undefined) bytePos += line.length + 1;
+      this.addHighlightsWithLength(
+        1,
+        [
+          { line: startLine, ch: startCh },
+          { line: endLine, ch: endCh },
+        ],
+        `typstmate-bracket-${pair.kind}`,
+        false,
+      );
     }
-
-    const currentLine = lines[target_line];
-    if (currentLine === undefined) return bytePos;
-
-    const column = Math.min(target_column, currentLine.length);
-    bytePos += column;
-
-    return bytePos;
   }
 
-  async highlightBracketPairs(display: boolean) {
-    if (!isActiveMathExists()) return this.removeBracketHighlights();
-
-    const cursor = this.editor?.getCursor();
-    if (!cursor) return;
-    this.removeParentBracketHighlights();
-    if (display) this.highlightBracketPairsDisplayMath();
-    else this.highlightBracketPairsInlineMath();
-  }
-
-  private removeBracketHighlights() {
+  private removeHighlightsFromBracketPairs() {
     this.editor?.removeHighlights('typstmate-bracket-paren');
     this.editor?.removeHighlights('typstmate-bracket-bracket');
     this.editor?.removeHighlights('typstmate-bracket-brace');
   }
 
-  private highlightBracketPairsInlineMath() {
-    if (!this.beforeInlineMathContent) return;
-
-    this.removeBracketHighlights();
-
-    // すべての括弧をハイライト
-    this.beforeBracketPairs?.forEach((pair) => {
-      this.highlightLength(
-        1,
-        [
-          {
-            line: this.beforeInlineMathContent!.startLine + pair.open_line,
-            ch: this.beforeInlineMathContent!.startIndex + pair.open_column,
-          },
-        ],
-        `typstmate-bracket-${pair.kind}`,
-        false,
-      );
-      this.highlightLength(
-        1,
-        [
-          {
-            line: this.beforeInlineMathContent!.startLine + pair.close_line,
-            ch: this.beforeInlineMathContent!.startIndex + pair.close_column,
-          },
-        ],
-        `typstmate-bracket-${pair.kind}`,
-        false,
-      );
-    });
+  private async updateBracketPairsInMathObject() {
+    if (!this.mathObject) return;
+    this.bracketPairs = await this.plugin.typst.findBracketPairs(this.mathObject.content);
   }
 
-  private highlightBracketPairsDisplayMath() {
-    if (!this.beforeDisplayMathContent) return;
-    this.removeBracketHighlights();
+  updateHighlightsOnBracketPairEnclosingCursor() {
+    if (!this.mathObject) return;
+    this.removeHighlightsFromBracketPairEnclosingCursor();
 
-    if (!this.beforeBracketPairs) return;
+    if (!this.cursorEnclosingBracketPair) return;
 
-    // すべての括弧をハイライト（正しい行と位置に）
-    for (const pair of this.beforeBracketPairs) {
-      if (pair.open_line === 0) pair.open_column += this.beforeDisplayMathContent.startIndex;
-      if (pair.close_line === 0) pair.close_column += this.beforeDisplayMathContent.startIndex;
-      this.highlightLength(
-        1,
-        [{ line: this.beforeDisplayMathContent.startLine + pair.open_line, ch: pair.open_column }],
-        `typstmate-bracket-${pair.kind}`,
-        false,
-      );
-      this.highlightLength(
-        1,
-        [{ line: this.beforeDisplayMathContent.startLine + pair.close_line, ch: pair.close_column }],
-        `typstmate-bracket-${pair.kind}`,
-        false,
-      );
-    }
+    let { ch: startCh, line: startLine } = this.cursorEnclosingBracketPair.open_pos;
+    let { ch: endCh, line: endLine } = this.cursorEnclosingBracketPair.close_pos;
+    if (this.cursorEnclosingBracketPair.open_pos.line === 0) startCh += this.mathObject.startPos.ch;
+    if (this.cursorEnclosingBracketPair.close_pos.line === 0) endCh += this.mathObject.startPos.ch;
+    startLine += this.mathObject.startPos.line;
+    endLine += this.mathObject.startPos.line;
+
+    this.addHighlightsWithLength(
+      1,
+      [
+        { line: startLine, ch: startCh },
+        { line: endLine, ch: endCh },
+      ],
+      `typstmate-bracket-enclosing-${this.cursorEnclosingBracketPair.kind}`,
+      false,
+    );
   }
 
-  highlightEnclosingBracketPair(cursor: EditorPosition, display: boolean) {
-    if (display) this.highlightEnclosingBracketPairDisplayMath(cursor);
-    else this.highlightEnclosingBracketPairInlineMath(cursor);
-  }
-
-  private removeParentBracketHighlights() {
+  private removeHighlightsFromBracketPairEnclosingCursor() {
     this.editor?.removeHighlights('typstmate-bracket-enclosing-paren');
     this.editor?.removeHighlights('typstmate-bracket-enclosing-bracket');
     this.editor?.removeHighlights('typstmate-bracket-enclosing-brace');
   }
 
-  private highlightEnclosingBracketPairInlineMath(cursor: EditorPosition) {
-    if (!this.beforeInlineMathContent) return;
+  updateBracketPairEnclosingCursorInMathObject(offset: number) {
+    if (!this.bracketPairs) return;
+    if (!this.mathObject) return;
+    if (!this.editor) return;
 
-    const bracket = this.calcInlineMathCursorEnclosure(cursor);
-    this.removeParentBracketHighlights();
-    if (!bracket) return;
-    this.highlightLength(
-      1,
-      [{ line: cursor.line, ch: this.beforeInlineMathContent!.startIndex + bracket.open_column }],
-      `typstmate-bracket-enclosing-${bracket.kind}`,
-      false,
-    );
-    this.highlightLength(
-      1,
-      [{ line: cursor.line, ch: this.beforeInlineMathContent!.startIndex + bracket.close_column }],
-      `typstmate-bracket-enclosing-${bracket.kind}`,
-      false,
-    );
-  }
-
-  private highlightEnclosingBracketPairDisplayMath(cursor: EditorPosition) {
-    if (!this.beforeDisplayMathContent) return;
-
-    const bracket = this.calcDisplayMathCursorEnclosure(cursor);
-
-    this.removeParentBracketHighlights();
-    if (!bracket) return;
-    if (bracket.open_line === 0) bracket.open_column += this.beforeDisplayMathContent.startIndex;
-    if (bracket.close_line === 0) bracket.close_column += this.beforeDisplayMathContent.startIndex;
-
-    this.highlightLength(
-      1,
-      [
-        {
-          line: this.beforeDisplayMathContent.startLine + bracket.open_line,
-          ch: bracket.open_column,
-        },
-      ],
-      `typstmate-bracket-enclosing-${bracket.kind}`,
-      false,
-    );
-    this.highlightLength(
-      1,
-      [
-        {
-          line: this.beforeDisplayMathContent.startLine + bracket.close_line,
-          ch: bracket.close_column,
-        },
-      ],
-      `typstmate-bracket-enclosing-${bracket.kind}`,
-      false,
-    );
-  }
-
-  onEditorChange(editor: Editor, _markdownView: MarkdownView) {
-    this.editor = editor;
-    if (!isActiveMathExists()) return this.hideAll();
-    if (!getSelection()!.isCollapsed) return this.hideSuggests(); // 選択されている
-    if (!this.plugin.settings.enableInlinePreview) return;
-    if (isCursorInCodeBlock(editor) || isCursorInInlineCode(editor)) return;
-
-    const cursor = editor.getCursor()!;
-    if (this.trySuggest(cursor)) return this.hideInlinePreview();
-    this.hideSuggests();
-
-    if (isActiveDisplayMathExists()) return this.hideInlinePreview();
-    this.updateInlinePreview();
-  }
-
-  hideAll() {
-    this.hideInlinePreview();
-    this.hideSuggests();
-  }
-
-  hideInlinePreview() {
-    this.inlinePreviewEl.close();
-  }
-
-  hideSuggests() {
-    this.symbolSuggestEl.close();
-    this.snippetSuggestEl.close();
-  }
-
-  updateInlinePreview() {
-    const cursor = this.editor?.getCursor();
-    if (!cursor) return;
-    const mathContent = this.extractInlineMathContentInsideDollarOutsideCursor(cursor);
-    if (!mathContent) return this.hideInlinePreview();
-
-    this.renderMathPreview(mathContent);
-  }
-
-  trySuggest(cursor: EditorPosition) {
-    const lineText = this.editor!.getLine(cursor.line);
-    const textBeforeCursor = lineText.slice(0, cursor.ch);
-
-    // snippet / symbol
-    if (textBeforeCursor.endsWith('@') && !textBeforeCursor.startsWith('#import')) {
-      this.symbolSuggestEl.close();
-
-      const match = textBeforeCursor.match(
-        /(?:^| |\$|\(|\)|\[|\]|\{|\}|<|>|\+|-|\/|\*|=|!|\?|#|%|&|'|:|;|,|\d)(?<word>[^\W_]+)(?<value>\(.*\))?@$/,
-      );
-      if (match) {
-        this.word = match.groups?.word;
-        if (this.word === undefined) return null;
-
-        this.value = match.groups?.value;
-        this.wordLine = cursor.line;
-
-        this.startWordIndex = cursor.ch - this.word!.length - 1;
-        if (this.value) this.startWordIndex -= this.value.length;
-
-        this.suggestSnippets(this.value !== undefined);
-        return true;
-      }
-      this.word = undefined;
-    } else if (!textBeforeCursor.endsWith(' ')) {
-      this.snippetSuggestEl.close();
-      const match = textBeforeCursor.match(
-        /(?:^| |\$|\(|\)|\[|\]|\{|\}|<|>|\+|-|\/|\*|=|!|\?|#|%|&|'|:|;|,|\d)(?<symbol>\\?([a-zA-Z.][a-zA-Z.]+|[-<>|=[\]~:-][-<>|=[\]~:-]+))$/,
-      );
-      if (match) {
-        this.symbol = match.groups?.symbol;
-        this.symbolLine = cursor.line;
-        this.startSymbolIndex = cursor.ch - this.symbol!.length;
-        if (!this.symbol) return null;
-        this.suggestSymbols(this.symbol);
-        return true;
-      }
+    const relative_offset = offset - this.mathObject.startOffset;
+    if (!relative_offset) {
+      this.cursorEnclosingBracketPair = undefined;
+      return;
     }
 
-    return null;
-  }
-
-  private suggestSnippets(find: boolean) {
-    if (find) {
-      const snippet = this.plugin.settings.snippets?.find((s) => s.name === this.word);
-      if (!snippet) return;
-
-      this.snippetSuggestEl.snippets = [snippet];
-    } else {
-      const snippets = this.plugin.settings.snippets?.filter((s) => s.name.includes(this.word!));
-      if (!snippets?.length) return this.snippetSuggestEl.close();
-      this.snippetSuggestEl.snippets = snippets;
+    const candidates = this.bracketPairs.filter(
+      (pair) => pair.open_offset < relative_offset && relative_offset <= pair.close_offset,
+    );
+    if (!candidates.length) {
+      this.cursorEnclosingBracketPair = undefined;
+      return;
     }
 
-    const position = calculatePosition(
-      this.editor!,
-      this.startWordIndex!,
-      this.startWordIndex! + this.word!.length + 1,
-    );
-    if (!position) return;
-
-    this.editor?.addHighlights(
-      [
-        {
-          from: {
-            line: this.wordLine!,
-            ch: this.startWordIndex! + this.word!.length + (this.value?.length ?? 0),
-          },
-          to: {
-            line: this.wordLine!,
-            ch: this.startWordIndex! + this.word!.length + (this.value?.length ?? 0) + 1,
-          },
-        },
-      ],
-      // @ts-expect-error
-      'typstmate-atmode',
-      true,
-    );
-    this.snippetSuggestEl.render(position, this.editor!);
-  }
-
-  complementSnippet(snippet: Snippet) {
-    this.replaceLength(
-      `${snippet.name + (this.value ? this.value : '')}@`,
-      {
-        line: this.wordLine!,
-        ch: this.startWordIndex!,
-      },
-      this.word!.length + (this.value?.length ?? 0) + 1,
+    this.cursorEnclosingBracketPair = candidates.reduce((a, b) =>
+      a.open_offset - a.close_offset < b.open_offset - b.close_offset ? b : a,
     );
   }
 
-  applySnippet(snippet: Snippet) {
-    let content = snippet.content;
-    if (snippet.script) {
-      try {
-        content = new Function('input', 'window', content)(this.value?.slice(1, -1), window);
-      } catch (e) {
-        new Notice(String(e));
-        return;
-      }
-    }
+  /* utils
+   */
 
-    const cursorIndex = content.indexOf('#CURSOR');
-    content = content.replace('#CURSOR', '');
-    let replaceLength = this.word!.length + 1;
-    if (this.value) replaceLength += this.value.length;
-    if (cursorIndex === -1) content = `${content} `;
-
-    this.replaceLength(
-      content,
-      {
-        line: this.wordLine!,
-        ch: this.startWordIndex!,
-      },
-      replaceLength,
-    );
-    this.editor?.setCursor(this.wordLine!, this.startWordIndex! + (cursorIndex === -1 ? content.length : cursorIndex));
-
-    if (snippet.kind === 'inline') this.updateInlinePreview();
+  updateMathObject(offset: number) {
+    if (this.isActiveDisplayMathExists())
+      this.mathObject = this.extractDisplayMathObjectInsideTwoDollarsOutsideCursor(offset);
+    else this.mathObject = this.extractInlineMathObjectInsideDollarOutsideCursor(offset);
   }
 
-  private suggestSymbols(name: string) {
-    const symbols = searchSymbols(name);
-    if (!symbols.length) return this.symbolSuggestEl.close();
+  private extractInlineMathObjectInsideDollarOutsideCursor(offset: number): MathObject | undefined {
+    const doc = this.editor?.cm.state.doc;
+    if (!doc) return;
 
-    this.symbolSuggestEl.symbols = symbols;
-    const position = calculatePosition(this.editor!, this.startDollarIndex!, this.startDollarIndex! + 1);
-    if (!position) return;
+    const cursor = this.editor!.offsetToPos(offset);
+    const lineOnCursor = doc.line(cursor.line + 1).text;
 
-    this.symbolSuggestEl.render(position, this.editor!, name.at(0) === '\\');
+    const lineBeforeCursor = lineOnCursor.slice(0, cursor.ch);
+    const lineAfterCursor = lineOnCursor.slice(cursor.ch);
+    const dollarIndexBeforeCursor = lineBeforeCursor.lastIndexOf('$');
+    const dollarIndexAfterCursor = lineAfterCursor.indexOf('$');
+
+    // カーソルを囲む $ がない場合は return
+    if (dollarIndexBeforeCursor === -1 || dollarIndexAfterCursor === -1) return;
+
+    const content = lineOnCursor.slice(dollarIndexBeforeCursor + 1, cursor.ch + dollarIndexAfterCursor);
+    const startPos = { line: cursor.line, ch: dollarIndexBeforeCursor + 1 };
+    const endPos = { line: cursor.line, ch: cursor.ch + dollarIndexAfterCursor };
+    return {
+      kind: 'inline',
+      content: content,
+      startPos: startPos,
+      endPos: endPos,
+      startOffset: this.editor!.posToOffset(startPos),
+      endOffset: this.editor!.posToOffset(endPos),
+    };
   }
 
-  complementSymbol(editor: Editor, symbol: SymbolData) {
-    if (symbol.name === this.symbol) return this.applySymbol(editor, symbol);
+  private extractDisplayMathObjectInsideTwoDollarsOutsideCursor(offset: number): MathObject | undefined {
+    const doc = this.editor?.cm.state.doc;
+    if (!doc) return;
 
-    this.replaceLength(
-      symbol.name,
-      {
-        line: this.symbolLine!,
-        ch: this.startSymbolIndex!,
-      },
-      this.symbol?.length ?? 0 + 1,
-    );
+    // カーソル前後のドキュメントを取得
+    const docBeforeCursor = doc.sliceString(0, offset);
+    const docAfterCursor = doc.sliceString(offset);
+
+    // $$ の間にカーソルがある
+    if (docBeforeCursor.endsWith('$') && docAfterCursor.startsWith('$')) return;
+
+    const dollarOffsetBeforeCursor = docBeforeCursor.lastIndexOf('$$') + 2; // ? $$ の分
+    const dollarOffsetAfterCursor = offset + docAfterCursor.indexOf('$$');
+
+    // カーソルを囲む $$ がない場合は return
+    if (dollarOffsetBeforeCursor === -1 + 2 || dollarOffsetAfterCursor === -1) return;
+
+    const content = doc.sliceString(dollarOffsetBeforeCursor, dollarOffsetAfterCursor);
+    const startPos = this.editor!.offsetToPos(dollarOffsetBeforeCursor);
+    const endPos = this.editor!.offsetToPos(dollarOffsetAfterCursor);
+    return {
+      kind: 'display',
+      content: content,
+      startPos: startPos,
+      endPos: endPos,
+      startOffset: this.editor!.posToOffset(startPos),
+      endOffset: this.editor!.posToOffset(endPos),
+    };
   }
 
-  applySymbol(editor: Editor, symbol: SymbolData) {
-    let content: string;
-    if (this.plugin.settings.complementSymbolWithUnicode) content = symbol.sym;
-    else content = symbol.name;
-
-    if (!['op', 'Large'].includes(symbol.mathClass)) content = `${content} `;
-
-    const line = editor.getCursor().line;
-
-    editor.replaceRange(
-      content,
-      {
-        line,
-        ch: this.startSymbolIndex!,
-      },
-      {
-        line,
-        ch: editor.getCursor().ch,
-      },
-    );
-    this.updateInlinePreview();
-  }
-
-  private renderMathPreview(mathContent: InlineMathContentResult): void {
-    const codeMirror = this.editor!.cm;
-
-    if (!codeMirror || !window.MathJax) return;
-
-    try {
-      const position = calculatePosition(this.editor!, mathContent.startIndex - 1, mathContent.endIndex);
-
-      this.inlinePreviewEl.render(position, mathContent.content);
-    } catch {}
-  }
-
-  removeSuggest(): void {
-    this.symbolSuggestEl?.close();
-    // this.snippetSuggestEl?.close();
-  }
-
-  replaceLength(content: string, from: EditorPosition, length: number): number {
+  replaceWithLength(content: string, from: EditorPosition, length: number): number {
     this.editor?.replaceRange(content, from, {
       line: from.line,
       ch: from.ch + length,
@@ -648,7 +535,7 @@ export class EditorHelper {
     return content.length;
   }
 
-  highlightLength(length: number, froms: EditorPosition[], style: string, remove_previous = true) {
+  addHighlightsWithLength(length: number, froms: EditorPosition[], style: string, remove_previous: boolean) {
     this.editor?.addHighlights(
       froms.map((from) => ({
         from,
@@ -663,151 +550,71 @@ export class EditorHelper {
     );
   }
 
-  extractInlineMathContentInsideDollarOutsideCursor(cursor: EditorPosition): InlineMathContentResult | undefined {
-    const lineText = this.editor!.getLine(cursor.line);
-    const textBeforeCursor = lineText.slice(0, cursor.ch);
-    const textAfterCursor = lineText.slice(cursor.ch);
-    const charBeforeCursor = textBeforeCursor.at(-1);
-    const charAfterCursor = textAfterCursor.at(0);
-    const dollarIndexBeforeCursor = textBeforeCursor.lastIndexOf('$');
-    const dollarIndexAfterCursor = textAfterCursor.indexOf('$');
-
-    if (dollarIndexBeforeCursor === -1 || dollarIndexAfterCursor === -1) return;
-    if (charBeforeCursor === '$' && charAfterCursor === ' ') return;
-    if (charBeforeCursor === ' ' && charAfterCursor === '$') return;
-
-    const content = lineText.slice(dollarIndexBeforeCursor + 1, cursor.ch + dollarIndexAfterCursor);
-
-    return {
-      content: content,
-      startIndex: dollarIndexBeforeCursor + 1,
-      endIndex: cursor.ch + dollarIndexAfterCursor,
-      startLine: cursor.line,
-    };
+  // ? カーソルが数式内にあるとは限らない
+  // ? |$$ でも $!$ でも 単に範囲選択中でも存在する
+  isActiveMathExists() {
+    return this.editor?.containerEl.querySelector('span.cm-formatting-math');
   }
 
-  extractDisplayMathContentInsideTwoDollarsOutsideCursor(cursor: EditorPosition): DisplayMathContentResult | undefined {
-    let content = '';
-    let startLine = -1,
-      endLine = -1;
-    let startIndex = -1,
-      endIndex = -1;
+  // TODO: これは先頭の $$ にしかない. ビューポートから外れると認識されない
+  isActiveDisplayMathExists() {
+    return this.editor?.containerEl.querySelector('span.cm-formatting-math.cm-math-block');
+  }
 
-    for (let i = cursor.line; i >= 0; i--) {
-      const lineText = this.editor!.getLine(i);
-      const twoDollarsIndex = lineText.indexOf('$$');
+  isCursorInCodeBlock() {
+    if (!this.editor) return false;
+    const cursor = this.editor.getCursor();
+    let inBlock = false;
 
-      if (twoDollarsIndex !== -1) {
-        startLine = i;
-        startIndex = twoDollarsIndex + 2;
-        if (i !== cursor.line) content = `${lineText.slice(twoDollarsIndex + 2)}\n${content}`;
-        break;
-      }
-      content = `${lineText}\n${content}`;
+    for (let i = cursor.line - 1; i >= 0; i--) {
+      const line = this.editor.getLine(i);
+      const trimmedLine = line.trim();
+
+      if (trimmedLine.startsWith('```') || trimmedLine.startsWith('~~~')) inBlock = !inBlock;
     }
 
-    const lineCount = this.editor!.lineCount();
-    for (let i = cursor.line; i < lineCount; i++) {
-      const lineText = this.editor!.getLine(i);
-      const twoDollarsIndex = lineText.indexOf('$$');
+    return inBlock;
+  }
 
-      if (twoDollarsIndex !== -1) {
-        endLine = i;
-        endIndex = twoDollarsIndex;
-        // ? 1行に $$...$$ が含まれる場合があるため
-        if (i === startLine) content += lineText.slice(startIndex, twoDollarsIndex);
-        else content += lineText.slice(0, twoDollarsIndex);
-        break;
-      }
-      if (i !== cursor.line) content += `${lineText}\n`;
-      else if (i === startLine) content += `${lineText.slice(startIndex)}\n`; // カーソル行で$$が始まったのに終わりの$$がなかったとき
-    }
+  isCursorInInlineCode() {
+    if (!this.editor) return false;
+    const cursor = this.editor.getCursor();
+    const line = this.editor.getLine(cursor.line);
+    const textBeforeCursor = line.slice(0, cursor.ch);
+    const backtickCount = textBeforeCursor.split('`').length - 1;
 
-    if (endLine === -1 || startLine === -1 || content === '') return;
+    return backtickCount % 2 === 1;
+  }
 
-    return {
-      content: content,
-      startIndex: startIndex,
-      endIndex: endIndex,
-      startLine: startLine,
-      endLine: endLine,
-    };
+  calculatePopupPosition(startPos: EditorPosition, endPos: EditorPosition): PopupPosition {
+    if (!this.editor) throw new Error();
+    const startCoords = this.editor.coordsAtPos(startPos, false);
+    const endCoords = this.editor.coordsAtPos(endPos, false);
+
+    if (!startCoords || !endCoords) throw new Error();
+
+    const x =
+      startCoords.top !== endCoords.top
+        ? this.editor.coordsAtPos({ line: startPos.line, ch: 0 }, false).left
+        : startCoords.left;
+
+    const y = endCoords.bottom;
+
+    return { x, y };
   }
 }
 
-function isActiveDisplayMathExists() {
-  return document.body.querySelector('span.cm-formatting-math.cm-math-block') !== null;
-}
+interface MathObject {
+  kind: 'inline' | 'display';
 
-function isActiveMathExists() {
-  return document.body.querySelector('span.cm-formatting-math') !== null;
-}
-
-function isCursorInCodeBlock(editor: Editor) {
-  const cursor = editor.getCursor();
-  let inBlock = false;
-
-  for (let i = cursor.line - 1; i >= 0; i--) {
-    const line = editor.getLine(i);
-    const trimmedLine = line.trim();
-
-    if (trimmedLine.startsWith('```') || trimmedLine.startsWith('~~~')) inBlock = !inBlock;
-  }
-
-  return inBlock;
-}
-
-function isCursorInInlineCode(editor: Editor) {
-  const cursor = editor.getCursor();
-  const line = editor.getLine(cursor.line);
-  const textBeforeCursor = line.slice(0, cursor.ch);
-
-  let backtickCount = 0;
-  for (let i = 0; i < textBeforeCursor.length; i++) {
-    if (textBeforeCursor[i] === '`') {
-      backtickCount++;
-    }
-  }
-  return backtickCount % 2 === 1;
-}
-
-function calculatePosition(editor: Editor, startIndex: number, endIndex: number): Position {
-  const position = editor.getCursor();
-
-  position.ch = startIndex;
-  const startCoords = editor.coordsAtPos(position, false);
-
-  position.ch = endIndex;
-  const endCoords = editor.coordsAtPos(position, false);
-
-  const x =
-    startCoords.top !== endCoords.top ? editor.coordsAtPos({ ...position, ch: 0 }, false).left : startCoords.left;
-
-  const y = endCoords.top + (window.app?.vault.config.baseFontSize ?? DEFAULT_FONT_SIZE);
-
-  return { x, y };
-}
-
-interface InlineMathContentResult {
   content: string;
-  startIndex: number;
-  endIndex: number;
-  startLine: number;
+  startPos: EditorPosition; // $ 含まない
+  endPos: EditorPosition; // $ 含まない
+  startOffset: number;
+  endOffset: number;
 }
 
-interface DisplayMathContentResult extends InlineMathContentResult {
-  startLine: number;
-  endLine: number;
-}
-
-export interface Rect {
-  readonly left: number;
-  readonly right: number;
-  readonly top: number;
-  readonly bottom: number;
-}
-
-export interface Position {
+export interface PopupPosition {
   x: number;
   y: number;
 }

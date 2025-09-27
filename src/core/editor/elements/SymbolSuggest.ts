@@ -1,41 +1,60 @@
-import type { Editor } from 'obsidian';
+import type { EditorPosition } from 'obsidian';
 
 import type ObsidianTypstMate from '@/main';
-import type { SymbolData } from '@/utils/symbolSearcher';
-
-import type { Position } from '../editor';
+import { type SymbolData, searchSymbols } from '@/utils/symbolSearcher';
+import type { PopupPosition } from '../editor';
 
 import './symbol-suggest.css';
 
+export const symbolRegex =
+  /(?:^| |\$|\(|\)|\[|\]|\{|\}|<|>|\+|-|\/|\*|=|!|\?|#|%|&|'|:|;|,|\d)(?<symbol>\\?([a-zA-Z.][a-zA-Z.]+|[-<>|=[\]~:-][-<>|=[\]~:-]+))$/;
+
 export default class SymbolSuggestElement extends HTMLElement {
   plugin!: ObsidianTypstMate;
-  container!: HTMLDivElement;
+  items!: HTMLElement;
 
-  symbols: SymbolData[];
+  candidates: SymbolData[] = [];
   selectedIndex: number = -1;
 
-  isOpen: boolean = false;
-  private outsideListener = (e: MouseEvent) => this.onOutsideMouseDown(e);
-  private keyListener = (e: KeyboardEvent) => this.onKeyDown(e);
+  query?: string;
+  queryPos?: EditorPosition;
 
-  editor?: Editor;
   prevEl?: HTMLElement;
 
-  constructor() {
-    super();
-    this.symbols = [];
+  private mouseMoveListener = (e: MouseEvent) => this.onMouseMove(e);
+  private mouseDownListener = (e: MouseEvent) => this.onMouseDown(e);
+
+  startup(plugin: ObsidianTypstMate) {
+    this.plugin = plugin;
+    this.addClasses(['typstmate-symbols', 'typstmate-temporary']);
+    this.hide();
+    this.items = this.createEl('div', { cls: 'items' });
   }
 
-  render(position: Position, editor: Editor, latex: boolean) {
+  suggest(query: string, cursorPos: EditorPosition) {
+    this.candidates = searchSymbols(query);
+    if (!this.candidates.length) return this.close();
+    this.query = query;
+    this.queryPos = {
+      line: cursorPos.line,
+      ch: cursorPos.ch - query.length,
+    };
+
+    const position = this.plugin.editorHelper.calculatePopupPosition(this.queryPos, cursorPos);
+
+    this.render(position, query.at(0) === '\\');
+  }
+
+  private render(position: PopupPosition, latex: boolean) {
     this.prevEl = document.activeElement as HTMLElement;
     this.style.setProperty('--preview-left', `${position.x}px`);
     this.style.setProperty('--preview-top', `${position.y}px`);
-    if (!this.isOpen) this.open();
-    this.container.empty();
-    this.editor = editor;
 
-    this.symbols.forEach((symbol, index) => {
-      const item = this.container.createEl('div', { cls: 'item typstmate-symbol' });
+    if (this.style.display === 'none') this.renderFirst();
+    this.items.empty();
+
+    this.candidates.forEach((symbol, index) => {
+      const item = this.items.createEl('div', { cls: 'item typstmate-symbol' });
       item.dataset.index = index.toString();
 
       item.addClass(symbol.kind!);
@@ -47,127 +66,106 @@ export default class SymbolSuggestElement extends HTMLElement {
         item.textContent = `${symbol.sym}: ${symbol.name} (${symbol.mathClass})`;
       }
 
-      item.addEventListener('click', () => {
-        this.prevEl?.focus();
-        this.plugin.editorHelper.applySymbol(editor, symbol);
-        this.close();
-      });
-      item.addEventListener('mouseover', () => {
-        const handleMouseMove = () => {
-          this.selectedIndex = Number(item.dataset.index);
-          this.updateSelectionVisual();
-          this.scrollSelectedIntoView();
-          item.removeEventListener('mousemove', handleMouseMove);
-        };
-
-        item.addEventListener('mousemove', handleMouseMove, { once: true });
-      });
+      if (this.query === symbol.name) this.updateSelection(index);
     });
-
-    return this;
   }
 
-  open() {
-    if (this.isOpen) return;
-    this.isOpen = true;
+  private renderFirst() {
+    this.prevEl = document.activeElement as HTMLElement;
     this.selectedIndex = -1;
     this.show();
     this.setAttribute('tabindex', '0');
-    document.addEventListener('mousedown', this.outsideListener, { capture: true });
-    window.addEventListener('keydown', this.keyListener, { capture: true });
-  }
-
-  private onOutsideMouseDown(e: MouseEvent) {
-    const target = e.target as Node | null;
-    if (!target) return;
-    if (!this.contains(target)) {
-      this.close();
-    }
-  }
-
-  private onKeyDown(e: KeyboardEvent) {
-    if (!this.isOpen) return;
-    if (this.symbols.length === 0) return;
-
-    switch (e.key) {
-      case 'ArrowDown': {
-        e.preventDefault();
-        e.stopPropagation();
-        this.focus();
-        if (this.selectedIndex === -1) this.selectedIndex = 0;
-        else this.selectedIndex = (this.selectedIndex + 1) % this.symbols.length;
-        this.updateSelectionVisual();
-        this.scrollSelectedIntoView();
-        return;
-      }
-
-      case 'ArrowUp': {
-        e.preventDefault();
-        e.stopPropagation();
-        this.focus();
-        if (this.selectedIndex === -1) this.selectedIndex = this.symbols.length - 1;
-        else this.selectedIndex = (this.selectedIndex - 1 + this.symbols.length) % this.symbols.length;
-        this.updateSelectionVisual();
-        this.scrollSelectedIntoView();
-        return;
-      }
-
-      case 'Tab':
-      case 'ArrowRight': {
-        e.preventDefault();
-        this.prevEl?.focus();
-        if (this.selectedIndex >= 0)
-          this.plugin.editorHelper.complementSymbol(
-            this.editor!,
-            this.symbols[this.selectedIndex]! ?? this.symbols[0]!,
-          );
-        else this.plugin.editorHelper.complementSymbol(this.editor!, this.symbols[0]!);
-        return;
-      }
-      case 'Enter': {
-        this.prevEl?.focus();
-        e.preventDefault();
-        if (this.selectedIndex >= 0) {
-          this.plugin.editorHelper.applySymbol(this.editor!, this.symbols[this.selectedIndex]! ?? this.symbols[0]!);
-        } else if (e.key === 'Enter' || e.key === 'Tab') {
-          this.plugin.editorHelper.applySymbol(this.editor!, this.symbols[0]!);
-        }
-        this.close();
-        return;
-      }
-
-      default:
-        break;
-    }
+    document.addEventListener('mousemove', this.mouseMoveListener);
+    document.addEventListener('mousedown', this.mouseDownListener);
   }
 
   close() {
-    this.isOpen = false;
     this.hide();
-    document.removeEventListener('mousedown', this.outsideListener, { capture: true });
-    window.removeEventListener('keydown', this.keyListener, { capture: true });
+    document.removeEventListener('mousemove', this.mouseMoveListener);
+    document.removeEventListener('mousedown', this.mouseDownListener);
   }
 
-  private updateSelectionVisual() {
-    if (!this.container) return;
-    Array.from(this.container.children).forEach((child) => {
-      const el = child as HTMLElement;
-      const idx = Number(el.dataset.index);
-      if (idx === this.selectedIndex) el.classList.add('selected');
-      else el.classList.remove('selected');
-    });
+  onMouseMove(e: MouseEvent) {
+    const item = (e.target as HTMLElement).closest('.item') as HTMLElement | null;
+    if (!item) return;
+    this.updateSelection(Number(item.dataset.index!));
   }
 
-  private scrollSelectedIntoView() {
-    if (this.selectedIndex < 0) return;
-    const el = this.container.querySelector(`.item[data-index="${this.selectedIndex}"]`) as HTMLElement | null;
-    if (el) {
-      el.scrollIntoView({ block: 'nearest', behavior: 'auto' });
+  onMouseDown(e: MouseEvent) {
+    const item = (e.target as HTMLElement).closest('.item') as HTMLElement | null;
+    if (!item) return;
+    this.execute(this.candidates[Number(item.dataset.index)] ?? this.candidates[0]!);
+    this.close();
+    e.preventDefault();
+  }
+
+  onKeyDown(e: KeyboardEvent) {
+    if (this.candidates.length === 0) return;
+
+    switch (e.key) {
+      // select
+      case 'ArrowUp':
+      case 'ArrowDown': {
+        e.preventDefault();
+        const candidatesLength = this.candidates.length;
+        if (e.key === 'ArrowUp') {
+          if (this.selectedIndex === -1) this.updateSelection(candidatesLength - 1);
+          else this.updateSelection((this.selectedIndex - 1 + candidatesLength) % candidatesLength);
+        } else {
+          if (this.selectedIndex === -1) this.updateSelection(0);
+          else this.updateSelection((this.selectedIndex + 1) % candidatesLength);
+        }
+
+        this.scrollSelectedIntoView();
+        return;
+      }
+
+      // complete
+      case 'Tab':
+      case 'ArrowRight': {
+        e.preventDefault();
+        if (this.selectedIndex >= 0) this.complete(this.candidates[this.selectedIndex]! ?? this.candidates[0]!);
+        else this.complete(this.candidates[0]!);
+        return;
+      }
+
+      // execute
+      case 'Enter': {
+        this.prevEl?.focus();
+        e.preventDefault();
+        if (this.selectedIndex >= 0) this.execute(this.candidates[this.selectedIndex]! ?? this.candidates[0]!);
+        else this.execute(this.candidates[0]!);
+        this.close();
+        return;
+      }
     }
   }
 
-  disconnectedCallback() {
-    document.removeEventListener('mousedown', this.outsideListener, { capture: true });
-    window.removeEventListener('keydown', this.keyListener, { capture: true });
+  private complete(symbol: SymbolData) {
+    if (symbol.name === this.query) return this.execute(symbol);
+
+    this.plugin.editorHelper.replaceWithLength(symbol.name, this.queryPos!, this.query!.length);
+  }
+
+  private execute(symbol: SymbolData) {
+    let content: string;
+    if (this.plugin.settings.complementSymbolWithUnicode) content = symbol.sym;
+    else content = symbol.name;
+
+    if (!['op', 'Large'].includes(symbol.mathClass)) content = `${content} `;
+
+    this.plugin.editorHelper.replaceWithLength(content, this.queryPos!, this.query!.length);
+  }
+
+  private updateSelection(newIndex: number) {
+    if (newIndex === this.selectedIndex) return;
+    this.items.children[this.selectedIndex]?.classList.remove('selected');
+    this.items.children[newIndex]?.classList.add('selected');
+    this.selectedIndex = newIndex;
+  }
+
+  private scrollSelectedIntoView() {
+    const el = this.items.children[this.selectedIndex];
+    if (el) el.scrollIntoView({ block: 'nearest', behavior: 'auto' });
   }
 }

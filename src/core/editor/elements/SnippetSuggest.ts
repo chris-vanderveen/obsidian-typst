@@ -1,55 +1,77 @@
-import type { Editor } from 'obsidian';
+import { type EditorPosition, Notice } from 'obsidian';
 
 import type { Snippet } from '@/libs/snippet';
 import type ObsidianTypstMate from '@/main';
-
-import type { Position } from '../editor';
+import type { PopupPosition } from '../editor';
 
 import './snippet-suggest.css';
 
+export const snippetRegex =
+  /(?:^| |\$|\(|\)|\[|\]|\{|\}|<|>|\+|-|\/|\*|=|!|\?|#|%|&|'|:|;|,|\d)(?<query>[^\W_]+)(?<arg>\(.*\))?@$/;
+
+// TODO! Abstract Class にする
+
 export default class SnippetSuggestElement extends HTMLElement {
   plugin!: ObsidianTypstMate;
-  container!: HTMLDivElement;
+  items!: HTMLElement;
 
-  snippets: Snippet[];
+  candidates: Snippet[] = [];
   selectedIndex: number = -1;
 
-  isOpen: boolean = false;
-  private outsideListener = (e: MouseEvent) => this.onOutsideMouseDown(e);
-  private keyListener = (e: KeyboardEvent) => this.onKeyDown(e);
+  query?: string;
+  argument?: string; // () 含む
+  queryPos?: EditorPosition;
 
-  editor?: Editor;
   prevEl?: HTMLElement;
 
-  constructor() {
-    super();
-    this.snippets = [];
+  private mouseMoveListener = (e: MouseEvent) => this.onMouseMove(e);
+  private mouseDownListener = (e: MouseEvent) => this.onMouseDown(e);
+
+  startup(plugin: ObsidianTypstMate) {
+    this.plugin = plugin;
+    this.addClasses(['typstmate-snippets', 'typstmate-temporary']);
+    this.hide();
+    this.items = this.createEl('div', { cls: 'items' });
   }
 
-  render(position: Position, editor: Editor) {
-    this.prevEl = document.activeElement as HTMLElement;
+  suggest(query: string, cursorPos: EditorPosition, argument?: string) {
+    this.candidates = this.plugin.settings.snippets?.filter((s) => s.name.includes(query)) ?? [];
+    if (!this.candidates.length) return this.close();
+    this.query = query;
+    this.queryPos = {
+      line: cursorPos.line,
+      ch: cursorPos.ch - query.length - (argument?.length ?? 0) - 1,
+    };
+    this.argument = argument;
+
+    const position = this.plugin.editorHelper.calculatePopupPosition(this.queryPos, cursorPos);
+
+    // @ のハイライト
+    this.plugin.editorHelper.addHighlightsWithLength(
+      1,
+      [
+        {
+          line: cursorPos.line,
+          ch: cursorPos.ch - 1,
+        },
+      ],
+      'typstmate-atmode',
+      true,
+    );
+
+    this.render(position);
+  }
+
+  private render(position: PopupPosition) {
     this.style.setProperty('--preview-left', `${position.x}px`);
     this.style.setProperty('--preview-top', `${position.y}px`);
-    if (!this.isOpen) this.open();
-    this.container.empty();
-    const items = this.container.createEl('div', { cls: 'items' });
-    this.editor = editor;
 
-    this.snippets.forEach((snippet, index) => {
-      const item = items.createEl('div', { cls: 'item' });
-      const svg = item.createEl('div', { cls: 'svg' });
-      item.className = 'item';
+    if (this.style.display === 'none') this.renderFirst();
+    this.items.empty();
+
+    this.candidates.forEach((snippet, index) => {
+      const item = this.items.createEl('div', { cls: 'item' });
       item.dataset.index = index.toString();
-      item.addEventListener('click', () => {
-        this.prevEl?.focus();
-        this.plugin.editorHelper.applySnippet(snippet);
-        this.close();
-      });
-      item.addEventListener('mouseover', () => {
-        this.selectedIndex = Number(item.dataset.index);
-        this.updateSelectionVisual();
-        this.scrollSelectedIntoView();
-      });
 
       let content: string = snippet.content;
       if (snippet.script) {
@@ -66,55 +88,61 @@ export default class SnippetSuggestElement extends HTMLElement {
             content = `${snippet.id}\n${content}\n`;
             break;
         }
-        this.plugin.typstManager.render(content, svg, snippet.kind);
+        const contentEl = item.createEl('div');
+        this.plugin.typstManager.render(content, contentEl, snippet.kind);
         item.appendChild(document.createTextNode(`${snippet.name} (${snippet.category})`));
-        item.appendChild(svg);
+        item.appendChild(contentEl);
       }
-      this.container.appendChild(item);
+
+      if (this.query === snippet.name) this.updateSelection(index);
     });
-
-    return this;
   }
 
-  open() {
-    if (this.isOpen) return;
-    this.isOpen = true;
+  private renderFirst() {
+    this.prevEl = document.activeElement as HTMLElement;
     this.selectedIndex = -1;
-    this.show();
     this.setAttribute('tabindex', '0');
-    document.addEventListener('mousedown', this.outsideListener, { capture: true });
-    window.addEventListener('keydown', this.keyListener, { capture: true });
+    this.show();
+    document.addEventListener('mousemove', this.mouseMoveListener);
+    document.addEventListener('mousedown', this.mouseDownListener);
   }
 
-  private onOutsideMouseDown(e: MouseEvent) {
-    const target = e.target as Node | null;
-    if (!target) return;
-    if (!this.contains(target)) this.close();
+  close() {
+    this.plugin.editorHelper.editor?.removeHighlights('typstmate-atmode');
+    this.hide();
+    document.removeEventListener('mousemove', this.mouseMoveListener);
+    document.removeEventListener('mousedown', this.mouseDownListener);
   }
 
-  private onKeyDown(e: KeyboardEvent) {
-    if (!this.isOpen) return;
-    if (this.snippets.length === 0) return;
+  onMouseMove(e: MouseEvent) {
+    const item = (e.target as HTMLElement).closest('.item') as HTMLElement | null;
+    if (!item) return;
+    this.updateSelection(Number(item.dataset.index!));
+  }
+
+  onMouseDown(e: MouseEvent) {
+    const item = (e.target as HTMLElement).closest('.item') as HTMLElement | null;
+    if (!item) return;
+    this.execute(this.candidates[Number(item.dataset.index)] ?? this.candidates[0]!);
+    this.close();
+    e.preventDefault();
+  }
+
+  onKeyDown(e: KeyboardEvent) {
+    if (this.candidates.length === 0) return;
 
     switch (e.key) {
-      case 'ArrowDown': {
-        e.preventDefault();
-        e.stopPropagation();
-        this.focus();
-        if (this.selectedIndex === -1) this.selectedIndex = 0;
-        else this.selectedIndex = (this.selectedIndex + 1) % this.snippets.length;
-        this.updateSelectionVisual();
-        this.scrollSelectedIntoView();
-        return;
-      }
-
+      case 'ArrowDown':
       case 'ArrowUp': {
         e.preventDefault();
-        e.stopPropagation();
-        this.focus();
-        if (this.selectedIndex === -1) this.selectedIndex = this.snippets.length - 1;
-        else this.selectedIndex = (this.selectedIndex - 1 + this.snippets.length) % this.snippets.length;
-        this.updateSelectionVisual();
+        const candidatesLength = this.candidates.length;
+        if (e.key === 'ArrowUp') {
+          if (this.selectedIndex === -1) this.updateSelection(candidatesLength - 1);
+          else this.updateSelection((this.selectedIndex - 1 + candidatesLength) % candidatesLength);
+        } else {
+          if (this.selectedIndex === -1) this.updateSelection(0);
+          else this.updateSelection((this.selectedIndex + 1) % candidatesLength);
+        }
         this.scrollSelectedIntoView();
         return;
       }
@@ -123,29 +151,19 @@ export default class SnippetSuggestElement extends HTMLElement {
       case 'ArrowRight': {
         e.preventDefault();
         this.prevEl?.focus();
-        if (this.selectedIndex >= 0)
-          this.plugin.editorHelper.complementSnippet(this.snippets[this.selectedIndex]! ?? this.snippets[0]!);
-        else this.plugin.editorHelper.complementSnippet(this.snippets[0]!);
+        if (this.selectedIndex >= 0) this.complete(this.candidates[this.selectedIndex]! ?? this.candidates[0]!);
+        else this.complete(this.candidates[0]!);
         return;
       }
       case 'Enter': {
         e.preventDefault();
         this.prevEl?.focus();
         let snippet: Snippet;
-        if (this.selectedIndex >= 0) snippet = this.snippets[this.selectedIndex]! ?? this.snippets[0]!;
-        else snippet = this.snippets[0]!;
+        if (this.selectedIndex >= 0) snippet = this.candidates[this.selectedIndex]! ?? this.candidates[0]!;
+        else snippet = this.candidates[0]!;
 
-        if (snippet.script && this.plugin.editorHelper.value === undefined) {
-          this.plugin.editorHelper.complementSnippet(snippet);
-          const cursor = this.editor!.getCursor();
-          this.editor?.replaceRange('()', {
-            line: cursor.line,
-            ch: cursor.ch - 1,
-          });
-        } else {
-          this.plugin.editorHelper.applySnippet(snippet);
-          this.close();
-        }
+        if (snippet.script && this.argument === undefined) this.complete(snippet);
+        else this.execute(snippet);
         return;
       }
 
@@ -155,42 +173,42 @@ export default class SnippetSuggestElement extends HTMLElement {
       }
 
       default: {
-        if (e.key === '(' && this.plugin.editorHelper.value === undefined) {
+        if (e.key === '(' && !e.ctrlKey && !e.metaKey && !e.altKey) {
           e.preventDefault();
-          const cursor = this.editor!.getCursor();
-          this.editor?.replaceRange('()', {
+          const cursor = this.plugin.editorHelper.editor!.getCursor();
+          this.plugin.editorHelper.editor!.replaceRange('()', {
             line: cursor.line,
-            ch: cursor.ch - 1,
+            ch: cursor.ch - (this.argument ? 2 : 1),
           });
           return;
-        } else if (e.key.length === 1) {
-          if (e.key === ' ' && this.plugin.editorHelper.value === undefined) {
+        } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          if (e.key === ' ' && this.argument === undefined) {
             this.prevEl?.focus();
             this.blur();
             this.close();
             return;
           }
           e.preventDefault();
-          const cursor = this.editor!.getCursor();
-          this.editor?.replaceRange(e.key, {
+          const cursor = this.plugin.editorHelper.editor!.getCursor();
+          this.plugin.editorHelper.editor!.replaceRange(e.key, {
             line: cursor.line,
-            ch: cursor.ch - (this.plugin.editorHelper.value ? 2 : 1),
+            ch: cursor.ch - (this.argument ? 2 : 1),
           });
           return;
         } else if (e.key === 'Backspace') {
           // @ のみのとき
-          if (this.plugin.editorHelper.word === undefined) break;
+          if (this.query === undefined) break;
 
-          // @直前を消す
+          // @ 直前を消す
           e.preventDefault();
-          const cursor = this.editor!.getCursor();
-          this.plugin.editorHelper.replaceLength(
+          const cursor = this.plugin.editorHelper.editor!.getCursor();
+          this.plugin.editorHelper.replaceWithLength(
             '',
             {
               line: cursor.line,
-              ch: cursor.ch - (this.plugin.editorHelper.value ? 3 : 2),
+              ch: cursor.ch - (this.argument ? 3 : 2),
             },
-            this.plugin.editorHelper.value === '()' ? 2 : 1,
+            this.argument === '()' ? 2 : 1,
           );
           return;
         } else if (e.key === 'Shift') {
@@ -205,35 +223,56 @@ export default class SnippetSuggestElement extends HTMLElement {
     this.close();
   }
 
-  close() {
-    this.editor?.removeHighlights('typstmate-atmode');
+  private complete(snippet: Snippet) {
+    if (!(snippet.script && !this.argument) && snippet.name === this.query) return this.execute(snippet);
 
-    this.isOpen = false;
-    this.hide();
-    document.removeEventListener('mousedown', this.outsideListener, { capture: true });
-    window.removeEventListener('keydown', this.keyListener, { capture: true });
+    this.plugin.editorHelper.replaceWithLength(
+      `${snippet.name + (snippet.script ? (this.argument ? this.argument : '()') : '')}@`,
+      this.queryPos!,
+      this.query!.length + (this.argument?.length ?? 0) + 1,
+    );
   }
 
-  private updateSelectionVisual() {
-    if (!this.container) return;
-    Array.from(this.container.children).forEach((child) => {
-      const el = child as HTMLElement;
-      const idx = Number(el.dataset.index);
-      if (idx === this.selectedIndex) el.classList.add('selected');
-      else el.classList.remove('selected');
-    });
+  private execute(snippet: Snippet) {
+    let content = snippet.content;
+    // スクリプトの実行
+    if (snippet.script) {
+      try {
+        content = new Function('input', 'window', content)(this.argument?.slice(1, -1), window);
+      } catch (e) {
+        new Notice(String(e));
+        return;
+      }
+    }
+
+    const cursorIndex = content.indexOf('#CURSOR');
+    content = content.replace('#CURSOR', '');
+    if (cursorIndex === -1) content = `${content} `;
+
+    this.plugin.editorHelper.replaceWithLength(
+      content,
+      this.queryPos!,
+      this.query!.length + (this.argument?.length ?? 0) + 1,
+    );
+    const newCursorPos = {
+      line: this.queryPos!.line,
+      ch: this.queryPos!.ch + (cursorIndex === -1 ? content.length : cursorIndex),
+    };
+    this.plugin.editorHelper.editor?.setCursor(newCursorPos);
+
+    const offset = this.plugin.editorHelper.editor!.posToOffset(newCursorPos);
+    this.plugin.editorHelper.updateMathObject(offset);
+  }
+
+  private updateSelection(newIndex: number) {
+    if (newIndex === this.selectedIndex) return;
+    this.items.children[this.selectedIndex]?.classList.remove('selected');
+    this.items.children[newIndex]?.classList.add('selected');
+    this.selectedIndex = newIndex;
   }
 
   private scrollSelectedIntoView() {
-    if (this.selectedIndex < 0) return;
-    const el = this.container.querySelector(`.item[data-index="${this.selectedIndex}"]`) as HTMLElement | null;
-    if (el) {
-      el.scrollIntoView({ block: 'nearest', behavior: 'auto' });
-    }
-  }
-
-  disconnectedCallback() {
-    document.removeEventListener('mousedown', this.outsideListener);
-    window.removeEventListener('keydown', this.keyListener);
+    const el = this.items.children[this.selectedIndex];
+    if (el) el.scrollIntoView({ block: 'nearest', behavior: 'auto' });
   }
 }

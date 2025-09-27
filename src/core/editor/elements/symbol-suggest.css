@@ -11,13 +11,12 @@
   transition: opacity 0.13s;
   opacity: 0.97;
   border: 1px solid var(--background-modifier-border);
-}
 
-.typstmate-symbols .container {
   display: flex;
   flex-direction: column;
-  max-height: 400px;
+  max-height: 600px;
   overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .typstmate-symbols .item {

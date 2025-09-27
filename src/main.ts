@@ -290,8 +290,7 @@ export default class ObsidianTypstMate extends Plugin {
   private registerListeners() {
     this.listeners.push(
       this.app.workspace.on('css-change', this.applyBaseColor.bind(this)),
-      this.app.workspace.on('editor-change', this.editorHelper.onEditorChange.bind(this.editorHelper)),
-      this.app.workspace.on('active-leaf-change', this.editorHelper.hideAll.bind(this.editorHelper)),
+      this.app.workspace.on('active-leaf-change', this.editorHelper.onActiveLeafChange.bind(this.editorHelper)),
       this.app.workspace.on('leaf-menu', (menu, leaf) => {
         if (leaf.view.getViewType() !== TypstTextView.viewtype) return;
         menu.addItem(async (item) => {
