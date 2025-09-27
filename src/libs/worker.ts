@@ -2,6 +2,7 @@ import type fsModule from 'node:fs';
 import type pathModule from 'node:path';
 
 import { expose } from 'comlink';
+import type { EditorPosition } from 'obsidian';
 import pako from 'pako';
 import untar from 'untar-sync';
 
@@ -239,12 +240,10 @@ export interface PDFResult {
 export interface BracketPair {
   kind: 'paren' | 'bracket' | 'brace';
   depth: number;
-  open_byte: number;
-  open_line: number;
-  open_column: number;
-  close_byte: number;
-  close_line: number;
-  close_column: number;
+  open_offset: number;
+  open_pos: EditorPosition;
+  close_offset: number;
+  close_pos: EditorPosition;
 }
 
 export interface Main {
