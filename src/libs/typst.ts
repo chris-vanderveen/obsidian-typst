@@ -19,8 +19,9 @@ export default class TypstManager {
   plugin: ObsidianTypstMate;
   ready = false;
 
-  beforeProcessor?: Processor;
-  beforeSVG = '';
+  beforeKind?: ProcessorKind;
+  beforeId?: string;
+  beforeContent = '';
 
   constructor(plugin: ObsidianTypstMate) {
     this.plugin = plugin;
@@ -203,7 +204,7 @@ export default class TypstManager {
     typstSVGEl.render();
 
     // ちらつき防止(仮)
-    if (processor === this.beforeProcessor) typstSVGEl.innerHTML = this.beforeSVG;
+    if (this.beforeKind === kind && this.beforeId === processor.id) typstSVGEl.innerHTML = this.beforeContent;
 
     return containerEl as HTMLElement;
   }
@@ -230,9 +231,7 @@ export default class TypstManager {
       }),
     );
 
-    for (const folderPath of folderPaths) {
-      await this.collectFiles(baseDirPath, folderPath, map);
-    }
+    for (const folderPath of folderPaths) await this.collectFiles(baseDirPath, folderPath, map);
   }
 
   async createCache(packageSpec: PackageSpec, store: boolean, targetDirPaths?: string[]) {
@@ -255,9 +254,7 @@ export default class TypstManager {
     );
 
     const atMap = new Map<string, Uint8Array>();
-    for (const [k, v] of map) {
-      atMap.set(`@${k}`, v);
-    }
+    for (const [k, v] of map) atMap.set(`@${k}`, v);
     if (store) await this.plugin.typst.store({ sources: atMap });
 
     return atMap;
