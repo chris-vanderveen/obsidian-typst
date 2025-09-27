@@ -39,6 +39,7 @@ export class TypstPDFView extends TextFileView {
   }
 
   override onPaneMenu(menu: Menu, source: string) {
+    // TODO: 毎回増える
     menu.addItem((item) => {
       item.setTitle('Open as text').onClick(async () => {
         try {
