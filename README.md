@@ -115,12 +115,9 @@ I'm grateful to the developers for making this plugin possible!
 
 - OCR
 - Obsidian LateX Suite関連
-  - Tabout(次の括弧に移動するショートカット)
   - Matrix shortcuts
-  - Editor commands
 - モジュールや定義した変数や関数の補完, シグネチャのTooltip
 - 機能のオンオフ, 設定画面の改善
-- 括弧ハイライトの判定の改善
 
 ## TODO
 
