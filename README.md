@@ -27,11 +27,12 @@ Are you an Obsidian LateX Suite user? Check out [this guide](docs/obsidian-latex
 - Support *inline math*, *display math*, and *code blocks*
 - Support **preamble** and **templates** (called processors)
 - **`.typ` View**
+- **Bracket Jump**
 - **Typst Shortcut**
 - **Snippets** / **Scripts**
 - **Bracket highlights**
 - **Symbol completion**
-  - type a leading backslash `/` to make the search look for LaTeX commands
+  - type a leading backslash `\` to make the search look for LaTeX commands
 - **Inline math preview**
 - **Available on mobile app**
 - Offer **background rendering**
