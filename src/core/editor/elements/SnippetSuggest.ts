@@ -73,6 +73,7 @@ export default class SnippetSuggestElement extends HTMLElement {
       const item = this.items.createEl('div', { cls: 'item' });
       item.dataset.index = index.toString();
 
+      this.selectedIndex = -1;
       let content: string = snippet.content;
       if (snippet.script) {
         item.append(`📦${snippet.name} (${snippet.category})`);
@@ -100,8 +101,6 @@ export default class SnippetSuggestElement extends HTMLElement {
 
   private renderFirst() {
     this.prevEl = document.activeElement as HTMLElement;
-    this.selectedIndex = -1;
-    this.setAttribute('tabindex', '0');
     this.show();
     document.addEventListener('mousemove', this.mouseMoveListener);
     document.addEventListener('mousedown', this.mouseDownListener);

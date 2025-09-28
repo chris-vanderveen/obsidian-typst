@@ -53,6 +53,7 @@ export default class SymbolSuggestElement extends HTMLElement {
     if (this.style.display === 'none') this.renderFirst();
     this.items.empty();
 
+    this.selectedIndex = -1;
     this.candidates.forEach((symbol, index) => {
       const item = this.items.createEl('div', { cls: 'item typstmate-symbol' });
       item.dataset.index = index.toString();
@@ -72,9 +73,7 @@ export default class SymbolSuggestElement extends HTMLElement {
 
   private renderFirst() {
     this.prevEl = document.activeElement as HTMLElement;
-    this.selectedIndex = -1;
     this.show();
-    this.setAttribute('tabindex', '0');
     document.addEventListener('mousemove', this.mouseMoveListener);
     document.addEventListener('mousedown', this.mouseDownListener);
   }
