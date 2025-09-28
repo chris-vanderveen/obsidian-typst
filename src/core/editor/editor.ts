@@ -107,24 +107,14 @@ export class EditorHelper {
   /* doc changed
    */
 
-  private async docChanged(offset: number, changes: ChangeSet): Promise<void> {
+  private async docChanged(offset: number, _changes: ChangeSet): Promise<void> {
     if (!this.isActiveMathExists()) {
       this.mathObject = undefined;
       this.hideAllPopup();
       return;
     }
 
-    if (this.mathObject) {
-      changes.iterChanges((fromA, toA, _fromB, _toB, inserted) => {
-        this.mathObject!.content =
-          this.mathObject!.content.slice(0, fromA - this.mathObject!.startOffset) +
-          inserted.toString() +
-          this.mathObject!.content.slice(toA - this.mathObject!.startOffset);
-      });
-      this.mathObject.endOffset = this.mathObject.startOffset + this.mathObject.content.length;
-      this.mathObject.endPos = this.editor!.offsetToPos(this.mathObject.endOffset);
-      console.log(1);
-    } else this.updateMathObject(offset);
+    this.updateMathObject(offset);
     if (!this.mathObject) return;
 
     await this.updateBracketPairsInMathObject();
