@@ -1,4 +1,4 @@
-import { Prec } from '@codemirror/state';
+import { type ChangeSet, Prec } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 import { type Editor, type EditorPosition, MarkdownView, type WorkspaceLeaf } from 'obsidian';
 
@@ -51,7 +51,7 @@ export class EditorHelper {
         // サジェストやプレビューの非表示
         if (update.focusChanged) this.focusChanged(update.view.hasFocus);
         // サジェストの開始, インラインプレビューの更新
-        if (update.docChanged && sel.empty) await this.docChanged(sel.head);
+        else if (update.docChanged && sel.empty) await this.docChanged(sel.head, update.changes);
         // 親括弧のハイライト, MathObject の更新 & 変更あれば括弧のハイライト, なければインラインプレビュー
         if (update.selectionSet) {
           const result = await this.cursorMoved(sel.head);
@@ -107,14 +107,24 @@ export class EditorHelper {
   /* doc changed
    */
 
-  private async docChanged(offset: number): Promise<void> {
+  private async docChanged(offset: number, changes: ChangeSet): Promise<void> {
     if (!this.isActiveMathExists()) {
       this.mathObject = undefined;
       this.hideAllPopup();
       return;
     }
 
-    this.updateMathObject(offset);
+    if (this.mathObject) {
+      changes.iterChanges((fromA, toA, _fromB, _toB, inserted) => {
+        this.mathObject!.content =
+          this.mathObject!.content.slice(0, fromA - this.mathObject!.startOffset) +
+          inserted.toString() +
+          this.mathObject!.content.slice(toA - this.mathObject!.startOffset);
+      });
+      this.mathObject.endOffset = this.mathObject.startOffset + this.mathObject.content.length;
+      this.mathObject.endPos = this.editor!.offsetToPos(this.mathObject.endOffset);
+      console.log(1);
+    } else this.updateMathObject(offset);
     if (!this.mathObject) return;
 
     await this.updateBracketPairsInMathObject();
