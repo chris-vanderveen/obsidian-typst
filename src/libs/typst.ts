@@ -90,8 +90,9 @@ export default class TypstManager {
 
           const waitingElements = document.querySelectorAll('.typstmate-waiting');
           for (const el of waitingElements) {
+            const content = el.textContent!;
             el.empty();
-            this.render(el.textContent!, el, el.getAttribute('kind')!);
+            this.render(content, el, el.getAttribute('kind')!);
           }
         });
       } else this.ready = true;

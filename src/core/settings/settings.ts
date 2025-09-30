@@ -38,6 +38,7 @@ export interface Settings {
   };
   snippets?: Snippet[];
   complementSymbolWithUnicode?: boolean;
+  patchPDFExport?: boolean;
 }
 export const DEFAULT_SETTINGS: Settings = {
   enableBackgroundRendering: true,
@@ -190,6 +191,7 @@ export const DEFAULT_SETTINGS: Settings = {
     },
   ],
   complementSymbolWithUnicode: true,
+  patchPDFExport: false,
 };
 
 export class SettingTab extends PluginSettingTab {
@@ -564,6 +566,19 @@ export class SettingTab extends PluginSettingTab {
         this.plugin.saveSettings();
       });
     });
+
+    new Setting(containerEl)
+      .setName('Patch PDF Export')
+      .setDesc(
+        'When performing PDF Export, temporarily disable AutoBaseColor and use BaseColor. This option exists because when performing PDF Export with a dark theme, it often outputs with a white background.',
+      )
+      .addToggle((toggle) => {
+        toggle.setValue(this.plugin.settings.patchPDFExport ?? DEFAULT_SETTINGS.patchPDFExport!);
+        toggle.onChange((value) => {
+          this.plugin.settings.patchPDFExport = value;
+          this.plugin.saveSettings();
+        });
+      });
 
     const div = containerEl.createDiv();
     div.textContent = 'Are you looking for the snippet settings? It is in ';
