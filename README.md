@@ -1,8 +1,12 @@
 # Typst Mate
 
-<a href="https://typst.app/docs/changelog/">
-  <img alt="Typst Version" src="https://img.shields.io/badge/typst-0.13.1-orange" />
+<a href="https://obsidian.md/">
+  <img alt="Obsidian Plugin" src="https://img.shields.io/badge/available%20on%20mobile-a78bfa?logo=obsidian&logoColor=white" />
 </a>
+<a href="https://typst.app/docs/changelog/">
+  <img alt="Typst Version" src="https://img.shields.io/badge/0.13.1-239dad?logo=typst&logoColor=white" />
+</a>
+
 
 Render math expressions in [Obsidian](https://obsidian.md) using [Typst](https://typst.app/) instead of MathJax.
 
