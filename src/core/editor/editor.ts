@@ -102,6 +102,7 @@ export class EditorHelper {
   onActiveLeafChange(leaf: WorkspaceLeaf | null) {
     this.editor = leaf?.view.getViewType() === 'markdown' ? (leaf?.view as MarkdownView)?.editor : undefined;
     if (this.editor) this.mathObject = undefined;
+    this.close();
   }
 
   /* doc changed
@@ -141,7 +142,8 @@ export class EditorHelper {
     if (
       this.mathObject?.kind !== 'inline' ||
       this.symbolSuggestEl.style.display !== 'none' ||
-      this.snippetSuggestEl.style.display !== 'none'
+      this.snippetSuggestEl.style.display !== 'none' ||
+      !this.plugin.settings.enableInlinePreview
     ) {
       this.inlinePreviewEl.close();
       return;
