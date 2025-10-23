@@ -209,6 +209,7 @@ export class EditorHelper {
       }
       default: {
         // Shortcut
+        if (!this.plugin.settings.enableShortcutKeys) break;
         if (SHORTCUTS_KEYS.includes(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey) this.executeShortcut(e);
         break;
       }
@@ -324,6 +325,7 @@ export class EditorHelper {
   private async cursorMoved(offset: number): Promise<null | undefined> {
     if (!this.isActiveMathExists()) {
       this.mathObject = undefined;
+      this.close();
       return null;
     }
 
