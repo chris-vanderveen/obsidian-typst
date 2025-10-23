@@ -21,6 +21,7 @@ export interface Settings {
   skipPreparationWaiting: boolean;
   enableInlinePreview: boolean;
   disablePackageCache: boolean;
+  enableShortcutKeys: boolean;
   preamble: string;
   processor: {
     inline?: {
@@ -49,6 +50,7 @@ export const DEFAULT_SETTINGS: Settings = {
   skipPreparationWaiting: false,
   enableInlinePreview: true,
   disablePackageCache: false,
+  enableShortcutKeys: true,
   preamble: [
     '#set page(margin: 0pt, width: auto, height: auto)',
     '#show raw: set text(size: 1.25em)',
@@ -563,6 +565,14 @@ export class SettingTab extends PluginSettingTab {
       );
       toggle.onChange((value) => {
         this.plugin.settings.complementSymbolWithUnicode = value;
+        this.plugin.saveSettings();
+      });
+    });
+
+    new Setting(containerEl).setName('Enable Shortcut Keys').addToggle((toggle) => {
+      toggle.setValue(this.plugin.settings.enableShortcutKeys ?? DEFAULT_SETTINGS.enableShortcutKeys!);
+      toggle.onChange((value) => {
+        this.plugin.settings.enableShortcutKeys = value;
         this.plugin.saveSettings();
       });
     });

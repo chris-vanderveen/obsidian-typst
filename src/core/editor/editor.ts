@@ -115,6 +115,7 @@ export class EditorHelper {
       return;
     }
 
+    const oldLine = this.mathObject?.startPos.line;
     if (this.mathObject && changes.length === 1) {
       changes.iterChanges((fromA, toA, _fromB, _toB, inserted) => {
         this.mathObject!.content =
@@ -135,7 +136,8 @@ export class EditorHelper {
       return;
     }
     this.hideAllSuggest();
-    this.updateInlinePreview();
+    if (oldLine === undefined || oldLine === this.mathObject.startPos.line) this.updateInlinePreview();
+    else this.inlinePreviewEl.close();
   }
 
   private updateInlinePreview() {
