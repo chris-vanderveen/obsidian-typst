@@ -22,6 +22,7 @@ export interface Settings {
   enableInlinePreview: boolean;
   disablePackageCache: boolean;
   enableShortcutKeys: boolean;
+  openTypstToolsOnStartup: boolean;
   preamble: string;
   processor: {
     inline?: {
@@ -51,6 +52,7 @@ export const DEFAULT_SETTINGS: Settings = {
   enableInlinePreview: true,
   disablePackageCache: false,
   enableShortcutKeys: true,
+  openTypstToolsOnStartup: true,
   preamble: [
     '#set page(margin: 0pt, width: auto, height: auto)',
     '#show raw: set text(size: 1.25em)',
@@ -254,6 +256,17 @@ export class SettingTab extends PluginSettingTab {
           this.plugin.settings.autoBaseColor = value;
           if (value) this.plugin.applyBaseColor();
 
+          this.plugin.saveSettings();
+        });
+      });
+
+    new Setting(containerEl)
+      .setName('Open Typst Tools on startup')
+      .setDesc("Open Typst tools in side panel when launching Obsidian.")
+      .addToggle((toggle) => {
+        toggle.setValue(this.plugin.settings.openTypstToolsOnStartup);
+        toggle.onChange((value) => {
+          this.plugin.settings.openTypstToolsOnStartup = value;
           this.plugin.saveSettings();
         });
       });
