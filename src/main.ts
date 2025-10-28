@@ -118,9 +118,7 @@ export default class ObsidianTypstMate extends Plugin {
       this.registerView(TypstTextView.viewtype, (leaf) => new TypstTextView(leaf));
       this.registerView(TypstPDFView.viewtype, (leaf) => new TypstPDFView(leaf, this));
       this.registerExtensions(['typ'], TypstPDFView.viewtype);
-      if (this.settings.openTypstToolsOnStartup) {
-        this.activateLeaf();
-      }
+      if (this.settings.openTypstToolsOnStartup) this.activateLeaf();
 
       // コマンドを登録する
       this.addCommands();

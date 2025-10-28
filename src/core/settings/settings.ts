@@ -261,8 +261,8 @@ export class SettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName('Open Typst Tools on startup')
-      .setDesc("Open Typst tools in side panel when launching Obsidian.")
+      .setName('Open Typst Tools on Startup')
+      .setDesc('Open Typst tools in side panel when launching Obsidian.')
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.openTypstToolsOnStartup);
         toggle.onChange((value) => {
