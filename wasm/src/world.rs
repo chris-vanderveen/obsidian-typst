@@ -6,9 +6,9 @@ use send_wrapper::SendWrapper;
 use wasm_bindgen::{JsCast, JsValue};
 
 use typst::{
-    Library, World,
+    Library, LibraryExt, World,
     diag::{FileError, FileResult, PackageError},
-    foundations::{Bytes, Content, Datetime, Style, Value},
+    foundations::{Bytes, Content, Datetime, Property, Style, Value},
     layout::Abs,
     syntax::{FileId, Source, VirtualPath, package::PackageSpec},
     text::{Font, FontBook, TextElem},
@@ -56,7 +56,7 @@ impl WasmWorld {
         // 値 `CURSOR` を定義
         let cursor_elem = TextElem::new("▮".into());
         let cursor_paint = Paint::Solid(Color::from_str("#44f").unwrap());
-        let cursor_style = Style::Property(TextElem::set_fill(cursor_paint));
+        let cursor_style = Style::Property(Property::new(TextElem::fill, cursor_paint));
         let cursor_val = Value::Content(Content::new(cursor_elem).styled(cursor_style));
         // グローバル定義に追加
         library.global.scope_mut().define("fontsize", fontsize_val);

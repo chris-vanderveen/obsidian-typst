@@ -4,7 +4,8 @@
   <img alt="Obsidian Plugin" src="https://img.shields.io/badge/Desktop%20%26%20Mobile-a78bfa?logo=obsidian&logoColor=white" />
 </a>
 <a href="https://typst.app/docs/changelog/">
-  <img alt="Typst Version" src="https://img.shields.io/badge/0.13.1-239dad?logo=typst&logoColor=white" />
+  <img alt="Typst Version" src="https://img.shields.io/badge/v0.13.1-239dad?logo=typst&logoColor=white" />
+  <img alt="Typst Version" src="https://img.shields.io/badge/v0.14.0-239dad?logo=typst&logoColor=white" />
 </a>
 
 
@@ -20,7 +21,7 @@ Snippet                  | Script
 
 For details about the processor / snippet(script) / shortcut / tab jump, see [Processor](docs/processor/) / [Snippet](docs/snippet/) / [Shortcut](docs/Shortcut.md) / [TabJump](docs/TabJump.md).
 
-I welcome pull requests featuring your wonderful snippets!
+I welcome [Discussions](https://github.com/azyarashi/obsidian-typst-mate/discussions/categories/show-and-tell) featuring your wonderful snippets!
 
 Are you an Obsidian LateX Suite user? Check out [this guide](docs/obsidian-latex-suite-migration.md).
 
@@ -115,23 +116,6 @@ I'm grateful to the developers for making this plugin possible!
 
 ---
 
-## NEXT
+## Planned Update Contents
 
-- OCR
-- Obsidian LateX Suite関連
-  - Matrix shortcuts
-- モジュールや定義した変数や関数の補完, シグネチャのTooltip
-- 機能のオンオフ, 設定画面の改善
-
-## TODO
-
-- RTL の対応
-- 記号のお気に入り機能とユーザー定義
-- `.typ` ファイルの編集
-- フォーマット機能
-- スニペットの充実・検索
-- モバイルで頻繁にクラッシュする問題の解決
-- Excalidrawプラグインへのレンダリングの利便性の向上
-- 諸々における設定のハイライト, UI改善
-- パッケージの更新の確認
-- Typst Universe外, Githubからの手動パッケージインストール
+See [Discussion#10](https://github.com/azyarashi/obsidian-typst-mate/discussions/10).
