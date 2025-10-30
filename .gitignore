@@ -2,9 +2,11 @@ pkg
 dist
 wasm/target
 node_modules
+.idea
 
 .env
-.idea
-.vscode
 .DS_Store
 *.code-workspace
+
+.vscode/**
+!.vscode/settings.json
