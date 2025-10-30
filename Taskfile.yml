@@ -19,7 +19,7 @@ tasks:
       - bun update --latest
       - bunx biome check
 
-  putstatic:
+  placestatic:
     vars:
       PLUGIN_DIR: "{{.CONFIG_DIR}}/plugins/{{.PLUGIN_ID}}"
       version:
