@@ -48,6 +48,6 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["src/**", "scripts/*", "vite.config.ts", "postcss.config.cjs"]
+    "includes": ["src/**", "scripts/*", "vite.config.ts", "postcss.config.cjs", ".vscode/settings.json"]
   }
 }
