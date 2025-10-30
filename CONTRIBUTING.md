@@ -32,7 +32,7 @@ CONFIG_DIR='/path/to/your_vault/.obsidian'
 3. Place static files into your vault
 
 ```
-task putstatic
+task placestatic
 ```
 
 ### Development
