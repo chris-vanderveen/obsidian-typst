@@ -14,6 +14,12 @@ This document is a guide to help make your contribution easier and more effectiv
 - Code styler: [Biome](https://biomejs.dev/) and the [its IDE extension](https://biomejs.dev/guides/editors/first-party-extensions/)
 - Hot-Reload Plugin: [Hot-Reload](https://github.com/obsidianmd/obsidian-hot-reload) (install via [BRAT](https://obsidian.md/plugins?id=obsidian42-brat))
 
+#### Windows only
+
+- [MSYS2](https://www.msys2.org/)
+- [coreutils](https://packages.msys2.org/packages/coreutils) (install with `pacman -S coreutils`)
+- add `C:\msys64\usr\bin` to your `PATH`
+
 ### Installation
 
 1. Clone the repository, move to the directory and install dependencies
