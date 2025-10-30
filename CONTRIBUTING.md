@@ -39,8 +39,8 @@ task placestatic
 
 The main scripts used during development are:
 
-- `task wasm`: Build the wasm file and copy it to the plugin directory
-- `task dev`:  Build the plugin in development mode, copy to plugin directory, and watch for changes
+- `task wasm`: Build the wasm file in development mode and copy it to the plugin directory
+- `task dev`:  Build the plugin files in development mode, copy them to plugin directory, and watch for changes
 - `bun check`: Run formatter and linter
 
 ## How to Contribute
