@@ -16,6 +16,7 @@ This document is a guide to help make your contribution easier and more effectiv
 
 #### Windows only
 
+These are required because the Taskfile uses GNU OS commands (e.g. `cp`, `mv`, `rm`, `touch`).
 - [MSYS2](https://www.msys2.org/)
 - [coreutils](https://packages.msys2.org/packages/coreutils) (install with `pacman -S coreutils`)
 - add `C:\msys64\usr\bin` to your `PATH`
@@ -52,16 +53,15 @@ The main scripts used during development are:
 - `task dev`:  Build the plugin files in development mode, copy them to plugin directory, and watch for changes
 - `bun check`: Run formatter and linter
 
-### 注意事項
+### Important
 
-- 3.0.0ブランチは開発中であり, 正しく動作しません. また, 大規模なコードロジックの変更が含まれています. mainブランチを使用してください.
+- The `3.0.0` branch is under active development and may not work correctly. It contains large-scale changes to the code logic. Please use the `main` branch.
 
 ### Structure (before 3.0.0)
 
-- `src/core/editor`: インラインプレビューやスニペットなど
-- `src/core/settings/`: 設定タブのUI
-- `src/libs/typst.ts`, `src/libs/worker.ts`, `src/libs/`
-
+- `src/core/editor/`: Inline preview and snippets
+- `src/core/settings/`, `src/ui/modals/`: Settings tab UI
+- `src/libs/typst.ts`, `src/libs/worker.ts`, `src/ui/elements/Typst.ts`: Typst core logic
 
 ## How to Contribute
 
