@@ -12,7 +12,7 @@ This document is a guide to help make your contribution easier and more effectiv
 - Wasm compiler: [wasm-pack](https://drager.github.io/wasm-pack/) (install with `cargo install wasm-pack`)
 - Task runner: [Taskfile](https://taskfile.dev)
 - Code styler: [Biome](https://biomejs.dev/) and the [its IDE extension](https://biomejs.dev/guides/editors/first-party-extensions/)
-- Hot-Reload Plugin: [Hot-Reload](https://github.com/obsidianmd/obsidian-hot-reload) (install via [BRAT](https://obsidian.md/plugins?id=obsidian42-brat))
+- Hot-Reload Plugin: [Hot-Reload](https://github.com/pjeby/hot-reload) (install via [BRAT](https://obsidian.md/plugins?id=obsidian42-brat))
 
 #### Windows only
 
