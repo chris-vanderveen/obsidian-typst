@@ -57,7 +57,6 @@ export const DEFAULT_SETTINGS: Settings = {
     '#set page(margin: 0pt, width: auto, height: auto)',
     '#show raw: set text(size: 1.25em)',
     '#set text(size: fontsize)',
-    '#let scr(it) = text(features: ("ss01",), box($cal(it)$))',
   ].join('\n'),
   processor: {
     inline: {

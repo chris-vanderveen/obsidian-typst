@@ -67,7 +67,7 @@ Turned OFF               | Turned ON
 ## Installation
 
 Currently, it's under review for the official plugin list. This process may take several months.
-Until then, please install using the official plugin [BRAT](https://tfthacker.com/brat-quick-guide).
+Until then, please install using the official plugin [BRAT](https://obsidian.md/plugins?id=obsidian42-brat).
 
 [![Screenshot](assets/install-with-brat.png)](#install-with-brat)
 
@@ -92,7 +92,8 @@ Until then, please install using the official plugin [BRAT](https://tfthacker.co
 #set page(margin: 0pt, width: auto, height: auto)
 #show raw: set text(1.25em)
 #set text(size: fontsize)
-#let scr(it) = text(features: ("ss01",), box($cal(it)$))
+// Typst 0.13.1 or before (plugin 2.1.7 or before)
+// #let scr(it) = text(features: ("ss01",), box($cal(it)$))
 ```
 
 ### Custom Styling
