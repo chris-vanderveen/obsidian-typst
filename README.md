@@ -86,7 +86,7 @@ Until then, please install using the official plugin [BRAT](https://obsidian.md/
 - [Export Image plugin](https://www.obsidianstats.com/plugins/obsidian-export-image)
 - [Webpage HTML Export](https://www.obsidianstats.com/plugins/webpage-html-export) (don't forget to include CSS from Style Options)
 
-If the export display doesn't work correctly, try disabling background rendering before exporting.
+If the export doesn't work correctly, try disabling background rendering before exporting.
 
 ### Default Preamble
 
