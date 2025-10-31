@@ -17,9 +17,9 @@ This document is a guide to help make your contribution easier and more effectiv
 #### Windows only
 
 These are required because the Taskfile uses GNU OS commands (e.g. `cp`, `mv`, `rm`, `touch`).
-- [MSYS2](https://www.msys2.org/)
-- [coreutils](https://packages.msys2.org/packages/coreutils) (install with `pacman -S coreutils`)
-- add `C:\msys64\usr\bin` to your `PATH`
+1. [MSYS2](https://www.msys2.org/)
+2. [coreutils](https://packages.msys2.org/packages/coreutils) (install with `pacman -S coreutils`)
+3. add `C:\msys64\usr\bin` to your `PATH`
 
 ### Installation
 
@@ -59,9 +59,9 @@ The main scripts used during development are:
 
 ### Structure (before 3.0.0)
 
-- `src/core/editor/`: Inline preview and snippets
-- `src/core/settings/`, `src/ui/modals/`: Settings tab UI
-- `src/libs/typst.ts`, `src/libs/worker.ts`, `src/ui/elements/Typst.ts`: Typst core logic
+- `src/core/editor/`: inline preview and autocomplete(snippet/symbol)
+- `src/core/settings/`, `src/ui/modals/`: settings tab UI
+- `wasm/`, `src/libs/typst.ts`, `src/libs/worker.ts`, `src/ui/elements/Typst.ts`: typst core logic
 
 ## How to Contribute
 
