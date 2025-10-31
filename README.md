@@ -91,7 +91,7 @@ Until then, please install using the official plugin [BRAT](https://obsidian.md/
 ```typst
 #set page(margin: 0pt, width: auto, height: auto)
 #show raw: set text(1.25em)
-#set text(size: fontsize)
+#set text(size: fontsize)  // This refers to the settings in Obsidian
 // Typst 0.13.1 or before (plugin 2.1.7 or before)
 // #let scr(it) = text(features: ("ss01",), box($cal(it)$))
 ```
