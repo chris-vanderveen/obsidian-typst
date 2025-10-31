@@ -37,7 +37,7 @@ bun install
 CONFIG_DIR='/path/to/your_vault/.obsidian'
 ```
 
-3. Place static files into your vault
+3. Place static files(`manifest.json`, `.hotreload`) into your vault
 
 ```
 task placestatic

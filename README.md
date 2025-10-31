@@ -86,6 +86,8 @@ Until then, please install using the official plugin [BRAT](https://obsidian.md/
 - [Export Image plugin](https://www.obsidianstats.com/plugins/obsidian-export-image)
 - [Webpage HTML Export](https://www.obsidianstats.com/plugins/webpage-html-export) (don't forget to include CSS from Style Options)
 
+If the export display doesn't work correctly, try disabling background rendering before exporting.
+
 ### Default Preamble
 
 ```typst
@@ -111,7 +113,7 @@ Typst Mate leverages the following open-source projects:
 
 - [Typst](https://typst.app/) – a modern and powerful typesetting system
 - [MiTex](https://github.com/mitex-rs/mitex) – a fast, lightweight LaTeX to Typst converter with **high compatibility**
-- [tex2typst](https://github.com/qwinsi/tex2typst) – a fast, lightweight bidirectional converter between TeX/LaTeX and Typst with **readable output**
+- [tex2typst](https://github.com/qwinsi/tex2typst) – a fast, lightweight bidirectional converter between TeX/LaTeX and Typst with **sophisticated output**
 
 I'm grateful to the developers for making this plugin possible!
 
