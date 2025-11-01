@@ -14,6 +14,10 @@ import {
   renderMath,
   requestUrl,
   type WorkspaceLeaf,
+  TFile,
+  TAbstractFile,
+  Menu,
+  Modal,
 } from "obsidian";
 import { tex2typst, typst2tex } from "tex2typst";
 import { EditorHelper } from "./core/editor/editor";
@@ -135,7 +139,7 @@ export default class ObsidianTypstMate extends Plugin {
         TypstPDFView.viewtype,
         (leaf) => new TypstPDFView(leaf, this),
       );
-      this.registerExtensions(["typ"], TypstPDFView.viewtype);
+      this.registerExtensions(["typ"], TypstTextView.viewtype);
       if (this.settings.openTypstToolsOnStartup) this.activateLeaf();
 
       // コマンドを登録する
@@ -152,9 +156,9 @@ export default class ObsidianTypstMate extends Plugin {
     this.fontsDirNPath = `${this.pluginDirNPath}/fonts`;
     this.cachesDirNPath = `${this.pluginDirNPath}/caches`;
     this.packagesDirNPath = `${this.pluginDirNPath}/packages`;
-    this.typstDirNPath = "/typst";
-
+    this.typstDirNPath = "/templates";
     this.localPackagesDirPaths = [this.packagesDirNPath];
+
     if (!Platform.isDesktopApp) return; // ? iOS/iPadOS でも Platform.isMacOS が true になる
     switch (true) {
       case Platform.isWin: {
@@ -372,6 +376,68 @@ export default class ObsidianTypstMate extends Plugin {
         },
       });
     }
+
+    this.addCommand({
+      id: "create-typst-template",
+      name: "Create Template",
+      callback: async () => {
+        await this.createTypstTemplate();
+      },
+    });
+  }
+
+  private async promptForFileName(): Promise<string | null> {
+    return new Promise((resolve) => {
+      const modal = new Modal(this.app);
+      modal.titleEl.setText("Create Typst Template");
+
+      const inputEl = modal.contentEl.createEl("input", {
+        type: "text",
+        placeholder: "Enter file name",
+        cls: "typst-template-name-input",
+      });
+
+      inputEl.style.width = "100%";
+      inputEl.style.marginBottom = "1rem";
+
+      const buttonContainer = modal.contentEl.createEl("div");
+      buttonContainer.style.display = "flex";
+      buttonContainer.style.gap = "0.5rem";
+      buttonContainer.style.justifyContent = "flex-end";
+
+      const createButton = buttonContainer.createEl("button", {
+        text: "Create",
+        cls: "mod-cta",
+      });
+
+      const cancelButton = buttonContainer.createEl("button", {
+        text: "Cancel",
+      });
+
+      const handleCreate = () => {
+        const value = inputEl.value.trim();
+        if (value) {
+          modal.close();
+          resolve(value);
+        }
+      };
+
+      createButton.onclick = handleCreate;
+      cancelButton.onclick = () => {
+        modal.close();
+        resolve(null);
+      };
+
+      inputEl.onkeypress = (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          handleCreate();
+        }
+      };
+
+      modal.open();
+      inputEl.focus();
+    });
   }
 
   private registerListeners() {
@@ -483,12 +549,12 @@ export default class ObsidianTypstMate extends Plugin {
       async writePackage(path: string, files: tarFile[]) {
         const map = new Map<string, Uint8Array>();
 
-        // ディレクトリ
+        // Directory
         for (const file of files.filter((f) => f.type === "5")) {
           await adapter.mkdir(`${packagesDirNPath}/${path}/${file.name}`);
         }
 
-        // ファイル
+        // file
         for (const file of files.filter((f) => f.type === "0")) {
           await adapter.writeBinary(
             `${packagesDirNPath}/${path}/${file.name}`,
@@ -497,7 +563,7 @@ export default class ObsidianTypstMate extends Plugin {
           map.set(`${path}/${file.name}`, new Uint8Array(file.buffer));
         }
 
-        // シンボリックリンク
+        // Symbolic link(s)
         for (const file of files.filter((f) => f.type === "2")) {
           await adapter.copy(
             `${packagesDirNPath}/${path}/${file.name}`,
@@ -595,9 +661,40 @@ export default class ObsidianTypstMate extends Plugin {
     await this.saveData(this.settings);
   }
 
-  override onConfigFileChange = debounce(
-    this.loadSettings.bind(this),
-    500,
-    true,
-  );
+  private async openInTypstTextView(file: TFile) {
+    const leaf = this.app.workspace.getLeaf();
+    await leaf.setViewState({
+      type: TypstTextView.viewtype,
+      state: {
+        file: file.path,
+      },
+    });
+  }
+
+  private async createTypstTemplate() {
+    try {
+      const filename = await this.promptForFileName();
+      if (!filename) return;
+
+      const templatesDir = "templates";
+      if (!(await this.app.vault.adapter.exists(templatesDir))) {
+        await this.app.vault.createFolder(templatesDir);
+      }
+
+      const filePath = `${templatesDir}/${filename}.typ`;
+
+      if (await this.app.vault.adapter.exists(filePath)) {
+        new Notice(`File ${filename}.typ already exists`);
+        return;
+      }
+
+      const file = await this.app.vault.create(filePath, "");
+      const leaf = this.app.workspace.getLeaf();
+      await leaf.openFile(file);
+
+      new Notice(`Created new Typst template: ${filename}.typ`);
+    } catch (error) {
+      new Notice(`Error creating Typst template`);
+    }
+  }
 }
