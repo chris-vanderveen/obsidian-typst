@@ -428,7 +428,7 @@ export default class ObsidianTypstMate extends Plugin {
         resolve(null);
       };
 
-      inputEl.onkeypress = (e) => {
+      inputEl.onkeydown = (e) => {
         if (e.key === "Enter") {
           e.preventDefault();
           handleCreate();
