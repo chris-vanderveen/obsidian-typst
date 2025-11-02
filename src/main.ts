@@ -15,8 +15,6 @@ import {
   requestUrl,
   type WorkspaceLeaf,
   TFile,
-  TAbstractFile,
-  Menu,
   Modal,
 } from "obsidian";
 import { tex2typst, typst2tex } from "tex2typst";
@@ -54,7 +52,7 @@ export default class ObsidianTypstMate extends Plugin {
   cachesDirNPath!: string;
   pluginDirNPath!: string;
   packagesDirNPath!: string;
-  typstDirNPath!: string;
+  templatesDirNPath!: string;
   localPackagesDirPaths!: string[]; // ? ローカルも含む, 0 番目は packagesDirNPath なので NPath
 
   originalTex2chtml: any;
@@ -156,7 +154,7 @@ export default class ObsidianTypstMate extends Plugin {
     this.fontsDirNPath = `${this.pluginDirNPath}/fonts`;
     this.cachesDirNPath = `${this.pluginDirNPath}/caches`;
     this.packagesDirNPath = `${this.pluginDirNPath}/packages`;
-    this.typstDirNPath = "/templates";
+    this.templatesDirNPath = this.settings.templatesDir;
     this.localPackagesDirPaths = [this.packagesDirNPath];
 
     if (!Platform.isDesktopApp) return; // ? iOS/iPadOS でも Platform.isMacOS が true になる
@@ -207,7 +205,7 @@ export default class ObsidianTypstMate extends Plugin {
       this.fontsDirNPath,
       this.cachesDirNPath,
       this.packagesDirNPath,
-      this.typstDirNPath,
+      this.templatesDirNPath,
     ];
 
     await Promise.allSettled(
@@ -676,7 +674,7 @@ export default class ObsidianTypstMate extends Plugin {
       const filename = await this.promptForFileName();
       if (!filename) return;
 
-      const templatesDir = "templates";
+      const templatesDir = this.settings.templatesDir;
       if (!(await this.app.vault.adapter.exists(templatesDir))) {
         await this.app.vault.createFolder(templatesDir);
       }
