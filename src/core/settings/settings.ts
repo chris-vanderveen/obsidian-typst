@@ -292,9 +292,9 @@ export class SettingTab extends PluginSettingTab {
       .setDesc("Directory where templates are stored.")
       .setClass("typstmate-settings-text-input")
       .addTextArea((textArea) => {
-        textArea.setValue(this.plugin.settings.templatesDir.replace("/", ""));
+        textArea.setValue(this.plugin.settings.templatesDir);
         textArea.onChange((value) => {
-          this.plugin.settings.templatesDir = "/" + value;
+          this.plugin.settings.templatesDir = value;
           this.plugin.saveSettings();
         });
       });

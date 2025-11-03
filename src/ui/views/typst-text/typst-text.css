@@ -1,0 +1,9 @@
+.typst-editor {
+    font-family: var(--font-monospace) !important;
+    line-height: 1.4;
+    tab-size: 2;
+}
+
+.typst-editor:focus {
+    outline: 1px solid var(--interactive-accent);
+}

@@ -659,40 +659,43 @@ export default class ObsidianTypstMate extends Plugin {
     await this.saveData(this.settings);
   }
 
-  private async openInTypstTextView(file: TFile) {
-    const leaf = this.app.workspace.getLeaf();
-    await leaf.setViewState({
-      type: TypstTextView.viewtype,
-      state: {
-        file: file.path,
-      },
-    });
-  }
-
   private async createTypstTemplate() {
     try {
       const filename = await this.promptForFileName();
       if (!filename) return;
 
-      const templatesDir = this.settings.templatesDir;
-      if (!(await this.app.vault.adapter.exists(templatesDir))) {
+      // Remove leading slash and ensure proper path format for Obsidian vault operations
+      const templatesDir = this.settings.templatesDir.replace(/^\/+/, "");
+
+      // Use vault operations consistently to ensure proper file tracking
+      try {
+        // Check if directory exists using vault, not adapter
+        await this.app.vault.adapter.stat(templatesDir);
+      } catch {
+        // Directory doesn't exist, create it using vault operations
         await this.app.vault.createFolder(templatesDir);
       }
 
       const filePath = `${templatesDir}/${filename}.typ`;
 
-      if (await this.app.vault.adapter.exists(filePath)) {
+      // Check if file exists using vault's file cache
+      const existingFile = this.app.vault.getAbstractFileByPath(filePath);
+      if (existingFile) {
         new Notice(`File ${filename}.typ already exists`);
         return;
       }
 
+      // Create the file using vault operations to ensure proper registration
       const file = await this.app.vault.create(filePath, "");
+
+      // Open the file
       const leaf = this.app.workspace.getLeaf();
       await leaf.openFile(file);
 
       new Notice(`Created new Typst template: ${filename}.typ`);
     } catch (error) {
-      new Notice(`Error creating Typst template`);
+      console.error("Error creating Typst template:", error);
+      new Notice("Error creating Typst template");
     }
   }
 }
