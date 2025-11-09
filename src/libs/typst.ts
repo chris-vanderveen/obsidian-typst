@@ -206,7 +206,7 @@ export default class TypstManager {
     typstSVGEl.processor = processor;
     containerEl.appendChild(typstSVGEl);
     // ちらつき防止
-    if (this.beforeKind === kind && this.beforeId === processor.id) typstSVGEl.replaceChildren(this.beforeElement!);
+    if (this.beforeKind === kind && this.beforeId === processor.id) typstSVGEl.replaceChildren(this.beforeElement);
 
     typstSVGEl.render();
 
