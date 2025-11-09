@@ -60,7 +60,6 @@ export default class TypstElement extends HTMLElement {
 
   postProcess(result: SVGResult) {
     if (this.plugin.settings.failOnWarning && result.diags.length !== 0) throw result.diags;
-    console.log(result.svg);
 
     this.plugin.typstManager.beforeKind = this.kind;
     this.plugin.typstManager.beforeId = this.processor.id;
