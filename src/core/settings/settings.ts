@@ -3,7 +3,6 @@ import { type App, debounce, Notice, Platform, PluginSettingTab, Setting } from 
 import type { CodeblockProcessor, DisplayProcessor, ExcalidrawProcessor, InlineProcessor } from '@/libs/processor';
 import type { Snippet } from '@/libs/snippet';
 import type ObsidianTypstMate from '@/main';
-import type { TypstToolsView } from '@/ui/views/typst-tools/typstTools';
 import { CustomFragment } from '@/utils/customFragment';
 
 import { FontList } from './components/font';
