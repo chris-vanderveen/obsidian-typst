@@ -253,7 +253,7 @@ export class SettingTab extends PluginSettingTab {
         toggle.setValue(this.plugin.settings.autoBaseColor);
         toggle.onChange((value) => {
           this.plugin.settings.autoBaseColor = value;
-          if (value) this.plugin.applyBaseColor();
+          this.plugin.applyBaseColor();
 
           this.plugin.saveSettings();
         });
@@ -517,6 +517,7 @@ export class SettingTab extends PluginSettingTab {
         colorPicker.setValue(this.plugin.settings.baseColor);
         colorPicker.onChange((value) => {
           this.plugin.settings.baseColor = value;
+          this.plugin.applyBaseColor();
           this.plugin.saveSettings();
         });
       });
@@ -606,10 +607,7 @@ export class SettingTab extends PluginSettingTab {
     div.textContent = 'Are you looking for the snippet settings? It is in ';
     const a = div.createEl('a', { text: 'Leaf' });
     a.addEventListener('click', async () => {
-      const leaf = await this.plugin.activateLeaf();
-      if (!leaf) return;
-      await this.app.workspace.revealLeaf(leaf);
-      (leaf.view as TypstToolsView).openContent('snippets');
+      await this.plugin.activateLeaf(true, 'snippets');
       this.app.setting.close();
     });
   }

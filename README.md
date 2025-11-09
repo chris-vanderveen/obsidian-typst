@@ -119,9 +119,21 @@ I'm grateful to the developers for making this plugin possible!
 
 ---
 
-## Reading Local Files (only in the Desktop App)
+## Disclosures
 
 This section contains wording required for publishing on Obsidian's official Community Plugins page, so I include it here.
+
+### Network
+
+This plugin makes use of a large WebAssembly (Wasm) binary.
+Bundling it directly would significantly increase startup time, so it is automatically downloaded from the [Releases](https://github.com/azyarashi/obsidian-typst-mate/releases) page instead.
+
+> [!WARNING]
+> (Mobile App only) This plugin uses approximately 600 MB of RAM at startup (it later settles to roughly 300 MB). On mobile devices, especially those with only 4 GB of total RAM, this can cause the app to enter a crash loop.
+
+Network access is also required for installing Typst packages and for displaying lists of packages and symbols within Typst Tools.
+
+### Reading Local Files (Desktop App only)
 
 If the cache for a given package cannot be found inside the Vault, this plugin will fall back to accessing the same local package files used by the Typst CLI.
 For the exact locations, see [typst/README.md#local-packages](https://github.com/typst/packages/blob/main/README.md#local-packages).
