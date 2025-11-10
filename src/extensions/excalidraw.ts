@@ -44,7 +44,6 @@ export default class ExcalidrawPlugin {
         created: Date.now(),
         file: null,
         hasSVGwithBitmap: false,
-        latex: code,
       };
       this.ea.elementsDict[id] = this.ea.boxedElement(id, 'image', pos.x, pos.y, width, height);
       this.ea.elementsDict[id].fileId = id;
