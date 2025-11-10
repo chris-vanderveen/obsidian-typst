@@ -149,7 +149,6 @@ impl Typst {
     }
 
     // ? ちらつき防止のためカーソルの親括弧の計算は TS 側でする
-
     pub fn mitex(&mut self, code: &str) -> Result<JsValue, JsValue> {
         match convert_math(code, None) {
             Ok(result) => Ok(JsValue::from_str(&result)),
@@ -193,8 +192,8 @@ impl Typst {
 
                 // ? typst_svg::svg は背景が透過しない
                 let svg = typst_svg::svg_frame(&document.pages[0].frame)
-                    .replace("<svg class", "<svg style=\"overflow: visible;\" class")
                     .replace("#000000", "var(--typst-base-color)");
+                    .replace("<svg class", "<svg style=\"overflow: visible;\" class")
 
                 svg::svg(svg, warnings, &self.world)
             }
