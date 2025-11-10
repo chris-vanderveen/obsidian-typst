@@ -87,8 +87,6 @@ export default class ObsidianTypstMate extends Plugin {
 
     // 必要なディレクトリの作成
     await this.tryCreateDirs();
-    // 他のプラグインとの連携
-    this.connectOtherPlugins();
 
     // Wasm の準備
     if (!(await adapter.exists(this.wasmPath))) await this.downloadWasm(version);
@@ -103,6 +101,9 @@ export default class ObsidianTypstMate extends Plugin {
 
     // ? Obsidian の起動時間を短縮するため onLayoutReady を使用
     this.app.workspace.onLayoutReady(() => {
+      // 他のプラグインとの連携
+      this.connectOtherPlugins();
+
       // 設定タブを登録
       this.addSettingTab(new SettingTab(this.app, this));
 
