@@ -30,6 +30,7 @@ import type $ from "./libs/worker";
 import Typst from "./libs/worker";
 import TypstWorker from "./libs/worker?worker&inline";
 import { ExcalidrawModal } from "./ui/modals/excalidraw";
+import { CreateTemplateModal } from "./ui/modals/createTemplate";
 import { TypstPDFView } from "./ui/views/typst-pdf/typstPDF";
 import { TypstTextView } from "./ui/views/typst-text/typstText";
 import { TypstToolsView } from "./ui/views/typst-tools/typstTools";
@@ -384,60 +385,6 @@ export default class ObsidianTypstMate extends Plugin {
     });
   }
 
-  private async promptForFileName(): Promise<string | null> {
-    return new Promise((resolve) => {
-      const modal = new Modal(this.app);
-      modal.titleEl.setText("Create Typst Template");
-
-      const inputEl = modal.contentEl.createEl("input", {
-        type: "text",
-        placeholder: "Enter file name",
-        cls: "typst-template-name-input",
-      });
-
-      inputEl.style.width = "100%";
-      inputEl.style.marginBottom = "1rem";
-
-      const buttonContainer = modal.contentEl.createEl("div");
-      buttonContainer.style.display = "flex";
-      buttonContainer.style.gap = "0.5rem";
-      buttonContainer.style.justifyContent = "flex-end";
-
-      const createButton = buttonContainer.createEl("button", {
-        text: "Create",
-        cls: "mod-cta",
-      });
-
-      const cancelButton = buttonContainer.createEl("button", {
-        text: "Cancel",
-      });
-
-      const handleCreate = () => {
-        const value = inputEl.value.trim();
-        if (value) {
-          modal.close();
-          resolve(value);
-        }
-      };
-
-      createButton.onclick = handleCreate;
-      cancelButton.onclick = () => {
-        modal.close();
-        resolve(null);
-      };
-
-      inputEl.onkeydown = (e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          handleCreate();
-        }
-      };
-
-      modal.open();
-      inputEl.focus();
-    });
-  }
-
   private registerListeners() {
     this.listeners.push(
       this.app.workspace.on("css-change", this.applyBaseColor.bind(this)),
@@ -661,31 +608,29 @@ export default class ObsidianTypstMate extends Plugin {
 
   private async createTypstTemplate() {
     try {
-      const filename = await this.promptForFileName();
+      const filename = await CreateTemplateModal.show(this.app, this);
       if (!filename) return;
 
       // Remove leading slash and ensure proper path format for Obsidian vault operations
-      const templatesDir = this.settings.templatesDir.replace(/^\/+/, "");
+      const templatesDir = this.templatesDirNPath;
 
-      // Use vault operations consistently to ensure proper file tracking
       try {
-        // Check if directory exists using vault, not adapter
+        // Check if directory exists
         await this.app.vault.adapter.stat(templatesDir);
       } catch {
-        // Directory doesn't exist, create it using vault operations
+        // Directory doesn't exist, create it
         await this.app.vault.createFolder(templatesDir);
       }
 
       const filePath = `${templatesDir}/${filename}.typ`;
 
-      // Check if file exists using vault's file cache
+      // Check if file exists using file cache
       const existingFile = this.app.vault.getAbstractFileByPath(filePath);
       if (existingFile) {
         new Notice(`File ${filename}.typ already exists`);
         return;
       }
 
-      // Create the file using vault operations to ensure proper registration
       const file = await this.app.vault.create(filePath, "");
 
       // Open the file
