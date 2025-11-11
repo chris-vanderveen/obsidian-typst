@@ -6,6 +6,7 @@
 		"check": "bunx biome check --write"
 	},
 	"dependencies": {
+		"codemirror": "^6.0.2",
 		"comlink": "^4.4.2",
 		"nanoid": "^5.1.6",
 		"pako": "^2.1.0",

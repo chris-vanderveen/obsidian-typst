@@ -1,4 +1,4 @@
-import { type App, Modal, Setting } from "obsidian";
+import { type App, Modal } from "obsidian";
 
 import type ObsidianTypstMate from "@/main";
 
@@ -23,7 +23,7 @@ export class CreateTemplateModal extends Modal {
     });
   }
 
-  override onOpen() {
+  override async onOpen() {
     this.titleEl.setText("Create Template");
 
     const inputEl = this.contentEl.createEl("input", {
