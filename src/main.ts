@@ -53,7 +53,7 @@ export default class ObsidianTypstMate extends Plugin {
   cachesDirNPath!: string;
   pluginDirNPath!: string;
   packagesDirNPath!: string;
-  templatesDirNPath!: string;
+  templatesDir!: string;
   localPackagesDirPaths!: string[]; // ? ローカルも含む, 0 番目は packagesDirNPath なので NPath
 
   originalTex2chtml: any;
@@ -155,7 +155,7 @@ export default class ObsidianTypstMate extends Plugin {
     this.fontsDirNPath = `${this.pluginDirNPath}/fonts`;
     this.cachesDirNPath = `${this.pluginDirNPath}/caches`;
     this.packagesDirNPath = `${this.pluginDirNPath}/packages`;
-    this.templatesDirNPath = this.settings.templatesDir;
+    this.templatesDir = this.settings.templatesDir;
     this.localPackagesDirPaths = [this.packagesDirNPath];
 
     if (!Platform.isDesktopApp) return; // ? iOS/iPadOS でも Platform.isMacOS が true になる
@@ -206,7 +206,6 @@ export default class ObsidianTypstMate extends Plugin {
       this.fontsDirNPath,
       this.cachesDirNPath,
       this.packagesDirNPath,
-      this.templatesDirNPath,
     ];
 
     await Promise.allSettled(
@@ -612,7 +611,7 @@ export default class ObsidianTypstMate extends Plugin {
       if (!filename) return;
 
       // Remove leading slash and ensure proper path format for Obsidian vault operations
-      const templatesDir = this.templatesDirNPath;
+      const templatesDir = this.templatesDir;
 
       try {
         // Check if directory exists
