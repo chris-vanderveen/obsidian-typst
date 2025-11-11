@@ -157,6 +157,11 @@ export default class TypstManager {
         // ? プラグイン No more flickering inline math との互換性のため
         if (code.startsWith('{}') && code.endsWith('{}'))
           code = code.slice(code.at(2) === ' ' ? 3 : 2, code.at(-3) === ' ' ? -3 : -2);
+        // ? プラグイン obsidian-equation-citator との互換性のため
+        if (code.startsWith('\\ref'))
+          return this.plugin.originalTex2chtml(code, {
+            display: kind !== 'inline',
+          });
 
         processor =
           this.plugin.settings.processor.inline?.processors.find((p) => code.startsWith(`${p.id}:`)) ??

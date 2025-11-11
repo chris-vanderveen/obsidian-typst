@@ -8,7 +8,6 @@
   <img alt="Typst Version" src="https://img.shields.io/badge/v0.14.0-239dad?logo=typst&logoColor=white" />
 </a>
 
-
 Render math expressions in [Obsidian](https://obsidian.md) using [Typst](https://typst.app/) instead of MathJax.
 
 [![TypstMate](assets/demo.png)](#demo)
@@ -49,6 +48,7 @@ Are you an Obsidian LateX Suite user? Check out [this guide](docs/obsidian-latex
 - Almost all **Typst packages** are supported (desktop app only for import local packages)
 - **Table and blockquotes support** with proper display math handling (`<br>` and `\n[\s\t]*> ` will be automatically replaced with line breaks)
 - [Excalidraw](https://www.obsidianstats.com/plugins/obsidian-excalidraw-plugin) integration
+- [Equation Citator](https://github.com/FRIEDparrot/obsidian-equation-citator) integration
 - [No more flickering inline math](https://www.obsidianstats.com/plugins/inline-math) compatibility
 - PDF Export, [Better Export PDF](https://www.obsidianstats.com/plugins/better-export-pdf), [Export Image plugin](https://www.obsidianstats.com/plugins/obsidian-export-image), and [Webpage HTML Export](https://www.obsidianstats.com/plugins/webpage-html-export) compatibility
 - Typst Tools
@@ -80,6 +80,7 @@ Until then, please install using the official plugin [BRAT](https://obsidian.md/
 ### Other Plugins
 
 - [Excalidraw](https://www.obsidianstats.com/plugins/obsidian-excalidraw-plugin) (use the `typst-render-to-excalidraw` command)
+- [Equation Citator](https://github.com/FRIEDparrot/obsidian-equation-citator)
 - [Markmind](https://www.obsidianstats.com/plugins/obsidian-markmind) (requires background rendering to be disabled)
 - [No more flickering inline math](https://www.obsidianstats.com/plugins/inline-math)
 - [Better Export PDF](https://www.obsidianstats.com/plugins/better-export-pdf)
