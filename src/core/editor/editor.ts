@@ -145,7 +145,9 @@ export class EditorHelper {
       this.mathObject?.kind !== 'inline' ||
       this.symbolSuggestEl.style.display !== 'none' ||
       this.snippetSuggestEl.style.display !== 'none' ||
-      !this.plugin.settings.enableInlinePreview
+      !this.plugin.settings.enableInlinePreview ||
+      this.mathObject.content.startsWith('\\ref') ||
+      this.mathObject.content.startsWith('{} \\ref')
     ) {
       this.inlinePreviewEl.close();
       return;
