@@ -576,31 +576,6 @@ export class EditorHelper {
     );
   }
 
-  isCursorInCodeBlock() {
-    if (!this.editor) return false;
-    const cursor = this.editor.getCursor();
-    let inBlock = false;
-
-    for (let i = cursor.line - 1; i >= 0; i--) {
-      const line = this.editor.getLine(i);
-      const trimmedLine = line.trim();
-
-      if (trimmedLine.startsWith('```') || trimmedLine.startsWith('~~~')) inBlock = !inBlock;
-    }
-
-    return inBlock;
-  }
-
-  isCursorInInlineCode() {
-    if (!this.editor) return false;
-    const cursor = this.editor.getCursor();
-    const line = this.editor.getLine(cursor.line);
-    const textBeforeCursor = line.slice(0, cursor.ch);
-    const backtickCount = textBeforeCursor.split('`').length - 1;
-
-    return backtickCount % 2 === 1;
-  }
-
   calculatePopupPosition(startPos: EditorPosition, endPos: EditorPosition): PopupPosition {
     if (!this.editor) throw new Error();
     const startCoords = this.editor.coordsAtPos(startPos, false);
