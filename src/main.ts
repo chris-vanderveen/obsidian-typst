@@ -206,6 +206,7 @@ export default class ObsidianTypstMate extends Plugin {
       this.fontsDirNPath,
       this.cachesDirNPath,
       this.packagesDirNPath,
+      this.templatesDir,
     ];
 
     await Promise.allSettled(
