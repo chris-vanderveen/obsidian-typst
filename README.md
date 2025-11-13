@@ -22,7 +22,7 @@ For details about the processor / snippet(script) / shortcut / tab jump, see [Pr
 
 I welcome [Discussions](https://github.com/azyarashi/obsidian-typst-mate/discussions/categories/show-and-tell) featuring your wonderful snippets!
 
-Are you an Obsidian LateX Suite user? Check out [this guide](docs/obsidian-latex-suite-migration.md).
+Are you an Obsidian LaTeX Suite user? Check out [this guide](docs/obsidian-latex-suite-migration.md).
 
 ---
 
