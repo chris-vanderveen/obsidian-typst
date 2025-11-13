@@ -491,4 +491,15 @@ export default class ObsidianTypstMate extends Plugin {
 
   override onConfigFileChange = debounce(this.loadSettings.bind(this), 500, true);
   override onExternalSettingsChange = debounce(this.loadSettings.bind(this), 500, true);
+
+  updateCrashStatus(crash: boolean) {
+    this.settings.lastRunCrashed = crash;
+
+    if (!crash) {
+      this.settings.crashCount = 0;
+      return;
+    }
+    if (this.settings.crashCount !== undefined) this.settings.crashCount += 1;
+    else this.settings.crashCount = 1;
+  }
 }

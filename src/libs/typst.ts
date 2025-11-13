@@ -29,6 +29,8 @@ export default class TypstManager {
 
   async init() {
     this.ready = false;
+    this.plugin.updateCrashStatus(true);
+
     await this.plugin.typst.init(
       await this.plugin.app.vault.adapter.readBinary(this.plugin.wasmPath),
       this.plugin.app.vault.config.baseFontSize ?? DEFAULT_FONT_SIZE,
@@ -90,6 +92,7 @@ export default class TypstManager {
       if (result instanceof Promise) {
         result.then(() => {
           this.ready = true;
+          this.plugin.updateCrashStatus(false);
 
           const waitingElements = document.querySelectorAll('.typstmate-waiting');
           for (const el of waitingElements) {
@@ -98,10 +101,15 @@ export default class TypstManager {
             this.render(content, el, el.getAttribute('kind')!);
           }
         });
-      } else this.ready = true;
+      } else {
+        this.ready = true;
+        this.plugin.updateCrashStatus(false);
+      }
     } else {
       await this.plugin.typst.store({ fonts, processors, sources });
+
       this.ready = true;
+      this.plugin.updateCrashStatus(false);
     }
   }
 
@@ -159,9 +167,11 @@ export default class TypstManager {
           code = code.slice(code.at(2) === ' ' ? 3 : 2, code.at(-3) === ' ' ? -3 : -2);
         // ? プラグイン obsidian-equation-citator との互換性のため
         if (code.startsWith('\\ref'))
-          return this.plugin.originalTex2chtml(code, {
-            display: kind !== 'inline',
-          });
+          return 10 <= code.length
+            ? document.createSpan(code.slice(5, -1))
+            : this.plugin.originalTex2chtml(code, {
+                display: kind !== 'inline',
+              });
 
         processor =
           this.plugin.settings.processor.inline?.processors.find((p) => code.startsWith(`${p.id}:`)) ??

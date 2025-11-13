@@ -40,6 +40,8 @@ export interface Settings {
   snippets?: Snippet[];
   complementSymbolWithUnicode?: boolean;
   patchPDFExport?: boolean;
+  lastRunCrashed?: boolean;
+  crashCount?: number;
 }
 export const DEFAULT_SETTINGS: Settings = {
   enableBackgroundRendering: true,
@@ -194,6 +196,8 @@ export const DEFAULT_SETTINGS: Settings = {
   ],
   complementSymbolWithUnicode: true,
   patchPDFExport: false,
+  lastRunCrashed: false,
+  crashCount: 0,
 };
 
 export class SettingTab extends PluginSettingTab {
