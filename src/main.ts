@@ -42,6 +42,7 @@ import { Observer } from "./utils/observer";
 import { zip } from "./utils/packageCompressor";
 
 import "./main.css";
+import { TypstEditorView } from "./ui/views/typst-editor/typstEditor";
 
 export default class ObsidianTypstMate extends Plugin {
   pluginId = "typst-mate";
@@ -131,14 +132,14 @@ export default class ObsidianTypstMate extends Plugin {
         (leaf) => new TypstToolsView(leaf, this),
       );
       this.registerView(
-        TypstTextView.viewtype,
-        (leaf) => new TypstTextView(leaf),
+        TypstEditorView.viewtype,
+        (leaf) => new TypstEditorView(leaf),
       );
       this.registerView(
         TypstPDFView.viewtype,
         (leaf) => new TypstPDFView(leaf, this),
       );
-      this.registerExtensions(["typ"], TypstTextView.viewtype);
+      this.registerExtensions(["typ"], TypstEditorView.viewtype);
       if (this.settings.openTypstToolsOnStartup) this.activateLeaf();
 
       // コマンドを登録する
