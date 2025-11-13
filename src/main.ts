@@ -66,6 +66,10 @@ export default class ObsidianTypstMate extends Plugin {
 
   override async onload() {
     await this.loadSettings(); // ユーザーの設定 (data.json) を読み込む
+    if (3 <= (this.settings.crashCount ?? 0)) {
+      new Notice('[Typst Mate] The plugin has been automatically turned off due to three consecutive crashes');
+      return await this.app.plugins.disablePlugin(this.pluginId);
+    }
 
     const { app } = this;
     const vault = app.vault;
@@ -455,6 +459,8 @@ export default class ObsidianTypstMate extends Plugin {
   }
 
   override async onunload() {
+    if (3 <= (this.settings.crashCount ?? 0)) return;
+
     const temporaryEls = document.querySelectorAll('.typstmate-temporary');
     for (const temporaryEl of temporaryEls) temporaryEl.remove();
 
@@ -493,13 +499,13 @@ export default class ObsidianTypstMate extends Plugin {
   override onExternalSettingsChange = debounce(this.loadSettings.bind(this), 500, true);
 
   updateCrashStatus(crash: boolean) {
-    this.settings.lastRunCrashed = crash;
-
     if (!crash) {
       this.settings.crashCount = 0;
+      this.saveSettings();
       return;
     }
     if (this.settings.crashCount !== undefined) this.settings.crashCount += 1;
     else this.settings.crashCount = 1;
+    this.saveSettings();
   }
 }
