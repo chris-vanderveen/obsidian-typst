@@ -130,7 +130,7 @@ This plugin makes use of a large WebAssembly (Wasm) binary.
 Bundling it directly would significantly increase startup time, so it is automatically downloaded from the [Releases](https://github.com/azyarashi/obsidian-typst-mate/releases) page instead.
 
 > [!WARNING]
-> (Mobile App only) This plugin uses approximately 600 MB of RAM at startup (it later settles to roughly 300 MB). On mobile devices, especially those with only 4 GB of total RAM, this can cause the app to enter a crash loop.
+> (Android devices only) Android imposes strict limits on heap size, which may cause crashes when loading WebAssembly. Resolving this requires support from the Obsidian team or a rooted device.
 
 Network access is also required for installing Typst packages and for displaying lists of packages and symbols within Typst Tools.
 
