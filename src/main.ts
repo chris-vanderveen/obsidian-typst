@@ -207,7 +207,6 @@ export default class ObsidianTypstMate extends Plugin {
       this.fontsDirNPath,
       this.cachesDirNPath,
       this.packagesDirNPath,
-      this.templatesDir,
     ];
 
     await Promise.allSettled(
@@ -615,11 +614,9 @@ export default class ObsidianTypstMate extends Plugin {
       // Remove leading slash and ensure proper path format for Obsidian vault operations
       const templatesDir = this.templatesDir;
 
-      try {
-        // Check if directory exists
-        await this.app.vault.adapter.stat(templatesDir);
-      } catch {
-        // Directory doesn't exist, create it
+      const templatesDirExists =
+        await this.app.vault.adapter.exists(templatesDir);
+      if (!templatesDirExists) {
         await this.app.vault.createFolder(templatesDir);
       }
 
