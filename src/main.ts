@@ -16,6 +16,8 @@ import {
   type WorkspaceLeaf,
   TFile,
   Modal,
+  addIcon,
+  setIcon,
 } from "obsidian";
 import { tex2typst, typst2tex } from "tex2typst";
 import { EditorHelper } from "./core/editor/editor";
@@ -119,6 +121,17 @@ export default class ObsidianTypstMate extends Plugin {
         ...this.app.workspace.getLeavesOfType(TypstPDFView.viewtype),
       ];
       for (const leaf of leafs) leaf.detach();
+
+      // Add icon to the sidebar. Opens a modal to a picker for selecting a template.
+      const typstRibbonIcon = this.addRibbonIcon(
+        "type",
+        "Typst Template",
+        (_evt: MouseEvent) => {
+          new Notice(
+            "This will be how to open a modal to a picker for selecting a template",
+          );
+        },
+      );
 
       // 設定タブを登録
       this.addSettingTab(new SettingTab(this.app, this));
@@ -392,6 +405,16 @@ export default class ObsidianTypstMate extends Plugin {
         "active-leaf-change",
         this.editorHelper.onActiveLeafChange.bind(this.editorHelper),
       ),
+      this.app.workspace.on("file-menu", (menu, file) => {
+        menu.addItem((item) => {
+          item
+            .setTitle("New Typst-Mate Template")
+            .setIcon("file")
+            .onClick(async () => {
+              await this.createTypstTemplate();
+            });
+        });
+      }),
       this.app.workspace.on("leaf-menu", (menu, leaf) => {
         if (leaf.view.getViewType() === "markdown") {
           const pdfItems = menu.items
@@ -458,7 +481,7 @@ export default class ObsidianTypstMate extends Plugin {
           });
         }
 
-        if (leaf.view.getViewType() !== TypstTextView.viewtype) return;
+        if (leaf.view.getViewType() !== TypstEditorView.viewtype) return;
         menu.addItem(async (item) => {
           item.setTitle("Open as PDF").onClick(async () => {
             await leaf.setViewState({
@@ -469,6 +492,10 @@ export default class ObsidianTypstMate extends Plugin {
         });
       }),
     );
+  }
+
+  private addEvents() {
+    this._events.push;
   }
 
   async init(wasmPath: string) {
