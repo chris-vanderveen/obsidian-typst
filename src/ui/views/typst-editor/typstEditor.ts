@@ -1,7 +1,34 @@
 import { TextFileView, WorkspaceLeaf } from "obsidian";
 import { basicSetup } from "codemirror";
-import { EditorView, keymap } from "@codemirror/view";
-import { defaultKeymap } from "@codemirror/commands";
+import {
+  EditorView,
+  keymap,
+  highlightSpecialChars,
+  drawSelection,
+  highlightActiveLine,
+  dropCursor,
+  rectangularSelection,
+  crosshairCursor,
+  lineNumbers,
+  highlightActiveLineGutter,
+} from "@codemirror/view";
+import {
+  defaultHighlightStyle,
+  syntaxHighlighting,
+  indentOnInput,
+  bracketMatching,
+  foldGutter,
+  foldKeymap,
+} from "@codemirror/language";
+import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
+import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
+import {
+  autocompletion,
+  completionKeymap,
+  closeBrackets,
+  closeBracketsKeymap,
+} from "@codemirror/autocomplete";
+import { lintKeymap } from "@codemirror/lint";
 import { EditorState, type Extension } from "@codemirror/state";
 
 const VIEW_TYPE_TYPST_EDITOR = "typst-editor-view";
@@ -27,11 +54,35 @@ export class TypstEditorView extends TextFileView {
       doc: this.data,
       parent: this.contentEl,
       extensions: [
-        basicSetup,
-        keymap.of(defaultKeymap),
+        lineNumbers(),
+        foldGutter(),
+        highlightSpecialChars(),
+        history(),
+        drawSelection(),
+        dropCursor(),
+        EditorState.allowMultipleSelections.of(true),
+        indentOnInput(),
+        syntaxHighlighting(defaultHighlightStyle),
+        bracketMatching(),
+        closeBrackets(),
+        autocompletion(),
+        rectangularSelection(),
+        crosshairCursor(),
+        highlightActiveLine(),
+        highlightActiveLineGutter(),
+        highlightSelectionMatches(),
+        keymap.of([
+          ...closeBracketsKeymap,
+          ...defaultKeymap,
+          ...searchKeymap,
+          ...historyKeymap,
+          ...foldKeymap,
+          ...completionKeymap,
+          ...lintKeymap,
+        ]),
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
-            this.data = this.editor?.state.doc.toString() ?? "";
+            this.data = update.state.doc.toString();
             this.requestSave();
           }
         }),

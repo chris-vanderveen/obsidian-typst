@@ -1,38 +1,52 @@
 {
-	"name": "typst-mate",
-	"scripts": {
-		"wasm": "wasm-pack build wasm --target web --release --out-dir ../pkg",
-		"build": "bunx --bun vite build",
-		"check": "bunx biome check --write"
-	},
-	"dependencies": {
-		"codemirror": "^6.0.2",
-		"comlink": "^4.4.2",
-		"nanoid": "^5.1.6",
-		"pako": "^2.1.0",
-		"tex2typst": "^0.3.23",
-		"untar-sync": "^1.0.4"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.2.4",
-		"@codemirror/state": "^6.5.2",
-		"@codemirror/view": "^6.38.3",
-		"@types/bun": "^1.2.22",
-		"@types/pako": "^2.0.4",
-		"@zsviczian/excalidraw": "^0.18.0-37",
-		"autoprefixer": "^10.4.21",
-		"builtin-modules": "^5.0.0",
-		"i18next": "^25.5.2",
-		"obsidian": "^1.8.7",
-		"obsidian-excalidraw-plugin": "github:zsviczian/obsidian-excalidraw-plugin#master",
-		"obsidian-typings": "^4.51.0",
-		"postcss": "^8.5.6",
-		"vite": "^7.1.7",
-		"vite-plugin-static-copy": "^3.1.2",
-		"vite-tsconfig-paths": "^5.1.4"
-	},
-	"peerDependencies": {
-		"typescript": "^5.9.2",
-		"puppeteer": "^24.22.3"
-	}
+  "name": "typst-mate",
+  "scripts": {
+    "wasm": "wasm-pack build wasm --target web --release --out-dir ../pkg",
+    "build": "bunx --bun vite build",
+    "check": "bunx biome check --write"
+  },
+  "dependencies": {
+    "codemirror": "^6.0.2",
+    "comlink": "^4.4.2",
+    "nanoid": "^5.1.6",
+    "pako": "^2.1.0",
+    "tex2typst": "^0.3.23",
+    "untar-sync": "^1.0.4"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.4",
+    "@codemirror/autocomplete": "^6.18.1",
+    "@codemirror/commands": "^6.7.1",
+    "@codemirror/language": "^6.10.3",
+    "@codemirror/lint": "^6.8.2",
+    "@codemirror/search": "^6.5.7",
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/view": "^6.38.3",
+    "@types/bun": "^1.2.22",
+    "@types/pako": "^2.0.4",
+    "@zsviczian/excalidraw": "^0.18.0-37",
+    "autoprefixer": "^10.4.21",
+    "builtin-modules": "^5.0.0",
+    "i18next": "^25.5.2",
+    "obsidian": "^1.8.7",
+    "obsidian-excalidraw-plugin": "github:zsviczian/obsidian-excalidraw-plugin#master",
+    "obsidian-typings": "^4.51.0",
+    "postcss": "^8.5.6",
+    "vite": "^7.1.7",
+    "vite-plugin-static-copy": "^3.1.2",
+    "vite-tsconfig-paths": "^5.1.4"
+  },
+  "resolutions": {
+    "@codemirror/view": "^6.38.3",
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/language": "^6.10.3",
+    "@codemirror/commands": "^6.7.1",
+    "@codemirror/search": "^6.5.7",
+    "@codemirror/autocomplete": "^6.18.1",
+    "@codemirror/lint": "^6.8.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.2",
+    "puppeteer": "^24.22.3"
+  }
 }
