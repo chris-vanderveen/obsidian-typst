@@ -66,9 +66,12 @@ export default class ObsidianTypstMate extends Plugin {
 
   override async onload() {
     await this.loadSettings(); // ユーザーの設定 (data.json) を読み込む
-    if (3 <= (this.settings.crashCount ?? 0)) {
+    if (3 === (this.settings.crashCount ?? 0)) {
       new Notice('[Typst Mate] The plugin has been automatically turned off due to three consecutive crashes');
-      return await this.app.plugins.disablePlugin(this.pluginId);
+      this.settings.crashCount = 0;
+      await this.saveSettings();
+      await this.app.plugins.disablePlugin(this.pluginId);
+      return;
     }
 
     const { app } = this;
