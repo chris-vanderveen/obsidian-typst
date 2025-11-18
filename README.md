@@ -8,7 +8,7 @@
   <img alt="Typst Version" src="https://img.shields.io/badge/v0.14.0-239dad?logo=typst&logoColor=white" />
 </a>
 
-> \*1: On iOS/iPadOS this is stable on devices with 6 GB or more of RAM.<br>
+> \*1: On iOS/iPadOS this is stable on devices with `6GB` or more of RAM, or in environments where JIT is available.<br>
 > \*2: You may need to use tools like `resetprop` or directly edit `build.prop` to change `dalvik.vm.heapgrowthlimit` and `dalvik.vm.heapsize` to around `512m`. See [this warning](https://github.com/azyarashi/obsidian-typst-mate?tab=readme-ov-file#network).
 
 Render math expressions in [Obsidian](https://obsidian.md) using [Typst](https://typst.app/) instead of MathJax.
