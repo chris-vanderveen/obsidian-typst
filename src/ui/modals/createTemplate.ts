@@ -1,23 +1,15 @@
 import { type App, Modal } from "obsidian";
 
-import type ObsidianTypstMate from "@/main";
-
 export class CreateTemplateModal extends Modal {
-  constructor(
-    app: App,
-    private plugin: ObsidianTypstMate,
-  ) {
+  constructor(app: App) {
     super(app);
   }
 
   private resolve: (value: string | null) => void = () => {};
 
-  static async show(
-    app: App,
-    plugin: ObsidianTypstMate,
-  ): Promise<string | null> {
+  static async show(app: App): Promise<string | null> {
     return new Promise((resolve) => {
-      const modal = new CreateTemplateModal(app, plugin);
+      const modal = new CreateTemplateModal(app);
       modal.resolve = resolve;
       modal.open();
     });

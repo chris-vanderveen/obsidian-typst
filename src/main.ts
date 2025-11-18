@@ -33,6 +33,7 @@ import Typst from "./libs/worker";
 import TypstWorker from "./libs/worker?worker&inline";
 import { ExcalidrawModal } from "./ui/modals/excalidraw";
 import { CreateTemplateModal } from "./ui/modals/createTemplate";
+import { TemplatePickerModal } from "./ui/modals/templatePicker";
 import { TypstPDFView } from "./ui/views/typst-pdf/typstPDF";
 import { TypstTextView } from "./ui/views/typst-text/typstText";
 import { TypstToolsView } from "./ui/views/typst-tools/typstTools";
@@ -122,14 +123,12 @@ export default class ObsidianTypstMate extends Plugin {
       ];
       for (const leaf of leafs) leaf.detach();
 
-      // Add icon to the sidebar. Opens a modal to a picker for selecting a template.
+      // Add icon to the ribbon. Opens a modal to a picker for selecting a template.
       const typstRibbonIcon = this.addRibbonIcon(
         "type",
         "Typst Template",
         (_evt: MouseEvent) => {
-          new Notice(
-            "This will be how to open a modal to a picker for selecting a template",
-          );
+          new TemplatePickerModal(this.app, this).open();
         },
       );
 
@@ -635,7 +634,7 @@ export default class ObsidianTypstMate extends Plugin {
 
   private async createTypstTemplate() {
     try {
-      const filename = await CreateTemplateModal.show(this.app, this);
+      const filename = await CreateTemplateModal.show(this.app);
       if (!filename) return;
 
       // Remove leading slash and ensure proper path format for Obsidian vault operations
