@@ -37,6 +37,8 @@ send_wrapper = "^0.6"
 default = []
 
 [profile.release]
-lto = "thin"
+lto = true
 codegen-units = 1
 panic = "abort"
+debug = false
+strip = "debuginfo"

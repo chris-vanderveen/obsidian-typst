@@ -7,16 +7,10 @@ import {
   Setting,
 } from "obsidian";
 
-import type {
-  CodeblockProcessor,
-  DisplayProcessor,
-  ExcalidrawProcessor,
-  InlineProcessor,
-} from "@/libs/processor";
-import type { Snippet } from "@/libs/snippet";
-import type ObsidianTypstMate from "@/main";
-import type { TypstToolsView } from "@/ui/views/typst-tools/typstTools";
-import { CustomFragment } from "@/utils/customFragment";
+import type { CodeblockProcessor, DisplayProcessor, ExcalidrawProcessor, InlineProcessor } from '@/libs/processor';
+import type { Snippet } from '@/libs/snippet';
+import type ObsidianTypstMate from '@/main';
+import { CustomFragment } from '@/utils/customFragment';
 
 import { FontList } from "./components/font";
 import { PackagesList } from "./components/package";
@@ -54,6 +48,7 @@ export interface Settings {
   snippets?: Snippet[];
   complementSymbolWithUnicode?: boolean;
   patchPDFExport?: boolean;
+  crashCount?: number;
 }
 export const DEFAULT_SETTINGS: Settings = {
   enableBackgroundRendering: true,
@@ -68,11 +63,10 @@ export const DEFAULT_SETTINGS: Settings = {
   enableShortcutKeys: true,
   openTypstToolsOnStartup: true,
   preamble: [
-    "#set page(margin: 0pt, width: auto, height: auto)",
-    "#show raw: set text(size: 1.25em)",
-    "#set text(size: fontsize)",
-    '#let scr(it) = text(features: ("ss01",), box($cal(it)$))',
-  ].join("\n"),
+    '#set page(margin: 0pt, width: auto, height: auto)',
+    '#show raw: set text(size: 1.25em)',
+    '#set text(size: fontsize)',
+  ].join('\n'),
   processor: {
     inline: {
       processors: [
@@ -210,6 +204,7 @@ export const DEFAULT_SETTINGS: Settings = {
   ],
   complementSymbolWithUnicode: true,
   patchPDFExport: false,
+  crashCount: 0,
 };
 
 export class SettingTab extends PluginSettingTab {
@@ -270,15 +265,15 @@ export class SettingTab extends PluginSettingTab {
         toggle.setValue(this.plugin.settings.autoBaseColor);
         toggle.onChange((value) => {
           this.plugin.settings.autoBaseColor = value;
-          if (value) this.plugin.applyBaseColor();
+          this.plugin.applyBaseColor();
 
           this.plugin.saveSettings();
         });
       });
 
     new Setting(containerEl)
-      .setName("Open Typst Tools on Startup")
-      .setDesc("Open Typst tools in side panel when launching Obsidian.")
+      .setName('Open Typst Tools on Startup')
+      .setDesc('Open Typst tools in side panel when launching Obsidian.')
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.openTypstToolsOnStartup);
         toggle.onChange((value) => {
@@ -591,6 +586,7 @@ export class SettingTab extends PluginSettingTab {
         colorPicker.setValue(this.plugin.settings.baseColor);
         colorPicker.onChange((value) => {
           this.plugin.settings.baseColor = value;
+          this.plugin.applyBaseColor();
           this.plugin.saveSettings();
         });
       });
@@ -692,13 +688,10 @@ export class SettingTab extends PluginSettingTab {
       });
 
     const div = containerEl.createDiv();
-    div.textContent = "Are you looking for the snippet settings? It is in ";
-    const a = div.createEl("a", { text: "Leaf" });
-    a.addEventListener("click", async () => {
-      const leaf = await this.plugin.activateLeaf();
-      if (!leaf) return;
-      await this.app.workspace.revealLeaf(leaf);
-      (leaf.view as TypstToolsView).openContent("snippets");
+    div.textContent = 'Are you looking for the snippet settings? It is in ';
+    const a = div.createEl('a', { text: 'Leaf' });
+    a.addEventListener('click', async () => {
+      await this.plugin.activateLeaf(true, 'snippets');
       this.app.setting.close();
     });
   }

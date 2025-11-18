@@ -145,7 +145,9 @@ export class EditorHelper {
       this.mathObject?.kind !== 'inline' ||
       this.symbolSuggestEl.style.display !== 'none' ||
       this.snippetSuggestEl.style.display !== 'none' ||
-      !this.plugin.settings.enableInlinePreview
+      !this.plugin.settings.enableInlinePreview ||
+      this.mathObject.content.startsWith('\\ref') ||
+      this.mathObject.content.startsWith('{} \\ref')
     ) {
       this.inlinePreviewEl.close();
       return;
@@ -574,31 +576,6 @@ export class EditorHelper {
       this.editor?.containerEl.querySelector('span.cm-formatting-math.cm-math-block') ||
       this.editor?.containerEl.querySelector('span.cm-formatting-math-end')?.textContent === '$$'
     );
-  }
-
-  isCursorInCodeBlock() {
-    if (!this.editor) return false;
-    const cursor = this.editor.getCursor();
-    let inBlock = false;
-
-    for (let i = cursor.line - 1; i >= 0; i--) {
-      const line = this.editor.getLine(i);
-      const trimmedLine = line.trim();
-
-      if (trimmedLine.startsWith('```') || trimmedLine.startsWith('~~~')) inBlock = !inBlock;
-    }
-
-    return inBlock;
-  }
-
-  isCursorInInlineCode() {
-    if (!this.editor) return false;
-    const cursor = this.editor.getCursor();
-    const line = this.editor.getLine(cursor.line);
-    const textBeforeCursor = line.slice(0, cursor.ch);
-    const backtickCount = textBeforeCursor.split('`').length - 1;
-
-    return backtickCount % 2 === 1;
   }
 
   calculatePopupPosition(startPos: EditorPosition, endPos: EditorPosition): PopupPosition {

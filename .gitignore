@@ -3,8 +3,6 @@ dist
 wasm/target
 node_modules
 .idea
-*.wasm
-*.log
 
 .env
 .DS_Store

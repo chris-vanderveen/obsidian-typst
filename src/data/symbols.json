@@ -63,6 +63,14 @@
     "mathClass": "Alphabetic",
     "latexName": "\\mupDelta"
   },
+  "Digamma": {
+    "sym": "Ϝ",
+    "unicName": "Greek Letter Digamma",
+    "name": "Digamma",
+    "shorthand": null,
+    "mathClass": "Alphabetic",
+    "latexName": "\\upDigamma"
+  },
   "EE": {
     "sym": "𝔼",
     "unicName": "Mathematical Double Struck Capital E",
@@ -327,6 +335,14 @@
     "mathClass": "Alphabetic",
     "latexName": "\\BbbS"
   },
+  "Sha": {
+    "sym": "Ш",
+    "unicName": "Cyrillic Capital Letter Sha",
+    "name": "Sha",
+    "shorthand": null,
+    "mathClass": "Alphabetic",
+    "latexName": "\\BbbS"
+  },
   "Sigma": {
     "sym": "Σ",
     "unicName": "Greek Capital Letter Sigma",
@@ -358,6 +374,14 @@
     "shorthand": null,
     "mathClass": "Alphabetic",
     "latexName": "\\mupTheta"
+  },
+  "Theta.alt": {
+    "sym": "ϴ",
+    "unicName": "Greek Capital Theta Symbol",
+    "name": "Theta.alt",
+    "shorthand": null,
+    "mathClass": "Alphabetic",
+    "latexName": "\\mupvarTheta"
   },
   "UU": {
     "sym": "𝕌",
@@ -447,6 +471,14 @@
     "mathClass": "Normal",
     "latexName": "\\mupZeta"
   },
+  "afghani": {
+    "sym": "؋",
+    "unicName": "Afghani Sign",
+    "name": "afghani",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\mupZeta"
+  },
   "alef": {
     "sym": "א",
     "unicName": "Hebrew Letter Alef",
@@ -484,7 +516,7 @@
     "unicName": "Turned Ampersand",
     "name": "amp.inv",
     "shorthand": null,
-    "mathClass": "Normal",
+    "mathClass": "Binary",
     "latexName": "\\upand"
   },
   "and": {
@@ -623,6 +655,22 @@
     "mathClass": "Normal",
     "latexName": "\\measuredangleleft"
   },
+  "angle.azimuth": {
+    "sym": "⍼",
+    "unicName": "Right Angle With Downwards Zigzag Arrow",
+    "name": "angle.azimuth",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\rangledownzigzagarrow"
+  },
+  "angle.obtuse": {
+    "sym": "⦦",
+    "unicName": "Oblique Angle Opening Up",
+    "name": "angle.obtuse",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\wideangledown"
+  },
   "angle.oblique": {
     "sym": "⦦",
     "unicName": "Oblique Angle Opening Up",
@@ -671,6 +719,14 @@
     "mathClass": "Normal",
     "latexName": "\\rightanglemdot"
   },
+  "angle.right.square": {
+    "sym": "⦜",
+    "unicName": "Right Angle Variant With Square",
+    "name": "angle.right.square",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\rightanglesqr"
+  },
   "angle.right.sq": {
     "sym": "⦜",
     "unicName": "Right Angle Variant With Square",
@@ -711,6 +767,14 @@
     "mathClass": "Normal",
     "latexName": "\\gtlpar"
   },
+  "angle.spheric.t": {
+    "sym": "⦡",
+    "unicName": "Spherical Angle Opening Up",
+    "name": "angle.spheric.t",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\sphericalangleup"
+  },
   "angle.spheric.top": {
     "sym": "⦡",
     "unicName": "Spherical Angle Opening Up",
@@ -726,6 +790,14 @@
     "shorthand": null,
     "mathClass": "Normal",
     "latexName": "\\sphericalangleup"
+  },
+  "angzarr": {
+    "sym": "⍼",
+    "unicName": "Right Angle With Downwards Zigzag Arrow",
+    "name": "angzarr",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\rangledownzigzagarrow"
   },
   "approx": {
     "sym": "≈",
@@ -887,21 +959,29 @@
     "mathClass": "Relation",
     "latexName": "\\nRightarrow"
   },
+  "arrow.r.double.struck": {
+    "sym": "⤃",
+    "unicName": "Rightwards Double Arrow With Vertical Stroke",
+    "name": "arrow.r.double.struck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nvRightarrow"
+  },
   "arrow.r.filled": {
-    "sym": "➡",
-    "unicName": "Black Rightwards Arrow",
+    "sym": "➡︎",
+    "unicName": "",
     "name": "arrow.r.filled",
     "shorthand": null,
     "mathClass": "Relation",
-    "latexName": "\\nRightarrow"
+    "latexName": "\\nvRightarrow"
   },
   "arrow.r.hook": {
-    "sym": "↪",
-    "unicName": "Rightwards Arrow With Hook",
+    "sym": "↪︎",
+    "unicName": "",
     "name": "arrow.r.hook",
     "shorthand": null,
     "mathClass": "Relation",
-    "latexName": "\\hookrightarrow"
+    "latexName": "\\nvRightarrow"
   },
   "-->": {
     "sym": "⟶",
@@ -991,6 +1071,22 @@
     "mathClass": "Relation",
     "latexName": "\\rightwhitearrow"
   },
+  "arrow.r.struck": {
+    "sym": "⇸",
+    "unicName": "Rightwards Arrow With Vertical Stroke",
+    "name": "arrow.r.struck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nvrightarrow"
+  },
+  "arrow.r.dstruck": {
+    "sym": "⇻",
+    "unicName": "Rightwards Arrow With Double Vertical Stroke",
+    "name": "arrow.r.dstruck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nVrightarrow"
+  },
   ">->": {
     "sym": "↣",
     "unicName": "Rightwards Arrow With Tail",
@@ -1006,6 +1102,22 @@
     "shorthand": ">->",
     "mathClass": "Relation",
     "latexName": "\\rightarrowtail"
+  },
+  "arrow.r.tail.struck": {
+    "sym": "⤔",
+    "unicName": "Rightwards Arrow With Tail With Vertical Stroke",
+    "name": "arrow.r.tail.struck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nvrightarrowtail"
+  },
+  "arrow.r.tail.dstruck": {
+    "sym": "⤕",
+    "unicName": "Rightwards Arrow With Tail With Double Vertical Stroke",
+    "name": "arrow.r.tail.dstruck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nVrightarrowtail"
   },
   "arrow.r.tilde": {
     "sym": "⥲",
@@ -1023,14 +1135,6 @@
     "mathClass": "Relation",
     "latexName": "\\Rrightarrow"
   },
-  "arrow.r.twohead.bar": {
-    "sym": "⤅",
-    "unicName": "Rightwards Two Headed Arrow From Bar",
-    "name": "arrow.r.twohead.bar",
-    "shorthand": null,
-    "mathClass": "Relation",
-    "latexName": "\\twoheadmapsto"
-  },
   "->>": {
     "sym": "↠",
     "unicName": "Rightwards Two Headed Arrow",
@@ -1046,6 +1150,62 @@
     "shorthand": "->>",
     "mathClass": "Relation",
     "latexName": "\\twoheadrightarrow"
+  },
+  "arrow.r.twohead.bar": {
+    "sym": "⤅",
+    "unicName": "Rightwards Two Headed Arrow From Bar",
+    "name": "arrow.r.twohead.bar",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\twoheadmapsto"
+  },
+  "arrow.r.twohead.struck": {
+    "sym": "⤀",
+    "unicName": "Rightwards Two Headed Arrow With Vertical Stroke",
+    "name": "arrow.r.twohead.struck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nvtwoheadrightarrow"
+  },
+  "arrow.r.twohead.dstruck": {
+    "sym": "⤁",
+    "unicName": "Rightwards Two Headed Arrow With Double Vertical Stroke",
+    "name": "arrow.r.twohead.dstruck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nVtwoheadrightarrow"
+  },
+  "arrow.r.twohead.tail": {
+    "sym": "⤖",
+    "unicName": "Rightwards Two Headed Arrow With Tail",
+    "name": "arrow.r.twohead.tail",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\twoheadrightarrowtail"
+  },
+  "arrow.r.twohead.tail.struck": {
+    "sym": "⤗",
+    "unicName": "Rightwards Two Headed Arrow With Tail With Vertical Stroke",
+    "name": "arrow.r.twohead.tail.struck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nvtwoheadrightarrowtail"
+  },
+  "arrow.r.twohead.tail.dstruck": {
+    "sym": "⤘",
+    "unicName": "Rightwards Two Headed Arrow With Tail With Double Vertical Stroke",
+    "name": "arrow.r.twohead.tail.dstruck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nVtwoheadrightarrowtail"
+  },
+  "arrow.r.open": {
+    "sym": "⇾",
+    "unicName": "Rightwards Open Headed Arrow",
+    "name": "arrow.r.open",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\rightarrowtriangle"
   },
   "arrow.r.wave": {
     "sym": "↝",
@@ -1159,21 +1319,29 @@
     "mathClass": "Relation",
     "latexName": "\\nLeftarrow"
   },
+  "arrow.l.double.struck": {
+    "sym": "⤂",
+    "unicName": "Leftwards Double Arrow With Vertical Stroke",
+    "name": "arrow.l.double.struck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nvLeftarrow"
+  },
   "arrow.l.filled": {
-    "sym": "⬅",
-    "unicName": "Leftwards Black Arrow",
+    "sym": "⬅︎",
+    "unicName": "",
     "name": "arrow.l.filled",
     "shorthand": null,
     "mathClass": "Relation",
-    "latexName": "\\nLeftarrow"
+    "latexName": "\\nvLeftarrow"
   },
   "arrow.l.hook": {
-    "sym": "↩",
-    "unicName": "Leftwards Arrow With Hook",
+    "sym": "↩︎",
+    "unicName": "",
     "name": "arrow.l.hook",
     "shorthand": null,
     "mathClass": "Relation",
-    "latexName": "\\hookleftarrow"
+    "latexName": "\\nvLeftarrow"
   },
   "<--": {
     "sym": "⟵",
@@ -1271,6 +1439,22 @@
     "mathClass": "Relation",
     "latexName": "\\leftwhitearrow"
   },
+  "arrow.l.struck": {
+    "sym": "⇷",
+    "unicName": "Leftwards Arrow With Vertical Stroke",
+    "name": "arrow.l.struck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nvleftarrow"
+  },
+  "arrow.l.dstruck": {
+    "sym": "⇺",
+    "unicName": "Leftwards Arrow With Double Vertical Stroke",
+    "name": "arrow.l.dstruck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nVleftarrow"
+  },
   "<-<": {
     "sym": "↢",
     "unicName": "Leftwards Arrow With Tail",
@@ -1286,6 +1470,22 @@
     "shorthand": "<-<",
     "mathClass": "Relation",
     "latexName": "\\leftarrowtail"
+  },
+  "arrow.l.tail.struck": {
+    "sym": "⬹",
+    "unicName": "Leftwards Arrow With Tail With Vertical Stroke",
+    "name": "arrow.l.tail.struck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nvleftarrowtail"
+  },
+  "arrow.l.tail.dstruck": {
+    "sym": "⬺",
+    "unicName": "Leftwards Arrow With Tail With Double Vertical Stroke",
+    "name": "arrow.l.tail.dstruck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nVleftarrowtail"
   },
   "arrow.l.tilde": {
     "sym": "⭉",
@@ -1303,14 +1503,6 @@
     "mathClass": "Relation",
     "latexName": "\\Lleftarrow"
   },
-  "arrow.l.twohead.bar": {
-    "sym": "⬶",
-    "unicName": "Leftwards Two Headed Arrow From Bar",
-    "name": "arrow.l.twohead.bar",
-    "shorthand": null,
-    "mathClass": "Relation",
-    "latexName": "\\twoheadmapsfrom"
-  },
   "<<-": {
     "sym": "↞",
     "unicName": "Leftwards Two Headed Arrow",
@@ -1326,6 +1518,62 @@
     "shorthand": "<<-",
     "mathClass": "Relation",
     "latexName": "\\twoheadleftarrow"
+  },
+  "arrow.l.twohead.bar": {
+    "sym": "⬶",
+    "unicName": "Leftwards Two Headed Arrow From Bar",
+    "name": "arrow.l.twohead.bar",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\twoheadmapsfrom"
+  },
+  "arrow.l.twohead.struck": {
+    "sym": "⬴",
+    "unicName": "Leftwards Two Headed Arrow With Vertical Stroke",
+    "name": "arrow.l.twohead.struck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nvtwoheadleftarrow"
+  },
+  "arrow.l.twohead.dstruck": {
+    "sym": "⬵",
+    "unicName": "Leftwards Two Headed Arrow With Double Vertical Stroke",
+    "name": "arrow.l.twohead.dstruck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nVtwoheadleftarrow"
+  },
+  "arrow.l.twohead.tail": {
+    "sym": "⬻",
+    "unicName": "Leftwards Two Headed Arrow With Tail",
+    "name": "arrow.l.twohead.tail",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\twoheadleftarrowtail"
+  },
+  "arrow.l.twohead.tail.struck": {
+    "sym": "⬼",
+    "unicName": "Leftwards Two Headed Arrow With Tail With Vertical Stroke",
+    "name": "arrow.l.twohead.tail.struck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nvtwoheadleftarrowtail"
+  },
+  "arrow.l.twohead.tail.dstruck": {
+    "sym": "⬽",
+    "unicName": "Leftwards Two Headed Arrow With Tail With Double Vertical Stroke",
+    "name": "arrow.l.twohead.tail.dstruck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nVtwoheadleftarrowtail"
+  },
+  "arrow.l.open": {
+    "sym": "⇽",
+    "unicName": "Leftwards Open Headed Arrow",
+    "name": "arrow.l.open",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\leftarrowtriangle"
   },
   "arrow.l.wave": {
     "sym": "↜",
@@ -1352,12 +1600,12 @@
     "latexName": "\\mapsup"
   },
   "arrow.t.curve": {
-    "sym": "⤴",
-    "unicName": "Arrow Pointing Rightwards Then Curving Upwards",
+    "sym": "⤴︎",
+    "unicName": "",
     "name": "arrow.t.curve",
     "shorthand": null,
     "mathClass": "Relation",
-    "latexName": "\\uprightcurvearrow"
+    "latexName": "\\mapsup"
   },
   "arrow.t.turn": {
     "sym": "⮍",
@@ -1365,7 +1613,7 @@
     "name": "arrow.t.turn",
     "shorthand": null,
     "mathClass": "Relation",
-    "latexName": "\\uprightcurvearrow"
+    "latexName": "\\mapsup"
   },
   "arrow.t.dashed": {
     "sym": "⇡",
@@ -1384,8 +1632,8 @@
     "latexName": "\\Uparrow"
   },
   "arrow.t.filled": {
-    "sym": "⬆",
-    "unicName": "Upwards Black Arrow",
+    "sym": "⬆︎",
+    "unicName": "",
     "name": "arrow.t.filled",
     "shorthand": null,
     "mathClass": "Relation",
@@ -1414,6 +1662,22 @@
     "shorthand": null,
     "mathClass": "Relation",
     "latexName": "\\upwhitearrow"
+  },
+  "arrow.t.struck": {
+    "sym": "⤉",
+    "unicName": "Upwards Arrow With Horizontal Stroke",
+    "name": "arrow.t.struck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\uparrowbarred"
+  },
+  "arrow.t.dstruck": {
+    "sym": "⇞",
+    "unicName": "Upwards Arrow With Double Stroke",
+    "name": "arrow.t.dstruck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nHuparrow"
   },
   "arrow.t.triple": {
     "sym": "⤊",
@@ -1448,12 +1712,12 @@
     "latexName": "\\mapsdown"
   },
   "arrow.b.curve": {
-    "sym": "⤵",
-    "unicName": "Arrow Pointing Rightwards Then Curving Downwards",
+    "sym": "⤵︎",
+    "unicName": "",
     "name": "arrow.b.curve",
     "shorthand": null,
     "mathClass": "Relation",
-    "latexName": "\\downrightcurvedarrow"
+    "latexName": "\\mapsdown"
   },
   "arrow.b.turn": {
     "sym": "⮏",
@@ -1461,7 +1725,7 @@
     "name": "arrow.b.turn",
     "shorthand": null,
     "mathClass": "Relation",
-    "latexName": "\\downrightcurvedarrow"
+    "latexName": "\\mapsdown"
   },
   "arrow.b.dashed": {
     "sym": "⇣",
@@ -1480,8 +1744,8 @@
     "latexName": "\\Downarrow"
   },
   "arrow.b.filled": {
-    "sym": "⬇",
-    "unicName": "Downwards Black Arrow",
+    "sym": "⬇︎",
+    "unicName": "",
     "name": "arrow.b.filled",
     "shorthand": null,
     "mathClass": "Relation",
@@ -1511,6 +1775,22 @@
     "mathClass": "Relation",
     "latexName": "\\downwhitearrow"
   },
+  "arrow.b.struck": {
+    "sym": "⤈",
+    "unicName": "Downwards Arrow With Horizontal Stroke",
+    "name": "arrow.b.struck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\downarrowbarred"
+  },
+  "arrow.b.dstruck": {
+    "sym": "⇟",
+    "unicName": "Downwards Arrow With Double Stroke",
+    "name": "arrow.b.dstruck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nHdownarrow"
+  },
   "arrow.b.triple": {
     "sym": "⤋",
     "unicName": "Downwards Triple Arrow",
@@ -1527,21 +1807,13 @@
     "mathClass": "Relation",
     "latexName": "\\twoheaddownarrow"
   },
-  "<->": {
-    "sym": "↔",
-    "unicName": "Left Right Arrow",
-    "name": "arrow.l.r",
-    "shorthand": "<->",
-    "mathClass": "Relation",
-    "latexName": "\\leftrightarrow"
-  },
   "arrow.l.r": {
-    "sym": "↔",
-    "unicName": "Left Right Arrow",
+    "sym": "↔︎",
+    "unicName": "",
     "name": "arrow.l.r",
-    "shorthand": "<->",
+    "shorthand": null,
     "mathClass": "Relation",
-    "latexName": "\\leftrightarrow"
+    "latexName": "\\twoheaddownarrow"
   },
   "<=>": {
     "sym": "⇔",
@@ -1583,13 +1855,21 @@
     "mathClass": "Relation",
     "latexName": "\\nLeftrightarrow"
   },
+  "arrow.l.r.double.struck": {
+    "sym": "⤄",
+    "unicName": "Left Right Double Arrow With Vertical Stroke",
+    "name": "arrow.l.r.double.struck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nvLeftrightarrow"
+  },
   "arrow.l.r.filled": {
     "sym": "⬌",
     "unicName": "Left Right Black Arrow",
     "name": "arrow.l.r.filled",
     "shorthand": null,
     "mathClass": "Relation",
-    "latexName": "\\nLeftrightarrow"
+    "latexName": "\\nvLeftrightarrow"
   },
   "<-->": {
     "sym": "⟷",
@@ -1623,6 +1903,30 @@
     "mathClass": "Relation",
     "latexName": "\\nleftrightarrow"
   },
+  "arrow.l.r.struck": {
+    "sym": "⇹",
+    "unicName": "Left Right Arrow With Vertical Stroke",
+    "name": "arrow.l.r.struck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nvleftrightarrow"
+  },
+  "arrow.l.r.dstruck": {
+    "sym": "⇼",
+    "unicName": "Left Right Arrow With Double Vertical Stroke",
+    "name": "arrow.l.r.dstruck",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\nVleftrightarrow"
+  },
+  "arrow.l.r.open": {
+    "sym": "⇿",
+    "unicName": "Left Right Open Headed Arrow",
+    "name": "arrow.l.r.open",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\leftrightarrowtriangle"
+  },
   "arrow.l.r.wave": {
     "sym": "↭",
     "unicName": "Left Right Wave Arrow",
@@ -1632,12 +1936,12 @@
     "latexName": "\\leftrightsquigarrow"
   },
   "arrow.t.b": {
-    "sym": "↕",
-    "unicName": "Up Down Arrow",
+    "sym": "↕︎",
+    "unicName": "",
     "name": "arrow.t.b",
     "shorthand": null,
     "mathClass": "Relation",
-    "latexName": "\\updownarrow"
+    "latexName": "\\leftrightsquigarrow"
   },
   "arrow.t.b.double": {
     "sym": "⇕",
@@ -1664,12 +1968,12 @@
     "latexName": "\\Updownarrow"
   },
   "arrow.tr": {
-    "sym": "↗",
-    "unicName": "North East Arrow",
+    "sym": "↗︎",
+    "unicName": "",
     "name": "arrow.tr",
     "shorthand": null,
     "mathClass": "Relation",
-    "latexName": "\\nearrow"
+    "latexName": "\\Updownarrow"
   },
   "arrow.tr.double": {
     "sym": "⇗",
@@ -1704,12 +2008,12 @@
     "latexName": "\\hknearrow"
   },
   "arrow.br": {
-    "sym": "↘",
-    "unicName": "South East Arrow",
+    "sym": "↘︎",
+    "unicName": "",
     "name": "arrow.br",
     "shorthand": null,
     "mathClass": "Relation",
-    "latexName": "\\searrow"
+    "latexName": "\\hknearrow"
   },
   "arrow.br.double": {
     "sym": "⇘",
@@ -1744,12 +2048,12 @@
     "latexName": "\\hksearrow"
   },
   "arrow.tl": {
-    "sym": "↖",
-    "unicName": "North West Arrow",
+    "sym": "↖︎",
+    "unicName": "",
     "name": "arrow.tl",
     "shorthand": null,
     "mathClass": "Relation",
-    "latexName": "\\nwarrow"
+    "latexName": "\\hksearrow"
   },
   "arrow.tl.double": {
     "sym": "⇖",
@@ -1784,12 +2088,12 @@
     "latexName": "\\hknwarrow"
   },
   "arrow.bl": {
-    "sym": "↙",
-    "unicName": "South West Arrow",
+    "sym": "↙︎",
+    "unicName": "",
     "name": "arrow.bl",
     "shorthand": null,
     "mathClass": "Relation",
-    "latexName": "\\swarrow"
+    "latexName": "\\hknwarrow"
   },
   "arrow.bl.double": {
     "sym": "⇙",
@@ -1999,13 +2303,21 @@
     "mathClass": "Binary",
     "latexName": "\\ast"
   },
+  "ast.op.o": {
+    "sym": "⊛",
+    "unicName": "Circled Asterisk Operator",
+    "name": "ast.op.o",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\circledast"
+  },
   "ast.basic": {
-    "sym": "*",
-    "unicName": "Asterisk",
+    "sym": "*︎",
+    "unicName": "",
     "name": "ast.basic",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\ast"
+    "latexName": "\\circledast"
   },
   "ast.low": {
     "sym": "⁎",
@@ -2013,7 +2325,7 @@
     "name": "ast.low",
     "shorthand": null,
     "mathClass": "Binary",
-    "latexName": "\\ast"
+    "latexName": "\\circledast"
   },
   "ast.double": {
     "sym": "⁑",
@@ -2021,7 +2333,7 @@
     "name": "ast.double",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\ast"
+    "latexName": "\\circledast"
   },
   "ast.triple": {
     "sym": "⁂",
@@ -2029,7 +2341,7 @@
     "name": "ast.triple",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\ast"
+    "latexName": "\\circledast"
   },
   "ast.small": {
     "sym": "﹡",
@@ -2037,7 +2349,7 @@
     "name": "ast.small",
     "shorthand": null,
     "mathClass": "Special",
-    "latexName": "\\ast"
+    "latexName": "\\circledast"
   },
   "ast.circle": {
     "sym": "⊛",
@@ -2087,6 +2399,14 @@
     "mathClass": "Binary",
     "latexName": "\\backslash"
   },
+  "backslash.o": {
+    "sym": "⦸",
+    "unicName": "Circled Reverse Solidus",
+    "name": "backslash.o",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\obslash"
+  },
   "backslash.circle": {
     "sym": "⦸",
     "unicName": "Circled Reverse Solidus",
@@ -2103,37 +2423,61 @@
     "mathClass": "Binary",
     "latexName": "\\rsolbar"
   },
+  "bag.l": {
+    "sym": "⟅",
+    "unicName": "Left S Shaped Bag Delimiter",
+    "name": "bag.l",
+    "shorthand": null,
+    "mathClass": "Opening",
+    "latexName": "\\lbag"
+  },
+  "bag.r": {
+    "sym": "⟆",
+    "unicName": "Right S Shaped Bag Delimiter",
+    "name": "bag.r",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\rbag"
+  },
+  "baht": {
+    "sym": "฿",
+    "unicName": "Thai Currency Symbol Baht",
+    "name": "baht",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\rbag"
+  },
   "ballot": {
     "sym": "☐",
     "unicName": "Ballot Box",
     "name": "ballot",
     "shorthand": null,
-    "mathClass": "Binary",
-    "latexName": "\\rsolbar"
+    "mathClass": "Closing",
+    "latexName": "\\rbag"
   },
   "ballot.cross": {
     "sym": "☒",
     "unicName": "Ballot Box With X",
     "name": "ballot.cross",
     "shorthand": null,
-    "mathClass": "Binary",
-    "latexName": "\\rsolbar"
+    "mathClass": "Closing",
+    "latexName": "\\rbag"
   },
   "ballot.check": {
-    "sym": "☑",
-    "unicName": "Ballot Box With Check",
+    "sym": "☑︎",
+    "unicName": "",
     "name": "ballot.check",
     "shorthand": null,
-    "mathClass": "Binary",
-    "latexName": "\\rsolbar"
+    "mathClass": "Closing",
+    "latexName": "\\rbag"
   },
   "ballot.check.heavy": {
     "sym": "🗹",
     "unicName": "Ballot Box With Bold Check",
     "name": "ballot.check.heavy",
     "shorthand": null,
-    "mathClass": "Binary",
-    "latexName": "\\rsolbar"
+    "mathClass": "Closing",
+    "latexName": "\\rbag"
   },
   "bar.v": {
     "sym": "|",
@@ -2174,6 +2518,14 @@
     "shorthand": null,
     "mathClass": "Normal",
     "latexName": "\\Vvert"
+  },
+  "bar.v.o": {
+    "sym": "⦶",
+    "unicName": "Circled Vertical Bar",
+    "name": "bar.v.o",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\circledvert"
   },
   "bar.v.circle": {
     "sym": "⦶",
@@ -2255,6 +2607,14 @@
     "mathClass": "Opening",
     "latexName": "\\lbrace"
   },
+  "brace.l.stroked": {
+    "sym": "⦃",
+    "unicName": "Left White Curly Bracket",
+    "name": "brace.l.stroked",
+    "shorthand": null,
+    "mathClass": "Opening",
+    "latexName": "\\lBrace"
+  },
   "brace.l.double": {
     "sym": "⦃",
     "unicName": "Left White Curly Bracket",
@@ -2270,6 +2630,14 @@
     "shorthand": null,
     "mathClass": "Closing",
     "latexName": "\\rbrace"
+  },
+  "brace.r.stroked": {
+    "sym": "⦄",
+    "unicName": "Right White Curly Bracket",
+    "name": "brace.r.stroked",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\rBrace"
   },
   "brace.r.double": {
     "sym": "⦄",
@@ -2303,10 +2671,34 @@
     "mathClass": "Opening",
     "latexName": "\\lbrack"
   },
+  "bracket.l.tick.t": {
+    "sym": "⦍",
+    "unicName": "Left Square Bracket With Tick In Top Corner",
+    "name": "bracket.l.tick.t",
+    "shorthand": null,
+    "mathClass": "Opening",
+    "latexName": "\\lbrackultick"
+  },
+  "bracket.l.tick.b": {
+    "sym": "⦏",
+    "unicName": "Left Square Bracket With Tick In Bottom Corner",
+    "name": "bracket.l.tick.b",
+    "shorthand": null,
+    "mathClass": "Opening",
+    "latexName": "\\lbracklltick"
+  },
   "[|": {
     "sym": "⟦",
     "unicName": "Mathematical Left White Square Bracket",
     "name": "bracket.l.double",
+    "shorthand": "[|",
+    "mathClass": "Opening",
+    "latexName": "\\lBrack"
+  },
+  "bracket.l.stroked": {
+    "sym": "⟦",
+    "unicName": "Mathematical Left White Square Bracket",
+    "name": "bracket.l.stroked",
     "shorthand": "[|",
     "mathClass": "Opening",
     "latexName": "\\lBrack"
@@ -2327,10 +2719,34 @@
     "mathClass": "Closing",
     "latexName": "\\rbrack"
   },
+  "bracket.r.tick.t": {
+    "sym": "⦐",
+    "unicName": "Right Square Bracket With Tick In Top Corner",
+    "name": "bracket.r.tick.t",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\rbrackurtick"
+  },
+  "bracket.r.tick.b": {
+    "sym": "⦎",
+    "unicName": "Right Square Bracket With Tick In Bottom Corner",
+    "name": "bracket.r.tick.b",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\rbracklrtick"
+  },
   "|]": {
     "sym": "⟧",
     "unicName": "Mathematical Right White Square Bracket",
     "name": "bracket.r.double",
+    "shorthand": "|]",
+    "mathClass": "Closing",
+    "latexName": "\\rBrack"
+  },
+  "bracket.r.stroked": {
+    "sym": "⟧",
+    "unicName": "Mathematical Right White Square Bracket",
+    "name": "bracket.r.stroked",
     "shorthand": "|]",
     "mathClass": "Closing",
     "latexName": "\\rBrack"
@@ -2375,12 +2791,84 @@
     "mathClass": "Binary",
     "latexName": "\\smblkcircle"
   },
+  "bullet.op": {
+    "sym": "∙",
+    "unicName": "Bullet Operator",
+    "name": "bullet.op",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\vysmblkcircle"
+  },
+  "bullet.o": {
+    "sym": "⦿",
+    "unicName": "Circled Bullet",
+    "name": "bullet.o",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\circledbullet"
+  },
+  "bullet.stroked": {
+    "sym": "◦",
+    "unicName": "White Bullet",
+    "name": "bullet.stroked",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\smwhtcircle"
+  },
+  "bullet.stroked.o": {
+    "sym": "⦾",
+    "unicName": "Circled White Bullet",
+    "name": "bullet.stroked.o",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\circledwhitebullet"
+  },
+  "bullet.hole": {
+    "sym": "◘",
+    "unicName": "Inverse Bullet",
+    "name": "bullet.hole",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\inversebullet"
+  },
+  "bullet.hyph": {
+    "sym": "⁃",
+    "unicName": "Hyphen Bullet",
+    "name": "bullet.hyph",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\hyphenbullet"
+  },
+  "bullet.tri": {
+    "sym": "‣",
+    "unicName": "Triangular Bullet",
+    "name": "bullet.tri",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\hyphenbullet"
+  },
+  "bullet.l": {
+    "sym": "⁌",
+    "unicName": "Black Leftwards Bullet",
+    "name": "bullet.l",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\hyphenbullet"
+  },
+  "bullet.r": {
+    "sym": "⁍",
+    "unicName": "Black Rightwards Bullet",
+    "name": "bullet.r",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\hyphenbullet"
+  },
   "caret": {
     "sym": "‸",
     "unicName": "Caret",
     "name": "caret",
     "shorthand": null,
-    "mathClass": "Binary",
+    "mathClass": "Normal",
     "latexName": "\\caretinsert"
   },
   "caron": {
@@ -2390,6 +2878,70 @@
     "shorthand": null,
     "mathClass": "Diacritic",
     "latexName": "\\caretinsert"
+  },
+  "cc": {
+    "sym": "🅭",
+    "unicName": "Circled Cc",
+    "name": "cc",
+    "shorthand": null,
+    "mathClass": "Diacritic",
+    "latexName": "\\caretinsert"
+  },
+  "cc.by": {
+    "sym": "🅯",
+    "unicName": "Circled Human Figure",
+    "name": "cc.by",
+    "shorthand": null,
+    "mathClass": "Diacritic",
+    "latexName": "\\caretinsert"
+  },
+  "cc.nc": {
+    "sym": "🄏",
+    "unicName": "Circled Dollar Sign With Overlaid Backslash",
+    "name": "cc.nc",
+    "shorthand": null,
+    "mathClass": "Diacritic",
+    "latexName": "\\caretinsert"
+  },
+  "cc.nd": {
+    "sym": "⊜",
+    "unicName": "Circled Equals",
+    "name": "cc.nd",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\circledequal"
+  },
+  "cc.public": {
+    "sym": "🅮",
+    "unicName": "Circled C With Overlaid Backslash",
+    "name": "cc.public",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\circledequal"
+  },
+  "cc.sa": {
+    "sym": "🄎",
+    "unicName": "Circled Anticlockwise Arrow",
+    "name": "cc.sa",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\circledequal"
+  },
+  "cc.zero": {
+    "sym": "🄍",
+    "unicName": "Circled Zero With Slash",
+    "name": "cc.zero",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\circledequal"
+  },
+  "cedi": {
+    "sym": "₵",
+    "unicName": "Cedi Sign",
+    "name": "cedi",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\circledequal"
   },
   "ceil.l": {
     "sym": "⌈",
@@ -2405,6 +2957,14 @@
     "name": "ceil.r",
     "shorthand": null,
     "mathClass": "Closing",
+    "latexName": "\\rceil"
+  },
+  "cent": {
+    "sym": "¢",
+    "unicName": "Cent Sign",
+    "name": "cent",
+    "shorthand": null,
+    "mathClass": "Normal",
     "latexName": "\\rceil"
   },
   "checkmark": {
@@ -2424,12 +2984,92 @@
     "latexName": "\\checkmark"
   },
   "checkmark.heavy": {
-    "sym": "✔",
-    "unicName": "Heavy Check Mark",
+    "sym": "✔︎",
+    "unicName": "",
     "name": "checkmark.heavy",
     "shorthand": null,
     "mathClass": "Normal",
     "latexName": "\\checkmark"
+  },
+  "chevron.l": {
+    "sym": "⟨",
+    "unicName": "Mathematical Left Angle Bracket",
+    "name": "chevron.l",
+    "shorthand": null,
+    "mathClass": "Opening",
+    "latexName": "\\langle"
+  },
+  "chevron.l.curly": {
+    "sym": "⧼",
+    "unicName": "Left Pointing Curved Angle Bracket",
+    "name": "chevron.l.curly",
+    "shorthand": null,
+    "mathClass": "Opening",
+    "latexName": "\\lcurvyangle"
+  },
+  "chevron.l.dot": {
+    "sym": "⦑",
+    "unicName": "Left Angle Bracket With Dot",
+    "name": "chevron.l.dot",
+    "shorthand": null,
+    "mathClass": "Opening",
+    "latexName": "\\langledot"
+  },
+  "chevron.l.closed": {
+    "sym": "⦉",
+    "unicName": "Z Notation Left Binding Bracket",
+    "name": "chevron.l.closed",
+    "shorthand": null,
+    "mathClass": "Opening",
+    "latexName": "\\llangle"
+  },
+  "chevron.l.double": {
+    "sym": "⟪",
+    "unicName": "Mathematical Left Double Angle Bracket",
+    "name": "chevron.l.double",
+    "shorthand": null,
+    "mathClass": "Opening",
+    "latexName": "\\lAngle"
+  },
+  "chevron.r": {
+    "sym": "⟩",
+    "unicName": "Mathematical Right Angle Bracket",
+    "name": "chevron.r",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\rangle"
+  },
+  "chevron.r.curly": {
+    "sym": "⧽",
+    "unicName": "Right Pointing Curved Angle Bracket",
+    "name": "chevron.r.curly",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\rcurvyangle"
+  },
+  "chevron.r.dot": {
+    "sym": "⦒",
+    "unicName": "Right Angle Bracket With Dot",
+    "name": "chevron.r.dot",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\rangledot"
+  },
+  "chevron.r.closed": {
+    "sym": "⦊",
+    "unicName": "Z Notation Right Binding Bracket",
+    "name": "chevron.r.closed",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\rrangle"
+  },
+  "chevron.r.double": {
+    "sym": "⟫",
+    "unicName": "Mathematical Right Double Angle Bracket",
+    "name": "chevron.r.double",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\rAngle"
   },
   "chi": {
     "sym": "χ",
@@ -2535,6 +3175,14 @@
     "mathClass": "Relation",
     "latexName": "\\mathcolon"
   },
+  "colon.currency": {
+    "sym": "₡",
+    "unicName": "Colon Sign",
+    "name": "colon.currency",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\mathcolon"
+  },
   "colon.double": {
     "sym": "∷",
     "unicName": "Proportion",
@@ -2599,6 +3247,22 @@
     "mathClass": "Punctuation",
     "latexName": "\\mathcomma"
   },
+  "comma.inv": {
+    "sym": "⸲",
+    "unicName": "Turned Comma",
+    "name": "comma.inv",
+    "shorthand": null,
+    "mathClass": "Punctuation",
+    "latexName": "\\mathcomma"
+  },
+  "comma.rev": {
+    "sym": "⹁",
+    "unicName": "Reversed Comma",
+    "name": "comma.rev",
+    "shorthand": null,
+    "mathClass": "Punctuation",
+    "latexName": "\\mathcomma"
+  },
   "complement": {
     "sym": "∁",
     "unicName": "Complement",
@@ -2615,6 +3279,14 @@
     "mathClass": "Binary",
     "latexName": "\\vysmwhtcircle"
   },
+  "compose.o": {
+    "sym": "⊚",
+    "unicName": "Circled Ring Operator",
+    "name": "compose.o",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\circledcirc"
+  },
   "convolve": {
     "sym": "∗",
     "unicName": "Asterisk Operator",
@@ -2623,21 +3295,29 @@
     "mathClass": "Binary",
     "latexName": "\\ast"
   },
+  "convolve.o": {
+    "sym": "⊛",
+    "unicName": "Circled Asterisk Operator",
+    "name": "convolve.o",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\circledast"
+  },
   "copyleft": {
     "sym": "🄯",
     "unicName": "Copyleft Symbol",
     "name": "copyleft",
     "shorthand": null,
     "mathClass": "Binary",
-    "latexName": "\\ast"
+    "latexName": "\\circledast"
   },
   "copyright": {
-    "sym": "©",
-    "unicName": "Copyright Sign",
+    "sym": "©︎",
+    "unicName": "",
     "name": "copyright",
     "shorthand": null,
     "mathClass": "Binary",
-    "latexName": "\\ast"
+    "latexName": "\\circledast"
   },
   "copyright.sound": {
     "sym": "℗",
@@ -2645,7 +3325,39 @@
     "name": "copyright.sound",
     "shorthand": null,
     "mathClass": "Binary",
-    "latexName": "\\ast"
+    "latexName": "\\circledast"
+  },
+  "corner.l.t": {
+    "sym": "⌜",
+    "unicName": "Top Left Corner",
+    "name": "corner.l.t",
+    "shorthand": null,
+    "mathClass": "Opening",
+    "latexName": "\\ulcorner"
+  },
+  "corner.l.b": {
+    "sym": "⌞",
+    "unicName": "Bottom Left Corner",
+    "name": "corner.l.b",
+    "shorthand": null,
+    "mathClass": "Opening",
+    "latexName": "\\llcorner"
+  },
+  "corner.r.t": {
+    "sym": "⌝",
+    "unicName": "Top Right Corner",
+    "name": "corner.r.t",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\urcorner"
+  },
+  "corner.r.b": {
+    "sym": "⌟",
+    "unicName": "Bottom Right Corner",
+    "name": "corner.r.b",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\lrcorner"
   },
   "crossmark": {
     "sym": "✗",
@@ -2653,7 +3365,7 @@
     "name": "crossmark",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\ast"
+    "latexName": "\\lrcorner"
   },
   "crossmark.heavy": {
     "sym": "✘",
@@ -2661,7 +3373,15 @@
     "name": "crossmark.heavy",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\ast"
+    "latexName": "\\lrcorner"
+  },
+  "currency": {
+    "sym": "¤",
+    "unicName": "Currency Sign",
+    "name": "currency",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\lrcorner"
   },
   "dagger": {
     "sym": "†",
@@ -2783,14 +3503,6 @@
     "mathClass": "Punctuation",
     "latexName": "\\ddagger"
   },
-  "dash.wave": {
-    "sym": "〜",
-    "unicName": "Wave Dash",
-    "name": "dash.wave",
-    "shorthand": null,
-    "mathClass": "Punctuation",
-    "latexName": "\\ddagger"
-  },
   "dash.colon": {
     "sym": "∹",
     "unicName": "Excess",
@@ -2798,6 +3510,14 @@
     "shorthand": null,
     "mathClass": "Relation",
     "latexName": "\\dashcolon"
+  },
+  "dash.o": {
+    "sym": "⊝",
+    "unicName": "Circled Dash",
+    "name": "dash.o",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\circleddash"
   },
   "dash.circle": {
     "sym": "⊝",
@@ -2807,13 +3527,21 @@
     "mathClass": "Binary",
     "latexName": "\\circleddash"
   },
+  "dash.wave": {
+    "sym": "〜",
+    "unicName": "Wave Dash",
+    "name": "dash.wave",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\circleddash"
+  },
   "dash.wave.double": {
-    "sym": "〰",
-    "unicName": "Wavy Dash",
+    "sym": "〰︎",
+    "unicName": "",
     "name": "dash.wave.double",
     "shorthand": null,
     "mathClass": "Binary",
-    "latexName": "\\hzigzag"
+    "latexName": "\\circleddash"
   },
   "degree": {
     "sym": "°",
@@ -2821,7 +3549,7 @@
     "name": "degree",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\hzigzag"
+    "latexName": "\\circleddash"
   },
   "delta": {
     "sym": "δ",
@@ -2959,6 +3687,14 @@
     "mathClass": "Normal",
     "latexName": "\\partial"
   },
+  "digamma": {
+    "sym": "ϝ",
+    "unicName": "Greek Small Letter Digamma",
+    "name": "digamma",
+    "shorthand": null,
+    "mathClass": "Alphabetic",
+    "latexName": "\\updigamma"
+  },
   "div": {
     "sym": "÷",
     "unicName": "Division Sign",
@@ -2966,6 +3702,22 @@
     "shorthand": null,
     "mathClass": "Binary",
     "latexName": "\\div"
+  },
+  "div.o": {
+    "sym": "⨸",
+    "unicName": "Circled Division Sign",
+    "name": "div.o",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\odiv"
+  },
+  "div.slanted.o": {
+    "sym": "⦼",
+    "unicName": "Circled Anticlockwise Rotated Division Sign",
+    "name": "div.slanted.o",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\odotslashdot"
   },
   "div.circle": {
     "sym": "⨸",
@@ -3015,6 +3767,22 @@
     "mathClass": "Normal",
     "latexName": "\\mathdollar"
   },
+  "dong": {
+    "sym": "₫",
+    "unicName": "Dong Sign",
+    "name": "dong",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\mathdollar"
+  },
+  "dorome": {
+    "sym": "߾",
+    "unicName": "Nko Dorome Sign",
+    "name": "dorome",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\mathdollar"
+  },
   "dot.op": {
     "sym": "⋅",
     "unicName": "Dot Operator",
@@ -3038,6 +3806,22 @@
     "shorthand": null,
     "mathClass": "Binary",
     "latexName": "\\cdotp"
+  },
+  "dot.o": {
+    "sym": "⊙",
+    "unicName": "Circled Dot Operator",
+    "name": "dot.o",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\odot"
+  },
+  "dot.o.big": {
+    "sym": "⨀",
+    "unicName": "N Ary Circled Dot Operator",
+    "name": "dot.o.big",
+    "shorthand": null,
+    "mathClass": "Large",
+    "latexName": "\\bigodot"
   },
   "dot.circle": {
     "sym": "⊙",
@@ -3151,6 +3935,30 @@
     "mathClass": "Normal",
     "latexName": "\\adots"
   },
+  "dram": {
+    "sym": "֏",
+    "unicName": "Armenian Dram Sign",
+    "name": "dram",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\adots"
+  },
+  "earth": {
+    "sym": "🜨",
+    "unicName": "Alchemical Symbol For Verdigris",
+    "name": "earth",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\adots"
+  },
+  "earth.alt": {
+    "sym": "♁",
+    "unicName": "Earth",
+    "name": "earth.alt",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\adots"
+  },
   "ell": {
     "sym": "ℓ",
     "unicName": "Script Small L",
@@ -3255,6 +4063,14 @@
     "mathClass": "Alphabetic",
     "latexName": "\\mupepsilon"
   },
+  "epsilon.alt.rev": {
+    "sym": "϶",
+    "unicName": "Greek Reversed Lunate Epsilon Symbol",
+    "name": "epsilon.alt.rev",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\upbackepsilon"
+  },
   "eq": {
     "sym": "=",
     "unicName": "Equals Sign",
@@ -3270,6 +4086,14 @@
     "shorthand": null,
     "mathClass": "Relation",
     "latexName": "\\stareq"
+  },
+  "eq.o": {
+    "sym": "⊜",
+    "unicName": "Circled Equals",
+    "name": "eq.o",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\circledequal"
   },
   "eq.circle": {
     "sym": "⊜",
@@ -3536,12 +4360,12 @@
     "latexName": "\\mathexclam"
   },
   "excl.double": {
-    "sym": "‼",
-    "unicName": "Double Exclamation Mark",
+    "sym": "‼︎",
+    "unicName": "",
     "name": "excl.double",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\Exclam"
+    "latexName": "\\mathexclam"
   },
   "excl.inv": {
     "sym": "¡",
@@ -3549,15 +4373,15 @@
     "name": "excl.inv",
     "shorthand": null,
     "mathClass": "Punctuation",
-    "latexName": "\\Exclam"
+    "latexName": "\\mathexclam"
   },
   "excl.quest": {
-    "sym": "⁉",
-    "unicName": "Exclamation Question Mark",
+    "sym": "⁉︎",
+    "unicName": "",
     "name": "excl.quest",
     "shorthand": null,
     "mathClass": "Punctuation",
-    "latexName": "\\Exclam"
+    "latexName": "\\mathexclam"
   },
   "exists": {
     "sym": "∃",
@@ -3727,6 +4551,14 @@
     "mathClass": "Relation",
     "latexName": "\\nVdash"
   },
+  "frown": {
+    "sym": "⌢",
+    "unicName": "Frown",
+    "name": "frown",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\frown"
+  },
   "gamma": {
     "sym": "γ",
     "unicName": "Greek Small Letter Gamma",
@@ -3774,6 +4606,14 @@
     "shorthand": null,
     "mathClass": "Relation",
     "latexName": "\\greater"
+  },
+  "gt.o": {
+    "sym": "⧁",
+    "unicName": "Circled Greater Than",
+    "name": "gt.o",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\ogreaterthan"
   },
   "gt.circle": {
     "sym": "⧁",
@@ -3995,6 +4835,14 @@
     "sym": "⫸",
     "unicName": "Triple Nested Greater Than",
     "name": "gt.triple.nested",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\gggnest"
+  },
+  "guarani": {
+    "sym": "₲",
+    "unicName": "Guarani Sign",
+    "name": "guarani",
     "shorthand": null,
     "mathClass": "Relation",
     "latexName": "\\gggnest"
@@ -4352,12 +5200,12 @@
     "latexName": "\\upharpoonsleftright"
   },
   "hash": {
-    "sym": "#",
-    "unicName": "Number Sign",
+    "sym": "#︎",
+    "unicName": "",
     "name": "hash",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\mathoctothorpe"
+    "latexName": "\\upharpoonsleftright"
   },
   "hat": {
     "sym": "^",
@@ -4365,7 +5213,7 @@
     "name": "hat",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\mathoctothorpe"
+    "latexName": "\\upharpoonsleftright"
   },
   "hexa.stroked": {
     "sym": "⬡",
@@ -4395,6 +5243,14 @@
     "sym": "⧗",
     "unicName": "Black Hourglass",
     "name": "hourglass.filled",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\blackhourglass"
+  },
+  "hryvnia": {
+    "sym": "₴",
+    "unicName": "Hryvnia Sign",
+    "name": "hryvnia",
     "shorthand": null,
     "mathClass": "Binary",
     "latexName": "\\blackhourglass"
@@ -4791,6 +5647,14 @@
     "mathClass": "Binary",
     "latexName": "\\nhVvert"
   },
+  "interrobang.inv": {
+    "sym": "⸘",
+    "unicName": "Inverted Interrobang",
+    "name": "interrobang.inv",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\nhVvert"
+  },
   "iota": {
     "sym": "ι",
     "unicName": "Greek Small Letter Iota",
@@ -4798,6 +5662,14 @@
     "shorthand": null,
     "mathClass": "Alphabetic",
     "latexName": "\\mupiota"
+  },
+  "iota.inv": {
+    "sym": "℩",
+    "unicName": "Turned Greek Small Letter Iota",
+    "name": "iota.inv",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\turnediota"
   },
   "join": {
     "sym": "⨝",
@@ -4831,12 +5703,20 @@
     "mathClass": "Large",
     "latexName": "\\fullouterjoin"
   },
+  "jupiter": {
+    "sym": "♃",
+    "unicName": "Jupiter",
+    "name": "jupiter",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\fullouterjoin"
+  },
   "kai": {
     "sym": "ϗ",
     "unicName": "Greek Kai Symbol",
     "name": "kai",
     "shorthand": null,
-    "mathClass": "Large",
+    "mathClass": "Normal",
     "latexName": "\\fullouterjoin"
   },
   "kappa": {
@@ -4855,6 +5735,14 @@
     "mathClass": "Alphabetic",
     "latexName": "\\mupvarkappa"
   },
+  "kip": {
+    "sym": "₭",
+    "unicName": "Kip Sign",
+    "name": "kip",
+    "shorthand": null,
+    "mathClass": "Alphabetic",
+    "latexName": "\\mupvarkappa"
+  },
   "lambda": {
     "sym": "λ",
     "unicName": "Greek Small Letter Lamda",
@@ -4867,6 +5755,14 @@
     "sym": "∆",
     "unicName": "Increment",
     "name": "laplace",
+    "shorthand": null,
+    "mathClass": "Unary",
+    "latexName": "\\increment"
+  },
+  "lari": {
+    "sym": "₾",
+    "unicName": "Lari Sign",
+    "name": "lari",
     "shorthand": null,
     "mathClass": "Unary",
     "latexName": "\\increment"
@@ -4958,6 +5854,14 @@
     "shorthand": null,
     "mathClass": "Relation",
     "latexName": "\\less"
+  },
+  "lt.o": {
+    "sym": "⧀",
+    "unicName": "Circled Less Than",
+    "name": "lt.o",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\olessthan"
   },
   "lt.circle": {
     "sym": "⧀",
@@ -5199,6 +6103,14 @@
     "mathClass": "Normal",
     "latexName": "\\maltese"
   },
+  "manat": {
+    "sym": "₼",
+    "unicName": "Manat Sign",
+    "name": "manat",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\maltese"
+  },
   "mapsto": {
     "sym": "↦",
     "unicName": "Rightwards Arrow From Bar",
@@ -5213,6 +6125,22 @@
     "name": "mapsto.long",
     "shorthand": null,
     "mathClass": "Relation",
+    "latexName": "\\longmapsto"
+  },
+  "mars": {
+    "sym": "♂︎",
+    "unicName": "",
+    "name": "mars",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\longmapsto"
+  },
+  "mercury": {
+    "sym": "☿",
+    "unicName": "Mercury",
+    "name": "mercury",
+    "shorthand": null,
+    "mathClass": "Normal",
     "latexName": "\\longmapsto"
   },
   "-": {
@@ -5230,6 +6158,14 @@
     "shorthand": "-",
     "mathClass": "Vary",
     "latexName": "\\minus"
+  },
+  "minus.o": {
+    "sym": "⊖",
+    "unicName": "Circled Minus",
+    "name": "minus.o",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\ominus"
   },
   "minus.circle": {
     "sym": "⊖",
@@ -5319,10 +6255,34 @@
     "mathClass": "Relation",
     "latexName": "\\dualmap"
   },
+  "mustache.l": {
+    "sym": "⎰",
+    "unicName": "Upper Left Or Lower Right Curly Bracket Section",
+    "name": "mustache.l",
+    "shorthand": null,
+    "mathClass": "Opening",
+    "latexName": "\\lmoustache"
+  },
+  "mustache.r": {
+    "sym": "⎱",
+    "unicName": "Upper Right Or Lower Left Curly Bracket Section",
+    "name": "mustache.r",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\rmoustache"
+  },
   "nabla": {
     "sym": "∇",
     "unicName": "Nabla",
     "name": "nabla",
+    "shorthand": null,
+    "mathClass": "Unary",
+    "latexName": "\\nabla"
+  },
+  "naira": {
+    "sym": "₦",
+    "unicName": "Naira Sign",
+    "name": "naira",
     "shorthand": null,
     "mathClass": "Unary",
     "latexName": "\\nabla"
@@ -5347,6 +6307,22 @@
     "sym": "𝄯",
     "unicName": "Musical Symbol Natural Down",
     "name": "natural.b",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\natural"
+  },
+  "neptune": {
+    "sym": "♆",
+    "unicName": "Neptune",
+    "name": "neptune",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\natural"
+  },
+  "neptune.alt": {
+    "sym": "⯉",
+    "unicName": "Neptune Form Two",
+    "name": "neptune.alt",
     "shorthand": null,
     "mathClass": "Normal",
     "latexName": "\\natural"
@@ -5580,7 +6556,7 @@
     "unicName": "Or With Dot Inside",
     "name": "or.dot",
     "shorthand": null,
-    "mathClass": "Relation",
+    "mathClass": "Binary",
     "latexName": "\\veedot"
   },
   "or.double": {
@@ -5614,6 +6590,14 @@
     "shorthand": null,
     "mathClass": "Relation",
     "latexName": "\\nhpar"
+  },
+  "parallel.o": {
+    "sym": "⦷",
+    "unicName": "Circled Parallel",
+    "name": "parallel.o",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\circledparallel"
   },
   "parallel.circle": {
     "sym": "⦷",
@@ -5703,6 +6687,30 @@
     "mathClass": "Opening",
     "latexName": "\\lparen"
   },
+  "paren.l.flat": {
+    "sym": "⟮",
+    "unicName": "Mathematical Left Flattened Parenthesis",
+    "name": "paren.l.flat",
+    "shorthand": null,
+    "mathClass": "Opening",
+    "latexName": "\\lgroup"
+  },
+  "paren.l.closed": {
+    "sym": "⦇",
+    "unicName": "Z Notation Left Image Bracket",
+    "name": "paren.l.closed",
+    "shorthand": null,
+    "mathClass": "Opening",
+    "latexName": "\\llparenthesis"
+  },
+  "paren.l.stroked": {
+    "sym": "⦅",
+    "unicName": "Left White Parenthesis",
+    "name": "paren.l.stroked",
+    "shorthand": null,
+    "mathClass": "Opening",
+    "latexName": "\\lParen"
+  },
   "paren.l.double": {
     "sym": "⦅",
     "unicName": "Left White Parenthesis",
@@ -5718,6 +6726,30 @@
     "shorthand": null,
     "mathClass": "Closing",
     "latexName": "\\rparen"
+  },
+  "paren.r.flat": {
+    "sym": "⟯",
+    "unicName": "Mathematical Right Flattened Parenthesis",
+    "name": "paren.r.flat",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\rgroup"
+  },
+  "paren.r.closed": {
+    "sym": "⦈",
+    "unicName": "Z Notation Right Image Bracket",
+    "name": "paren.r.closed",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\rrparenthesis"
+  },
+  "paren.r.stroked": {
+    "sym": "⦆",
+    "unicName": "Right White Parenthesis",
+    "name": "paren.r.stroked",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\rParen"
   },
   "paren.r.double": {
     "sym": "⦆",
@@ -5751,6 +6783,14 @@
     "mathClass": "Normal",
     "latexName": "\\partial"
   },
+  "pataca": {
+    "sym": "$",
+    "unicName": "Dollar Sign",
+    "name": "pataca",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\mathdollar"
+  },
   "penta.stroked": {
     "sym": "⬠",
     "unicName": "White Pentagon",
@@ -5783,6 +6823,14 @@
     "mathClass": "Normal",
     "latexName": "\\mathpercent"
   },
+  "permyriad": {
+    "sym": "‱",
+    "unicName": "Per Ten Thousand Sign",
+    "name": "permyriad",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\mathpercent"
+  },
   "perp": {
     "sym": "⟂",
     "unicName": "Perpendicular",
@@ -5790,6 +6838,14 @@
     "shorthand": null,
     "mathClass": "Relation",
     "latexName": "\\perp"
+  },
+  "perp.o": {
+    "sym": "⦹",
+    "unicName": "Circled Perpendicular",
+    "name": "perp.o",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\operp"
   },
   "perp.circle": {
     "sym": "⦹",
@@ -5800,12 +6856,20 @@
     "latexName": "\\operp"
   },
   "peso": {
-    "sym": "₱",
-    "unicName": "Peso Sign",
+    "sym": "$",
+    "unicName": "Dollar Sign",
     "name": "peso",
     "shorthand": null,
-    "mathClass": "Binary",
-    "latexName": "\\operp"
+    "mathClass": "Normal",
+    "latexName": "\\mathdollar"
+  },
+  "peso.philippine": {
+    "sym": "₱",
+    "unicName": "Peso Sign",
+    "name": "peso.philippine",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\mathdollar"
   },
   "phi": {
     "sym": "φ",
@@ -5856,20 +6920,20 @@
     "latexName": "\\mathparagraph"
   },
   "planck": {
-    "sym": "ℎ",
-    "unicName": "Planck Constant",
+    "sym": "ħ",
+    "unicName": "Latin Small Letter H With Stroke",
     "name": "planck",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\Planckconst"
+    "latexName": "\\mathparagraph"
   },
   "planck.reduce": {
-    "sym": "ℏ",
-    "unicName": "Planck Constant Over Two Pi",
+    "sym": "ħ",
+    "unicName": "Latin Small Letter H With Stroke",
     "name": "planck.reduce",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\hslash"
+    "latexName": "\\mathparagraph"
   },
   "plus": {
     "sym": "+",
@@ -5878,6 +6942,46 @@
     "shorthand": null,
     "mathClass": "Vary",
     "latexName": "\\mathplus"
+  },
+  "plus.o": {
+    "sym": "⊕",
+    "unicName": "Circled Plus",
+    "name": "plus.o",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\oplus"
+  },
+  "plus.o.l": {
+    "sym": "⨭",
+    "unicName": "Plus Sign In Left Half Circle",
+    "name": "plus.o.l",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\opluslhrim"
+  },
+  "plus.o.r": {
+    "sym": "⨮",
+    "unicName": "Plus Sign In Right Half Circle",
+    "name": "plus.o.r",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\oplusrhrim"
+  },
+  "plus.o.arrow": {
+    "sym": "⟴",
+    "unicName": "Right Arrow With Circled Plus",
+    "name": "plus.o.arrow",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\rightarrowonoplus"
+  },
+  "plus.o.big": {
+    "sym": "⨁",
+    "unicName": "N Ary Circled Plus Operator",
+    "name": "plus.o.big",
+    "shorthand": null,
+    "mathClass": "Large",
+    "latexName": "\\bigoplus"
   },
   "plus.circle": {
     "sym": "⊕",
@@ -5963,6 +7067,46 @@
     "sym": "£",
     "unicName": "Pound Sign",
     "name": "pound",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\mathsterling"
+  },
+  "power.standby": {
+    "sym": "⏻",
+    "unicName": "Power Symbol",
+    "name": "power.standby",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\mathsterling"
+  },
+  "power.on": {
+    "sym": "⏽",
+    "unicName": "Power On Symbol",
+    "name": "power.on",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\mathsterling"
+  },
+  "power.off": {
+    "sym": "⭘",
+    "unicName": "Heavy Circle",
+    "name": "power.off",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\mathsterling"
+  },
+  "power.on.off": {
+    "sym": "⏼",
+    "unicName": "Power On Off Symbol",
+    "name": "power.on.off",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\mathsterling"
+  },
+  "power.sleep": {
+    "sym": "⏾",
+    "unicName": "Power Sleep Symbol",
+    "name": "power.sleep",
     "shorthand": null,
     "mathClass": "Normal",
     "latexName": "\\mathsterling"
@@ -6247,6 +7391,38 @@
     "mathClass": "Punctuation",
     "latexName": "\\Question"
   },
+  "quote.chevron.l.double": {
+    "sym": "«",
+    "unicName": "Left Pointing Double Angle Quotation Mark",
+    "name": "quote.chevron.l.double",
+    "shorthand": null,
+    "mathClass": "Punctuation",
+    "latexName": "\\Question"
+  },
+  "quote.chevron.l.single": {
+    "sym": "‹",
+    "unicName": "Single Left Pointing Angle Quotation Mark",
+    "name": "quote.chevron.l.single",
+    "shorthand": null,
+    "mathClass": "Punctuation",
+    "latexName": "\\Question"
+  },
+  "quote.chevron.r.double": {
+    "sym": "»",
+    "unicName": "Right Pointing Double Angle Quotation Mark",
+    "name": "quote.chevron.r.double",
+    "shorthand": null,
+    "mathClass": "Punctuation",
+    "latexName": "\\Question"
+  },
+  "quote.chevron.r.single": {
+    "sym": "›",
+    "unicName": "Single Right Pointing Angle Quotation Mark",
+    "name": "quote.chevron.r.single",
+    "shorthand": null,
+    "mathClass": "Punctuation",
+    "latexName": "\\Question"
+  },
   "quote.angle.l.double": {
     "sym": "«",
     "unicName": "Left Pointing Double Angle Quotation Mark",
@@ -6431,6 +7607,14 @@
     "mathClass": "Alphabetic",
     "latexName": "\\mupvarrho"
   },
+  "riel": {
+    "sym": "៛",
+    "unicName": "Khmer Currency Symbol Riel",
+    "name": "riel",
+    "shorthand": null,
+    "mathClass": "Alphabetic",
+    "latexName": "\\mupvarrho"
+  },
   "rlm": {
     "sym": "rlm",
     "unicName": "Right To Left Mark",
@@ -6447,12 +7631,44 @@
     "mathClass": "Alphabetic",
     "latexName": "\\mupvarrho"
   },
-  "rupee": {
+  "rupee.indian": {
     "sym": "₹",
     "unicName": "Indian Rupee Sign",
-    "name": "rupee",
+    "name": "rupee.indian",
     "shorthand": null,
     "mathClass": "Alphabetic",
+    "latexName": "\\mupvarrho"
+  },
+  "rupee.generic": {
+    "sym": "₨",
+    "unicName": "Rupee Sign",
+    "name": "rupee.generic",
+    "shorthand": null,
+    "mathClass": "Alphabetic",
+    "latexName": "\\mupvarrho"
+  },
+  "rupee.tamil": {
+    "sym": "௹",
+    "unicName": "Tamil Rupee Sign",
+    "name": "rupee.tamil",
+    "shorthand": null,
+    "mathClass": "Alphabetic",
+    "latexName": "\\mupvarrho"
+  },
+  "rupee.wancho": {
+    "sym": "𞋿",
+    "unicName": "Wancho Ngun Sign",
+    "name": "rupee.wancho",
+    "shorthand": null,
+    "mathClass": "Alphabetic",
+    "latexName": "\\mupvarrho"
+  },
+  "saturn": {
+    "sym": "♄",
+    "unicName": "Saturn",
+    "name": "saturn",
+    "shorthand": null,
+    "mathClass": "Normal",
     "latexName": "\\mupvarrho"
   },
   "sect": {
@@ -6535,10 +7751,26 @@
     "mathClass": "Punctuation",
     "latexName": "\\mathsemicolon"
   },
+  "semi.inv": {
+    "sym": "⸵",
+    "unicName": "Turned Semicolon",
+    "name": "semi.inv",
+    "shorthand": null,
+    "mathClass": "Punctuation",
+    "latexName": "\\mathsemicolon"
+  },
   "semi.rev": {
     "sym": "⁏",
     "unicName": "Reversed Semicolon",
     "name": "semi.rev",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\mathsemicolon"
+  },
+  "sha": {
+    "sym": "ш",
+    "unicName": "Cyrillic Small Letter Sha",
+    "name": "sha",
     "shorthand": null,
     "mathClass": "Relation",
     "latexName": "\\mathsemicolon"
@@ -6583,6 +7815,14 @@
     "mathClass": "Normal",
     "latexName": "\\sharp"
   },
+  "shekel": {
+    "sym": "₪",
+    "unicName": "New Sheqel Sign",
+    "name": "shekel",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\sharp"
+  },
   "shell.l": {
     "sym": "❲",
     "unicName": "Light Left Tortoise Shell Bracket Ornament",
@@ -6590,6 +7830,22 @@
     "shorthand": null,
     "mathClass": "Opening",
     "latexName": "\\lbrbrak"
+  },
+  "shell.l.stroked": {
+    "sym": "⟬",
+    "unicName": "Mathematical Left White Tortoise Shell Bracket",
+    "name": "shell.l.stroked",
+    "shorthand": null,
+    "mathClass": "Opening",
+    "latexName": "\\Lbrbrak"
+  },
+  "shell.l.filled": {
+    "sym": "⦗",
+    "unicName": "Left Black Tortoise Shell Bracket",
+    "name": "shell.l.filled",
+    "shorthand": null,
+    "mathClass": "Opening",
+    "latexName": "\\lblkbrbrak"
   },
   "shell.l.double": {
     "sym": "⟬",
@@ -6606,6 +7862,22 @@
     "shorthand": null,
     "mathClass": "Closing",
     "latexName": "\\rbrbrak"
+  },
+  "shell.r.stroked": {
+    "sym": "⟭",
+    "unicName": "Mathematical Right White Tortoise Shell Bracket",
+    "name": "shell.r.stroked",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\Rbrbrak"
+  },
+  "shell.r.filled": {
+    "sym": "⦘",
+    "unicName": "Right Black Tortoise Shell Bracket",
+    "name": "shell.r.filled",
+    "shorthand": null,
+    "mathClass": "Closing",
+    "latexName": "\\rblkbrbrak"
   },
   "shell.r.double": {
     "sym": "⟭",
@@ -6663,6 +7935,14 @@
     "mathClass": "Normal",
     "latexName": "\\mathslash"
   },
+  "slash.o": {
+    "sym": "⊘",
+    "unicName": "Circled Division Slash",
+    "name": "slash.o",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\oslash"
+  },
   "slash.double": {
     "sym": "⫽",
     "unicName": "Double Solidus Operator",
@@ -6695,6 +7975,14 @@
     "mathClass": "Binary",
     "latexName": "\\smashtimes"
   },
+  "smile": {
+    "sym": "⌣",
+    "unicName": "Smile",
+    "name": "smile",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\smile"
+  },
   "smt": {
     "sym": "⪪",
     "unicName": "Smaller Than",
@@ -6707,6 +7995,14 @@
     "sym": "⪬",
     "unicName": "Smaller Than Or Equal To",
     "name": "smt.eq",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\smte"
+  },
+  "som": {
+    "sym": "⃀",
+    "unicName": "Som Sign",
+    "name": "som",
     "shorthand": null,
     "mathClass": "Relation",
     "latexName": "\\smte"
@@ -6832,36 +8128,36 @@
     "latexName": "\\mdlgwhtsquare"
   },
   "square.stroked.tiny": {
-    "sym": "▫",
-    "unicName": "White Small Square",
+    "sym": "▫︎",
+    "unicName": "",
     "name": "square.stroked.tiny",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\smwhtsquare"
+    "latexName": "\\mdlgwhtsquare"
   },
   "square.stroked.small": {
-    "sym": "◽",
-    "unicName": "White Medium Small Square",
+    "sym": "◽︎",
+    "unicName": "",
     "name": "square.stroked.small",
     "shorthand": null,
     "mathClass": "Binary",
-    "latexName": "\\mdsmwhtsquare"
+    "latexName": "\\mdlgwhtsquare"
   },
   "square.stroked.medium": {
-    "sym": "◻",
-    "unicName": "White Medium Square",
+    "sym": "◻︎",
+    "unicName": "",
     "name": "square.stroked.medium",
     "shorthand": null,
     "mathClass": "Binary",
-    "latexName": "\\mdwhtsquare"
+    "latexName": "\\mdlgwhtsquare"
   },
   "square.stroked.big": {
-    "sym": "⬜",
-    "unicName": "White Large Square",
+    "sym": "⬜︎",
+    "unicName": "",
     "name": "square.stroked.big",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\lgwhtsquare"
+    "latexName": "\\mdlgwhtsquare"
   },
   "square.stroked.dotted": {
     "sym": "⬚",
@@ -6888,36 +8184,36 @@
     "latexName": "\\mdlgblksquare"
   },
   "square.filled.tiny": {
-    "sym": "▪",
-    "unicName": "Black Small Square",
+    "sym": "▪︎",
+    "unicName": "",
     "name": "square.filled.tiny",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\smblksquare"
+    "latexName": "\\mdlgblksquare"
   },
   "square.filled.small": {
-    "sym": "◾",
-    "unicName": "Black Medium Small Square",
+    "sym": "◾︎",
+    "unicName": "",
     "name": "square.filled.small",
     "shorthand": null,
     "mathClass": "Binary",
-    "latexName": "\\mdsmblksquare"
+    "latexName": "\\mdlgblksquare"
   },
   "square.filled.medium": {
-    "sym": "◼",
-    "unicName": "Black Medium Square",
+    "sym": "◼︎",
+    "unicName": "",
     "name": "square.filled.medium",
     "shorthand": null,
     "mathClass": "Binary",
-    "latexName": "\\mdblksquare"
+    "latexName": "\\mdlgblksquare"
   },
   "square.filled.big": {
-    "sym": "⬛",
-    "unicName": "Black Large Square",
+    "sym": "⬛︎",
+    "unicName": "",
     "name": "square.filled.big",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\lgblksquare"
+    "latexName": "\\mdlgblksquare"
   },
   "star.op": {
     "sym": "⋆",
@@ -7136,12 +8432,12 @@
     "latexName": "\\succsim"
   },
   "suit.club.filled": {
-    "sym": "♣",
-    "unicName": "Black Club Suit",
+    "sym": "♣︎",
+    "unicName": "",
     "name": "suit.club.filled",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\clubsuit"
+    "latexName": "\\succsim"
   },
   "suit.club.stroked": {
     "sym": "♧",
@@ -7152,12 +8448,12 @@
     "latexName": "\\varclubsuit"
   },
   "suit.diamond.filled": {
-    "sym": "♦",
-    "unicName": "Black Diamond Suit",
+    "sym": "♦︎",
+    "unicName": "",
     "name": "suit.diamond.filled",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\vardiamondsuit"
+    "latexName": "\\varclubsuit"
   },
   "suit.diamond.stroked": {
     "sym": "♢",
@@ -7168,12 +8464,12 @@
     "latexName": "\\diamondsuit"
   },
   "suit.heart.filled": {
-    "sym": "♥",
-    "unicName": "Black Heart Suit",
+    "sym": "♥︎",
+    "unicName": "",
     "name": "suit.heart.filled",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\varheartsuit"
+    "latexName": "\\diamondsuit"
   },
   "suit.heart.stroked": {
     "sym": "♡",
@@ -7184,12 +8480,12 @@
     "latexName": "\\heartsuit"
   },
   "suit.spade.filled": {
-    "sym": "♠",
-    "unicName": "Black Spade Suit",
+    "sym": "♠︎",
+    "unicName": "",
     "name": "suit.spade.filled",
     "shorthand": null,
     "mathClass": "Normal",
-    "latexName": "\\spadesuit"
+    "latexName": "\\heartsuit"
   },
   "suit.spade.stroked": {
     "sym": "♤",
@@ -7214,6 +8510,14 @@
     "shorthand": null,
     "mathClass": "Large",
     "latexName": "\\sumint"
+  },
+  "sun": {
+    "sym": "☉",
+    "unicName": "Sun",
+    "name": "sun",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\astrosun"
   },
   "supset": {
     "sym": "⊃",
@@ -7455,10 +8759,34 @@
     "mathClass": "Relation",
     "latexName": "\\dashVdash"
   },
+  "taka": {
+    "sym": "৳",
+    "unicName": "Bengali Rupee Sign",
+    "name": "taka",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\dashVdash"
+  },
+  "taman": {
+    "sym": "߿",
+    "unicName": "Nko Taman Sign",
+    "name": "taman",
+    "shorthand": null,
+    "mathClass": "Relation",
+    "latexName": "\\dashVdash"
+  },
   "tau": {
     "sym": "τ",
     "unicName": "Greek Small Letter Tau",
     "name": "tau",
+    "shorthand": null,
+    "mathClass": "Alphabetic",
+    "latexName": "\\muptau"
+  },
+  "tenge": {
+    "sym": "₸",
+    "unicName": "Tenge Sign",
+    "name": "tenge",
     "shorthand": null,
     "mathClass": "Alphabetic",
     "latexName": "\\muptau"
@@ -7607,6 +8935,46 @@
     "mathClass": "Large",
     "latexName": "\\bigtimes"
   },
+  "times.o": {
+    "sym": "⊗",
+    "unicName": "Circled Times",
+    "name": "times.o",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\otimes"
+  },
+  "times.o.l": {
+    "sym": "⨴",
+    "unicName": "Multiplication Sign In Left Half Circle",
+    "name": "times.o.l",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\otimeslhrim"
+  },
+  "times.o.r": {
+    "sym": "⨵",
+    "unicName": "Multiplication Sign In Right Half Circle",
+    "name": "times.o.r",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\otimesrhrim"
+  },
+  "times.o.hat": {
+    "sym": "⨶",
+    "unicName": "Circled Multiplication Sign With Circumflex Accent",
+    "name": "times.o.hat",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\otimeshat"
+  },
+  "times.o.big": {
+    "sym": "⨂",
+    "unicName": "N Ary Circled Times Operator",
+    "name": "times.o.big",
+    "shorthand": null,
+    "mathClass": "Large",
+    "latexName": "\\bigotimes"
+  },
   "times.circle": {
     "sym": "⊗",
     "unicName": "Circled Times",
@@ -7687,6 +9055,14 @@
     "mathClass": "Binary",
     "latexName": "\\tplus"
   },
+  "togrog": {
+    "sym": "₮",
+    "unicName": "Tugrik Sign",
+    "name": "togrog",
+    "shorthand": null,
+    "mathClass": "Binary",
+    "latexName": "\\tplus"
+  },
   "top": {
     "sym": "⊤",
     "unicName": "Down Tack",
@@ -7696,16 +9072,16 @@
     "latexName": "\\top"
   },
   "trademark": {
-    "sym": "™",
-    "unicName": "Trade Mark Sign",
+    "sym": "™︎",
+    "unicName": "",
     "name": "trademark",
     "shorthand": null,
     "mathClass": "Normal",
     "latexName": "\\top"
   },
   "trademark.registered": {
-    "sym": "®",
-    "unicName": "Registered Sign",
+    "sym": "®︎",
+    "unicName": "",
     "name": "trademark.registered",
     "shorthand": null,
     "mathClass": "Normal",
@@ -7856,20 +9232,20 @@
     "latexName": "\\bigblacktriangledown"
   },
   "triangle.filled.r": {
-    "sym": "▶",
-    "unicName": "Black Right Pointing Triangle",
+    "sym": "▶︎",
+    "unicName": "",
     "name": "triangle.filled.r",
     "shorthand": null,
     "mathClass": "Binary",
-    "latexName": "\\blacktriangleright"
+    "latexName": "\\bigblacktriangledown"
   },
   "triangle.filled.l": {
-    "sym": "◀",
-    "unicName": "Black Left Pointing Triangle",
+    "sym": "◀︎",
+    "unicName": "",
     "name": "triangle.filled.l",
     "shorthand": null,
     "mathClass": "Binary",
-    "latexName": "\\blacktriangleleft"
+    "latexName": "\\bigblacktriangledown"
   },
   "triangle.filled.bl": {
     "sym": "◣",
@@ -8047,6 +9423,30 @@
     "mathClass": "Alphabetic",
     "latexName": "\\mupupsilon"
   },
+  "uranus": {
+    "sym": "⛢",
+    "unicName": "Astronomical Symbol For Uranus",
+    "name": "uranus",
+    "shorthand": null,
+    "mathClass": "Alphabetic",
+    "latexName": "\\mupupsilon"
+  },
+  "uranus.alt": {
+    "sym": "♅",
+    "unicName": "Uranus",
+    "name": "uranus.alt",
+    "shorthand": null,
+    "mathClass": "Alphabetic",
+    "latexName": "\\mupupsilon"
+  },
+  "venus": {
+    "sym": "♀︎",
+    "unicName": "",
+    "name": "venus",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\mupupsilon"
+  },
   "without": {
     "sym": "∖",
     "unicName": "Set Minus",
@@ -8107,6 +9507,14 @@
     "sym": "¥",
     "unicName": "Yen Sign",
     "name": "yen",
+    "shorthand": null,
+    "mathClass": "Normal",
+    "latexName": "\\mathyen"
+  },
+  "yuan": {
+    "sym": "¥",
+    "unicName": "Yen Sign",
+    "name": "yuan",
     "shorthand": null,
     "mathClass": "Normal",
     "latexName": "\\mathyen"

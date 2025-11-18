@@ -61,15 +61,9 @@ export default class TypstElement extends HTMLElement {
   postProcess(result: SVGResult) {
     if (this.plugin.settings.failOnWarning && result.diags.length !== 0) throw result.diags;
 
-    const svg = result.svg.replaceAll(
-      '#000000',
-      this.plugin.settings.autoBaseColor ? this.plugin.baseColor : this.plugin.settings.baseColor,
-    );
-
     this.plugin.typstManager.beforeKind = this.kind;
     this.plugin.typstManager.beforeId = this.processor.id;
-    this.plugin.typstManager.beforeContent = svg;
-    this.innerHTML = svg;
+    this.innerHTML = result.svg;
   }
 
   handleError(err: Diagnostic[]) {
@@ -91,7 +85,6 @@ export default class TypstElement extends HTMLElement {
 
       this.plugin.typstManager.beforeKind = this.kind;
       this.plugin.typstManager.beforeId = this.processor.id;
-      this.plugin.typstManager.beforeContent = diagEl.outerHTML;
       this.replaceChildren(diagEl);
     }
   }

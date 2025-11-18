@@ -59,7 +59,7 @@ tasks:
       - git push
       - git push origin "{{.tag}}"
       - task wasm
-      - task putstatic
+      - task placestatic
     preconditions:
       - sh: "[ {{.TYPE}} != '' ]"
     desc: "e.g. task release TYPE=major | TYPE=minor | TYPE=patch | TYPE=mock"

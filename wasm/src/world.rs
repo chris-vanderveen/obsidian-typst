@@ -75,23 +75,15 @@ impl WasmWorld {
         }
     }
 
-    pub fn set_main(&mut self, new: Source) {
-        self.slots
-            .lock()
-            .unwrap()
-            .get_mut(&self.main)
-            .unwrap()
-            .set_source_result(Ok(new));
+    pub fn set_main(&mut self, id: FileId) {
+        self.main = id;
     }
 
     // ? 差分コンパイルのため
     pub fn replace(&mut self, new: &str) {
-        self.slots
-            .lock()
-            .unwrap()
-            .get_mut(&self.main)
-            .unwrap()
-            .replace(new);
+        let mut m = self.slots.lock().unwrap();
+
+        m.get_mut(&self.main).unwrap().replace(new);
     }
 
     pub fn add_file_text(&self, vpath: VirtualPath, text: String) {

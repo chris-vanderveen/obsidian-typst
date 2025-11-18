@@ -8,7 +8,6 @@
   <img alt="Typst Version" src="https://img.shields.io/badge/v0.14.0-239dad?logo=typst&logoColor=white" />
 </a>
 
-
 Render math expressions in [Obsidian](https://obsidian.md) using [Typst](https://typst.app/) instead of MathJax.
 
 [![TypstMate](assets/demo.png)](#demo)
@@ -23,7 +22,7 @@ For details about the processor / snippet(script) / shortcut / tab jump, see [Pr
 
 I welcome [Discussions](https://github.com/azyarashi/obsidian-typst-mate/discussions/categories/show-and-tell) featuring your wonderful snippets!
 
-Are you an Obsidian LateX Suite user? Check out [this guide](docs/obsidian-latex-suite-migration.md).
+Are you an Obsidian LaTeX Suite user? Check out [this guide](docs/obsidian-latex-suite-migration.md).
 
 ---
 
@@ -49,6 +48,7 @@ Are you an Obsidian LateX Suite user? Check out [this guide](docs/obsidian-latex
 - Almost all **Typst packages** are supported (desktop app only for import local packages)
 - **Table and blockquotes support** with proper display math handling (`<br>` and `\n[\s\t]*> ` will be automatically replaced with line breaks)
 - [Excalidraw](https://www.obsidianstats.com/plugins/obsidian-excalidraw-plugin) integration
+- [Equation Citator](https://github.com/FRIEDparrot/obsidian-equation-citator) integration
 - [No more flickering inline math](https://www.obsidianstats.com/plugins/inline-math) compatibility
 - PDF Export, [Better Export PDF](https://www.obsidianstats.com/plugins/better-export-pdf), [Export Image plugin](https://www.obsidianstats.com/plugins/obsidian-export-image), and [Webpage HTML Export](https://www.obsidianstats.com/plugins/webpage-html-export) compatibility
 - Typst Tools
@@ -67,7 +67,7 @@ Turned OFF               | Turned ON
 ## Installation
 
 Currently, it's under review for the official plugin list. This process may take several months.
-Until then, please install using the official plugin [BRAT](https://tfthacker.com/brat-quick-guide).
+Until then, please install using the official plugin [BRAT](https://obsidian.md/plugins?id=obsidian42-brat).
 
 [![Screenshot](assets/install-with-brat.png)](#install-with-brat)
 
@@ -80,19 +80,23 @@ Until then, please install using the official plugin [BRAT](https://tfthacker.co
 ### Other Plugins
 
 - [Excalidraw](https://www.obsidianstats.com/plugins/obsidian-excalidraw-plugin) (use the `typst-render-to-excalidraw` command)
+- [Equation Citator](https://github.com/FRIEDparrot/obsidian-equation-citator)
 - [Markmind](https://www.obsidianstats.com/plugins/obsidian-markmind) (requires background rendering to be disabled)
 - [No more flickering inline math](https://www.obsidianstats.com/plugins/inline-math)
 - [Better Export PDF](https://www.obsidianstats.com/plugins/better-export-pdf)
 - [Export Image plugin](https://www.obsidianstats.com/plugins/obsidian-export-image)
 - [Webpage HTML Export](https://www.obsidianstats.com/plugins/webpage-html-export) (don't forget to include CSS from Style Options)
 
+If the export doesn't work correctly, try disabling background rendering before exporting.
+
 ### Default Preamble
 
 ```typst
 #set page(margin: 0pt, width: auto, height: auto)
 #show raw: set text(1.25em)
-#set text(size: fontsize)
-#let scr(it) = text(features: ("ss01",), box($cal(it)$))
+#set text(size: fontsize)  // This refers to the settings in Obsidian
+// Typst 0.13.1 or before (plugin 2.1.7 or before)
+// #let scr(it) = text(features: ("ss01",), box($cal(it)$))
 ```
 
 ### Custom Styling
@@ -110,12 +114,13 @@ Typst Mate leverages the following open-source projects:
 
 - [Typst](https://typst.app/) – a modern and powerful typesetting system
 - [MiTex](https://github.com/mitex-rs/mitex) – a fast, lightweight LaTeX to Typst converter with **high compatibility**
-- [tex2typst](https://github.com/qwinsi/tex2typst) – a fast, lightweight bidirectional converter between TeX/LaTeX and Typst with **readable output**
+- [tex2typst](https://github.com/qwinsi/tex2typst) – a fast, lightweight bidirectional converter between TeX/LaTeX and Typst with **sophisticated output**
 
 I'm grateful to the developers for making this plugin possible!
 
 ---
 
+<<<<<<< HEAD
 ## Reading Local Files (only in the Desktop App)
 
 This section contains wording required for publishing on Obsidian's official Community Plugins page, so I include it here.
@@ -123,6 +128,27 @@ This section contains wording required for publishing on Obsidian's official Com
 If the cache for a given package cannot be found inside the Vault, this plugin will fall back to accessing the same local package files used by the Typst CLI.
 For the exact locations, see [typst/README.md#local-packages](https://github.com/typst/packages/blob/main/README.md#local-packages).
 
+=======
+## Disclosures
+
+This section contains wording required for publishing on Obsidian's official Community Plugins page, so I include it here.
+
+### Network
+
+This plugin makes use of a large WebAssembly (Wasm) binary.
+Bundling it directly would significantly increase startup time, so it is automatically downloaded from the [Releases](https://github.com/azyarashi/obsidian-typst-mate/releases) page instead.
+
+> [!WARNING]
+> (Android devices only) Android imposes strict limits on heap size, which may cause crashes when loading WebAssembly. Resolving this requires support from the Obsidian team or a rooted device.
+
+Network access is also required for installing Typst packages and for displaying lists of packages and symbols within Typst Tools.
+
+### Reading Local Files (Desktop App only)
+
+If the cache for a given package cannot be found inside the Vault, this plugin will fall back to accessing the same local package files used by the Typst CLI.
+For the exact locations, see [typst/README.md#local-packages](https://github.com/typst/packages/blob/main/README.md#local-packages).
+
+>>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
 ## Planned Update Contents
 
 See [Discussion#10](https://github.com/azyarashi/obsidian-typst-mate/discussions/10).

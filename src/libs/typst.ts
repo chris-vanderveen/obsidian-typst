@@ -21,7 +21,7 @@ export default class TypstManager {
 
   beforeKind?: ProcessorKind;
   beforeId?: string;
-  beforeContent = '';
+  beforeElement: HTMLElement = document.createElement('span');
 
   constructor(plugin: ObsidianTypstMate) {
     this.plugin = plugin;
@@ -29,7 +29,12 @@ export default class TypstManager {
 
   async init() {
     this.ready = false;
-    await this.plugin.typst.init(this.plugin.app.vault.config.baseFontSize ?? DEFAULT_FONT_SIZE);
+    this.plugin.updateCrashStatus(true);
+
+    await this.plugin.typst.init(
+      await this.plugin.app.vault.adapter.readBinary(this.plugin.wasmPath),
+      this.plugin.app.vault.config.baseFontSize ?? DEFAULT_FONT_SIZE,
+    );
 
     const fontPaths = (await this.plugin.app.vault.adapter.list(this.plugin.fontsDirNPath)).files.filter((file) =>
       file.endsWith('.font'),
@@ -87,6 +92,7 @@ export default class TypstManager {
       if (result instanceof Promise) {
         result.then(() => {
           this.ready = true;
+          this.plugin.updateCrashStatus(false);
 
           const waitingElements = document.querySelectorAll('.typstmate-waiting');
           for (const el of waitingElements) {
@@ -95,10 +101,15 @@ export default class TypstManager {
             this.render(content, el, el.getAttribute('kind')!);
           }
         });
-      } else this.ready = true;
+      } else {
+        this.ready = true;
+        this.plugin.updateCrashStatus(false);
+      }
     } else {
       await this.plugin.typst.store({ fonts, processors, sources });
+
       this.ready = true;
+      this.plugin.updateCrashStatus(false);
     }
   }
 
@@ -154,6 +165,13 @@ export default class TypstManager {
         // ? プラグイン No more flickering inline math との互換性のため
         if (code.startsWith('{}') && code.endsWith('{}'))
           code = code.slice(code.at(2) === ' ' ? 3 : 2, code.at(-3) === ' ' ? -3 : -2);
+        // ? プラグイン obsidian-equation-citator との互換性のため
+        if (code.startsWith('\\ref'))
+          return 10 <= code.length
+            ? document.createSpan(code.slice(5, -1))
+            : this.plugin.originalTex2chtml(code, {
+                display: kind !== 'inline',
+              });
 
         processor =
           this.plugin.settings.processor.inline?.processors.find((p) => code.startsWith(`${p.id}:`)) ??
@@ -202,11 +220,12 @@ export default class TypstManager {
     typstSVGEl.source = code;
     typstSVGEl.processor = processor;
     containerEl.appendChild(typstSVGEl);
+    // ちらつき防止
+    if (this.beforeKind === kind && this.beforeId === processor.id) typstSVGEl.replaceChildren(this.beforeElement);
+
     typstSVGEl.render();
 
-    // ちらつき防止(仮)
-    if (this.beforeKind === kind && this.beforeId === processor.id) typstSVGEl.innerHTML = this.beforeContent;
-
+    this.beforeElement = typstSVGEl;
     return containerEl as HTMLElement;
   }
 

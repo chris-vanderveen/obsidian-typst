@@ -1,7 +1,11 @@
 {
 	"id": "typst-mate",
 	"name": "Typst Mate",
+<<<<<<< HEAD
 	"version": "2.2.0",
+=======
+	"version": "2.2.1",
+>>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
 	"minAppVersion": "1.0.0",
 	"description": "Render math expressions with Typst instead of MathJax.",
 	"author": "azyarashi",

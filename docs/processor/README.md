@@ -46,7 +46,7 @@ Becomes available when the Excalidraw plugin is installed. Can be added using th
 Please note the following:
 
 - Settings like `Use Theme Text Color` and `Base Color` do not work.
-- Currently, editing is not supported. However, you can view the original code using a method similar to LaTeX (`Obsidian Tools Panel > Utility actions > Open the image-link or LaTeX-formula editor`).
+- Currently, editing is not supported.
 
 ## Notes
 

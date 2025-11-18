@@ -105,7 +105,7 @@ impl Typst {
         // プロセッサー
         for p in procs_serde {
             self.world.add_file_text(
-                VirtualPath::new(format!("{}--{}.typ", p.kind, p.id)),
+                VirtualPath::new(format!("{}-{}.typ", p.kind, p.id)),
                 p.format,
             );
         }
@@ -149,7 +149,6 @@ impl Typst {
     }
 
     // ? ちらつき防止のためカーソルの親括弧の計算は TS 側でする
-
     pub fn mitex(&mut self, code: &str) -> Result<JsValue, JsValue> {
         match convert_math(code, None) {
             Ok(result) => Ok(JsValue::from_str(&result)),
@@ -158,17 +157,17 @@ impl Typst {
     }
 
     fn update_source(&mut self, vpath: VirtualPath, code: &str) {
-        let result = self.world.source(FileId::new(None, vpath.clone()));
+        let file_id = FileId::new(None, vpath.clone());
+        let result = self.world.source(file_id);
 
         match result {
-            Ok(mut source) => {
-                source.replace(code);
-                self.world.set_main(source);
+            Ok(_source) => {
+                self.world.set_main(file_id);
+                self.world.replace(code);
             }
             Err(_e) => {
                 self.world.add_file_text(vpath.clone(), code.into());
-                self.world
-                    .set_main(self.world.source(FileId::new(None, vpath)).unwrap());
+                self.world.set_main(file_id);
             }
         }
     }
@@ -180,7 +179,7 @@ impl Typst {
             self.last_kind = kind.to_string();
             self.last_id = id.to_string();
 
-            self.update_source(VirtualPath::new(format!("{}--{}.typ", kind, id)), code);
+            self.update_source(VirtualPath::new(format!("{}_{}.typ", kind, id)), code);
         }
 
         let Warned { output, warnings } = typst::compile::<PagedDocument>(&mut self.world);
@@ -193,7 +192,8 @@ impl Typst {
 
                 // ? typst_svg::svg は背景が透過しない
                 let svg = typst_svg::svg_frame(&document.pages[0].frame)
-                    .replace("<svg class", "<svg style=\"overflow: visible;\" class");
+                    .replace("#000000", "var(--typst-base-color)")
+                    .replacen("<svg class", "<svg style=\"overflow: visible;\" class", 1);
 
                 svg::svg(svg, warnings, &self.world)
             }
