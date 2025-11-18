@@ -570,11 +570,7 @@ checksum = "998b056554fbe42e03ae0e152895cd1a7e1002aec800fdc6635d20270260c46f"
 dependencies = [
  "bit-set",
  "regex-automata",
-<<<<<<< HEAD
- "regex-syntax 0.8.6",
-=======
  "regex-syntax 0.8.8",
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
 ]
 
 [[package]]
@@ -813,11 +809,7 @@ version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56204c972d08e844f3db13b1e14be769f846e576699b46d4f4637cc4f8f70102"
 dependencies = [
-<<<<<<< HEAD
- "bitflags 2.9.4",
-=======
  "bitflags 2.10.0",
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
  "hayro-font",
  "hayro-syntax",
  "kurbo 0.12.0",
@@ -828,11 +820,7 @@ dependencies = [
  "siphasher",
  "skrifa",
  "smallvec",
-<<<<<<< HEAD
- "yoke 0.8.0",
-=======
  "yoke 0.8.1",
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
 ]
 
 [[package]]
@@ -1207,15 +1195,6 @@ checksum = "edcd27d72f2f071c64249075f42e205ff93c9a4c5f6c6da53e79ed9f9832c285"
 [[package]]
 name = "imagesize"
 version = "0.14.0"
-<<<<<<< HEAD
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09e54e57b4c48b40f7aec75635392b12b3421fa26fe8b4332e63138ed278459c"
-
-[[package]]
-name = "indexmap"
-version = "2.11.4"
-=======
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "09e54e57b4c48b40f7aec75635392b12b3421fa26fe8b4332e63138ed278459c"
 
@@ -1289,11 +1268,7 @@ dependencies = [
  "subsetter",
  "tiny-skia-path",
  "xmp-writer",
-<<<<<<< HEAD
- "yoke 0.8.0",
-=======
  "yoke 0.8.1",
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
  "zune-jpeg",
 ]
 
@@ -1593,8 +1568,6 @@ dependencies = [
 ]
 
 [[package]]
-<<<<<<< HEAD
-=======
 name = "object"
 version = "0.32.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1604,7 +1577,6 @@ dependencies = [
 ]
 
 [[package]]
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
 name = "once_cell"
 version = "1.21.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1820,15 +1792,6 @@ dependencies = [
 [[package]]
 name = "proc-macro-hack"
 version = "0.5.20+deprecated"
-<<<<<<< HEAD
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc375e1527247fe1a97d8b7156678dfe7c1af2fc075c9a4db3690ecd2a148068"
-
-[[package]]
-name = "proc-macro2"
-version = "1.0.101"
-=======
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dc375e1527247fe1a97d8b7156678dfe7c1af2fc075c9a4db3690ecd2a148068"
 
@@ -2400,11 +2363,7 @@ dependencies = [
  "heck",
  "proc-macro2",
  "quote",
-<<<<<<< HEAD
- "syn 2.0.106",
-=======
  "syn 2.0.109",
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
 ]
 
 [[package]]
@@ -2503,30 +2462,15 @@ checksum = "144f754d318415ac792f9d69fc87abbbfc043ce2ef041c60f16ad828f638717d"
 
 [[package]]
 name = "thiserror"
-<<<<<<< HEAD
-version = "2.0.16"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3467d614147380f2e4e374161426ff399c91084acd2363eaf549172b3d5e60c0"
-=======
 version = "2.0.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f63587ca0f12b72a0600bcba1d40081f830876000bb46dd2337a3051618f4fc8"
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
 dependencies = [
  "thiserror-impl",
 ]
 
 [[package]]
 name = "thiserror-impl"
-<<<<<<< HEAD
-version = "2.0.16"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6c5e1be1c48b9172ee610da68fd9cd2770e7a4056cb3fc98710ee6906f0c7960"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.106",
-=======
 version = "2.0.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3ff15c8ecd7de3849db632e14d18d2571fa09dfc5ed93479bc4485c7a517c913"
@@ -2534,7 +2478,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.109",
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
 ]
 
 [[package]]
@@ -3380,11 +3323,7 @@ version = "0.228.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4abf1132c1fdf747d56bbc1bb52152400c70f336870f968b85e89ea422198ae3"
 dependencies = [
-<<<<<<< HEAD
- "bitflags 2.9.4",
-=======
  "bitflags 2.10.0",
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
 ]
 
 [[package]]

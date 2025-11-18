@@ -7,10 +7,15 @@ import {
   Setting,
 } from "obsidian";
 
-import type { CodeblockProcessor, DisplayProcessor, ExcalidrawProcessor, InlineProcessor } from '@/libs/processor';
-import type { Snippet } from '@/libs/snippet';
-import type ObsidianTypstMate from '@/main';
-import { CustomFragment } from '@/utils/customFragment';
+import type {
+  CodeblockProcessor,
+  DisplayProcessor,
+  ExcalidrawProcessor,
+  InlineProcessor,
+} from "@/libs/processor";
+import type { Snippet } from "@/libs/snippet";
+import type ObsidianTypstMate from "@/main";
+import { CustomFragment } from "@/utils/customFragment";
 
 import { FontList } from "./components/font";
 import { PackagesList } from "./components/package";
@@ -63,10 +68,10 @@ export const DEFAULT_SETTINGS: Settings = {
   enableShortcutKeys: true,
   openTypstToolsOnStartup: true,
   preamble: [
-    '#set page(margin: 0pt, width: auto, height: auto)',
-    '#show raw: set text(size: 1.25em)',
-    '#set text(size: fontsize)',
-  ].join('\n'),
+    "#set page(margin: 0pt, width: auto, height: auto)",
+    "#show raw: set text(size: 1.25em)",
+    "#set text(size: fontsize)",
+  ].join("\n"),
   processor: {
     inline: {
       processors: [
@@ -272,8 +277,8 @@ export class SettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName('Open Typst Tools on Startup')
-      .setDesc('Open Typst tools in side panel when launching Obsidian.')
+      .setName("Open Typst Tools on Startup")
+      .setDesc("Open Typst tools in side panel when launching Obsidian.")
       .addToggle((toggle) => {
         toggle.setValue(this.plugin.settings.openTypstToolsOnStartup);
         toggle.onChange((value) => {
@@ -688,10 +693,10 @@ export class SettingTab extends PluginSettingTab {
       });
 
     const div = containerEl.createDiv();
-    div.textContent = 'Are you looking for the snippet settings? It is in ';
-    const a = div.createEl('a', { text: 'Leaf' });
-    a.addEventListener('click', async () => {
-      await this.plugin.activateLeaf(true, 'snippets');
+    div.textContent = "Are you looking for the snippet settings? It is in ";
+    const a = div.createEl("a", { text: "Leaf" });
+    a.addEventListener("click", async () => {
+      await this.plugin.activateLeaf(true, "snippets");
       this.app.setting.close();
     });
   }

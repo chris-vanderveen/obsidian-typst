@@ -1,18 +1,18 @@
-import type fsModule from 'node:fs';
-import type pathModule from 'node:path';
+import type fsModule from "node:fs";
+import type pathModule from "node:path";
 
-import { expose } from 'comlink';
-import type { EditorPosition } from 'obsidian';
-import pako from 'pako';
-import untar from 'untar-sync';
+import { expose } from "comlink";
+import type { EditorPosition } from "obsidian";
+import pako from "pako";
+import untar from "untar-sync";
 
-import init, { type InitOutput, Typst } from '../../pkg/typst_wasm.js';
+import init, { type InitOutput, Typst } from "../../pkg/typst_wasm.js";
 
 let main: Main;
 
 const map = new Map<string, Uint8Array | undefined>();
 const xhr = new XMLHttpRequest();
-xhr.overrideMimeType('text/plain; charset=x-user-defined');
+xhr.overrideMimeType("text/plain; charset=x-user-defined");
 
 export default class $ {
   module!: InitOutput;
@@ -22,12 +22,16 @@ export default class $ {
   path?: typeof pathModule;
   baseDirPath: string;
 
-  constructor(localPackagesDirPaths: string[], baseDirPath: string, isDesktopApp: boolean) {
+  constructor(
+    localPackagesDirPaths: string[],
+    baseDirPath: string,
+    isDesktopApp: boolean,
+  ) {
     this.localPackagesDirPaths = localPackagesDirPaths;
     this.baseDirPath = baseDirPath;
     if (isDesktopApp) {
-      this.fs = require('node:fs');
-      this.path = require('node:path');
+      this.fs = require("node:fs");
+      this.path = require("node:path");
     }
   }
 
@@ -40,7 +44,11 @@ export default class $ {
   }
 
   store(args: Args): void {
-    this.typst.store(args.fonts ?? [], args.sources ?? [], args.processors ?? []);
+    this.typst.store(
+      args.fonts ?? [],
+      args.sources ?? [],
+      args.processors ?? [],
+    );
   }
 
   svg(code: string, kind: string, id: string): SVGResult {
@@ -82,7 +90,8 @@ export default class $ {
     const readBinary = (vpath: string, rpath: string) => {
       const f = this.fs?.readFileSync ?? main.readBinary;
 
-      if (this.path && !this.path.isAbsolute(rpath)) rpath = `${this.baseDirPath}/${rpath}`;
+      if (this.path && !this.path.isAbsolute(rpath))
+        rpath = `${this.baseDirPath}/${rpath}`;
 
       const result = f(rpath);
       if (result instanceof Promise) {
@@ -101,23 +110,30 @@ export default class $ {
       throw 0; // FileError::Other(implementation constraints)
     };
 
-    if (path.startsWith('@')) {
+    if (path.startsWith("@")) {
       isPackage = true;
       path = path.slice(1);
-      const [namespace, name, version] = path.split('/');
-      const vpath = path.split('/').slice(3).join('/');
+      const [namespace, name, version] = path.split("/");
+      const vpath = path.split("/").slice(3).join("/");
       const p = `${namespace}/${name}/${version}`;
 
-      if (namespace === 'preview') {
+      if (namespace === "preview") {
         if (this.fs) {
           try {
-            return readBinary(`@${path}`, `${this.localPackagesDirPaths[0]}/${p}/${vpath}`);
+            return readBinary(
+              `@${path}`,
+              `${this.localPackagesDirPaths[0]}/${p}/${vpath}`,
+            );
           } catch {}
         }
 
-        if (vpath === 'typst.toml') main.notice(`Downloading ${name}...`, 500);
+        if (vpath === "typst.toml") main.notice(`Downloading ${name}...`, 500);
 
-        xhr.open('GET', `https://packages.typst.org/preview/${name}-${version}.tar.gz`, false);
+        xhr.open(
+          "GET",
+          `https://packages.typst.org/preview/${name}-${version}.tar.gz`,
+          false,
+        );
         xhr.send(null);
         if (xhr.status === 0) throw 21; // PackageError::NetworkFailed
         if (xhr.status === 404) throw 22; // PackageError::NotFound
@@ -139,15 +155,21 @@ export default class $ {
           }[];
           main.writePackage(p, files);
 
-          for (const f of files.filter((f) => f.type === '0')) {
+          for (const f of files.filter((f) => f.type === "0")) {
             map.set(`@${p}/${f.name}`, new Uint8Array(f.buffer));
           }
 
-          for (const f of files.filter((f) => f.type === '2')) {
-            map.set(`@${p}/${f.name}`, new Uint8Array(map.get(f.linkname!)?.buffer || new ArrayBuffer(0)));
+          for (const f of files.filter((f) => f.type === "2")) {
+            map.set(
+              `@${p}/${f.name}`,
+              new Uint8Array(
+                map.get(f.linkname!)?.buffer || new ArrayBuffer(0),
+              ),
+            );
           }
 
-          if (vpath === 'typst.toml') main.notice(`Downloaded successfully!`, 500);
+          if (vpath === "typst.toml")
+            main.notice(`Downloaded successfully!`, 500);
         } catch (e) {
           console.error(e);
           throw 20; // PackageError::MalformedArchive;
@@ -236,7 +258,7 @@ export interface PDFResult {
 }
 
 export interface BracketPair {
-  kind: 'paren' | 'bracket' | 'brace';
+  kind: "paren" | "bracket" | "brace";
   depth: number;
   open_offset: number;
   open_pos: EditorPosition;

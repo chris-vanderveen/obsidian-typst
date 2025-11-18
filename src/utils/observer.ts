@@ -1,4 +1,4 @@
-import { debounce } from 'obsidian';
+import { debounce } from "obsidian";
 
 type Callback = (entry: ResizeObserverEntry) => void;
 
@@ -10,7 +10,10 @@ export class Observer {
   private registered = new Map<Element, { cb: Callback; debounceMs: number }>();
   private waiting = new Set<Element>();
   private parentToChildren = new Map<Element, Set<Element>>();
-  private parentDebouncers = new Map<Element, (entry: ResizeObserverEntry) => void>();
+  private parentDebouncers = new Map<
+    Element,
+    (entry: ResizeObserverEntry) => void
+  >();
 
   constructor() {
     // 親要素のリサイズを監視

@@ -1,6 +1,6 @@
-import { type App, Modal, Notice, Setting } from 'obsidian';
+import { type App, Modal, Notice, Setting } from "obsidian";
 
-import type { FontInfo } from '@/libs/worker';
+import type { FontInfo } from "@/libs/worker";
 
 export class FontModal extends Modal {
   constructor(app: App, fontInfoArray: FontInfo[]) {
@@ -11,19 +11,25 @@ export class FontModal extends Modal {
         .setName(fontInfo.family)
         .setHeading()
         .addButton((button) => {
-          button.setIcon('copy');
-          button.setTooltip('Copy Font Family Name');
+          button.setIcon("copy");
+          button.setTooltip("Copy Font Family Name");
 
           button.onClick(async () => {
             await navigator.clipboard.writeText(fontInfo.family);
-            new Notice('Copied!');
+            new Notice("Copied!");
           });
         });
 
       new Setting(this.contentEl).setName(`style: ${fontInfo.variant.style}`);
-      new Setting(this.contentEl).setName(`weight: ${fontWeightAliasFromNumber(fontInfo.variant.weight)}`);
-      new Setting(this.contentEl).setName(`stretch: ${fontStretchAliasFromRatio(fontInfo.variant.stretch)}`);
-      new Setting(this.contentEl).setName(`flags: ${fontFlagsToArray(fontInfo.flags)}`);
+      new Setting(this.contentEl).setName(
+        `weight: ${fontWeightAliasFromNumber(fontInfo.variant.weight)}`,
+      );
+      new Setting(this.contentEl).setName(
+        `stretch: ${fontStretchAliasFromRatio(fontInfo.variant.stretch)}`,
+      );
+      new Setting(this.contentEl).setName(
+        `flags: ${fontFlagsToArray(fontInfo.flags)}`,
+      );
     }
   }
 }
@@ -106,10 +112,10 @@ export const fontFlagsToArray = (bits: number): string[] => {
   const result: string[] = [];
 
   for (const [key, value] of Object.entries(FontFlagAlias)) {
-    if (typeof value !== 'number') continue;
+    if (typeof value !== "number") continue;
     if ((bits & value) !== 0) result.push(key.toUpperCase());
   }
 
-  if (result.length === 0) result.push('none');
+  if (result.length === 0) result.push("none");
   return result;
 };

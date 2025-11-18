@@ -120,15 +120,6 @@ I'm grateful to the developers for making this plugin possible!
 
 ---
 
-<<<<<<< HEAD
-## Reading Local Files (only in the Desktop App)
-
-This section contains wording required for publishing on Obsidian's official Community Plugins page, so I include it here.
-
-If the cache for a given package cannot be found inside the Vault, this plugin will fall back to accessing the same local package files used by the Typst CLI.
-For the exact locations, see [typst/README.md#local-packages](https://github.com/typst/packages/blob/main/README.md#local-packages).
-
-=======
 ## Disclosures
 
 This section contains wording required for publishing on Obsidian's official Community Plugins page, so I include it here.
@@ -148,7 +139,6 @@ Network access is also required for installing Typst packages and for displaying
 If the cache for a given package cannot be found inside the Vault, this plugin will fall back to accessing the same local package files used by the Typst CLI.
 For the exact locations, see [typst/README.md#local-packages](https://github.com/typst/packages/blob/main/README.md#local-packages).
 
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
 ## Planned Update Contents
 
 See [Discussion#10](https://github.com/azyarashi/obsidian-typst-mate/discussions/10).

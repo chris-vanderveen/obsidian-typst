@@ -1,4 +1,4 @@
-declare module '@/data/shortcuts.json' {
+declare module "@/data/shortcuts.json" {
   interface Shortcut {
     content: string;
     category: string;

@@ -1,14 +1,14 @@
-import type { Processor, ProcessorKind } from '@/libs/processor';
-import type { Diagnostic, SVGResult } from '@/libs/worker';
-import type ObsidianTypstMate from '@/main';
-import { DiagnosticModal } from '@/ui/modals/diagnostic';
+import type { Processor, ProcessorKind } from "@/libs/processor";
+import type { Diagnostic, SVGResult } from "@/libs/worker";
+import type ObsidianTypstMate from "@/main";
+import { DiagnosticModal } from "@/ui/modals/diagnostic";
 
 export default class TypstElement extends HTMLElement {
   kind!: ProcessorKind;
   source!: string;
   processor!: Processor;
 
-  renderingFormat!: 'svg';
+  renderingFormat!: "svg";
 
   plugin!: ObsidianTypstMate;
 
@@ -19,15 +19,23 @@ export default class TypstElement extends HTMLElement {
       const result = this.plugin.typst.svg(input, this.kind, this.processor.id);
 
       if (result instanceof Promise) {
-        if (this.kind !== 'inline' && this.processor.fitToParentWidth && !this.source.includes('<br>'))
+        if (
+          this.kind !== "inline" &&
+          this.processor.fitToParentWidth &&
+          !this.source.includes("<br>")
+        )
           this.plugin.observer.register(
             this,
             (entry: ResizeObserverEntry) => {
               const input =
                 `#let WIDTH = ${(entry.contentRect.width * 3) / 4}pt\n` +
-                this.format().replace('width: auto', 'width: WIDTH');
+                this.format().replace("width: auto", "width: WIDTH");
 
-              const result = this.plugin.typst.svg(input, this.kind, this.processor.id) as Promise<SVGResult>;
+              const result = this.plugin.typst.svg(
+                input,
+                this.kind,
+                this.processor.id,
+              ) as Promise<SVGResult>;
 
               result
                 .then((result: SVGResult) => this.postProcess(result))
@@ -50,16 +58,19 @@ export default class TypstElement extends HTMLElement {
   }
 
   format() {
-    let formatted = this.processor.format.replace('{CODE}', this.source);
-    formatted = this.processor.noPreamble ? formatted : `${this.plugin.settings.preamble}\n${formatted}`;
+    let formatted = this.processor.format.replace("{CODE}", this.source);
+    formatted = this.processor.noPreamble
+      ? formatted
+      : `${this.plugin.settings.preamble}\n${formatted}`;
 
-    if (this.kind === 'display') formatted = formatted.replaceAll('<br>', '\n');
+    if (this.kind === "display") formatted = formatted.replaceAll("<br>", "\n");
 
     return formatted;
   }
 
   postProcess(result: SVGResult) {
-    if (this.plugin.settings.failOnWarning && result.diags.length !== 0) throw result.diags;
+    if (this.plugin.settings.failOnWarning && result.diags.length !== 0)
+      throw result.diags;
 
     this.plugin.typstManager.beforeKind = this.kind;
     this.plugin.typstManager.beforeId = this.processor.id;
@@ -70,18 +81,20 @@ export default class TypstElement extends HTMLElement {
     if (this.plugin.settings.enableMathjaxFallback) {
       this.replaceChildren(
         this.plugin.originalTex2chtml(this.source, {
-          display: this.kind !== 'inline',
+          display: this.kind !== "inline",
         }),
       );
     } else {
-      const diagEl = document.createElement('span');
-      diagEl.className = 'typstmate-error';
+      const diagEl = document.createElement("span");
+      diagEl.className = "typstmate-error";
 
-      diagEl.textContent = `${err[0]?.message}${err[0]?.hints.length !== 0 ? ` [${err[0]?.hints.length} hints]` : ''}`;
+      diagEl.textContent = `${err[0]?.message}${err[0]?.hints.length !== 0 ? ` [${err[0]?.hints.length} hints]` : ""}`;
 
       // TODO: エラー箇所を表示する
       if (err[0]?.hints.length !== 0)
-        diagEl.addEventListener('click', () => new DiagnosticModal(this.plugin.app, err).open());
+        diagEl.addEventListener("click", () =>
+          new DiagnosticModal(this.plugin.app, err).open(),
+        );
 
       this.plugin.typstManager.beforeKind = this.kind;
       this.plugin.typstManager.beforeId = this.processor.id;

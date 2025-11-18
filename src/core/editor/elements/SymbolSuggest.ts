@@ -1,10 +1,10 @@
-import type { EditorPosition } from 'obsidian';
+import type { EditorPosition } from "obsidian";
 
-import type ObsidianTypstMate from '@/main';
-import { type SymbolData, searchSymbols } from '@/utils/symbolSearcher';
-import type { PopupPosition } from '../editor';
+import type ObsidianTypstMate from "@/main";
+import { type SymbolData, searchSymbols } from "@/utils/symbolSearcher";
+import type { PopupPosition } from "../editor";
 
-import './symbol-suggest.css';
+import "./symbol-suggest.css";
 
 export const symbolRegex =
   /(?:^| |\$|\(|\)|\[|\]|\{|\}|<|>|\+|-|\/|\*|=|!|\?|#|%|&|'|:|;|,|\d)(?<symbol>\\?([a-zA-Z.][a-zA-Z.]+|[-<>|=[\]~:-][-<>|=[\]~:-]+))$/;
@@ -26,9 +26,9 @@ export default class SymbolSuggestElement extends HTMLElement {
 
   startup(plugin: ObsidianTypstMate) {
     this.plugin = plugin;
-    this.addClasses(['typstmate-symbols', 'typstmate-temporary']);
+    this.addClasses(["typstmate-symbols", "typstmate-temporary"]);
     this.hide();
-    this.items = this.createEl('div', { cls: 'items' });
+    this.items = this.createEl("div", { cls: "items" });
   }
 
   suggest(query: string, cursorPos: EditorPosition) {
@@ -40,30 +40,33 @@ export default class SymbolSuggestElement extends HTMLElement {
       ch: cursorPos.ch - query.length,
     };
 
-    const position = this.plugin.editorHelper.calculatePopupPosition(this.queryPos, cursorPos);
+    const position = this.plugin.editorHelper.calculatePopupPosition(
+      this.queryPos,
+      cursorPos,
+    );
 
-    this.render(position, query.at(0) === '\\');
+    this.render(position, query.at(0) === "\\");
   }
 
   private render(position: PopupPosition, latex: boolean) {
     this.prevEl = document.activeElement as HTMLElement;
-    this.style.setProperty('--preview-left', `${position.x}px`);
-    this.style.setProperty('--preview-top', `${position.y}px`);
+    this.style.setProperty("--preview-left", `${position.x}px`);
+    this.style.setProperty("--preview-top", `${position.y}px`);
 
-    if (this.style.display === 'none') this.renderFirst();
+    if (this.style.display === "none") this.renderFirst();
     this.items.empty();
 
     this.selectedIndex = -1;
     this.candidates.forEach((symbol, index) => {
-      const item = this.items.createEl('div', { cls: 'item typstmate-symbol' });
+      const item = this.items.createEl("div", { cls: "item typstmate-symbol" });
       item.dataset.index = index.toString();
 
       item.addClass(symbol.kind!);
       if (latex) {
-        item.addClass('latex');
+        item.addClass("latex");
         item.textContent = `${symbol.sym}: ${symbol.latexName} (${symbol.mathClass})`;
       } else {
-        item.addClass('typst');
+        item.addClass("typst");
         item.textContent = `${symbol.sym}: ${symbol.name} (${symbol.mathClass})`;
       }
 
@@ -74,26 +77,32 @@ export default class SymbolSuggestElement extends HTMLElement {
   private renderFirst() {
     this.prevEl = document.activeElement as HTMLElement;
     this.show();
-    document.addEventListener('mousemove', this.mouseMoveListener);
-    document.addEventListener('mousedown', this.mouseDownListener);
+    document.addEventListener("mousemove", this.mouseMoveListener);
+    document.addEventListener("mousedown", this.mouseDownListener);
   }
 
   close() {
     this.hide();
-    document.removeEventListener('mousemove', this.mouseMoveListener);
-    document.removeEventListener('mousedown', this.mouseDownListener);
+    document.removeEventListener("mousemove", this.mouseMoveListener);
+    document.removeEventListener("mousedown", this.mouseDownListener);
   }
 
   onMouseMove(e: MouseEvent) {
-    const item = (e.target as HTMLElement).closest('.item') as HTMLElement | null;
+    const item = (e.target as HTMLElement).closest(
+      ".item",
+    ) as HTMLElement | null;
     if (!item) return;
     this.updateSelection(Number(item.dataset.index!));
   }
 
   onMouseDown(e: MouseEvent) {
-    const item = (e.target as HTMLElement).closest('.item') as HTMLElement | null;
+    const item = (e.target as HTMLElement).closest(
+      ".item",
+    ) as HTMLElement | null;
     if (!item) return;
-    this.execute(this.candidates[Number(item.dataset.index)] ?? this.candidates[0]!);
+    this.execute(
+      this.candidates[Number(item.dataset.index)] ?? this.candidates[0]!,
+    );
     this.close();
     e.preventDefault();
   }
@@ -103,16 +112,21 @@ export default class SymbolSuggestElement extends HTMLElement {
 
     switch (e.key) {
       // select
-      case 'ArrowUp':
-      case 'ArrowDown': {
+      case "ArrowUp":
+      case "ArrowDown": {
         e.preventDefault();
         const candidatesLength = this.candidates.length;
-        if (e.key === 'ArrowUp') {
-          if (this.selectedIndex === -1) this.updateSelection(candidatesLength - 1);
-          else this.updateSelection((this.selectedIndex - 1 + candidatesLength) % candidatesLength);
+        if (e.key === "ArrowUp") {
+          if (this.selectedIndex === -1)
+            this.updateSelection(candidatesLength - 1);
+          else
+            this.updateSelection(
+              (this.selectedIndex - 1 + candidatesLength) % candidatesLength,
+            );
         } else {
           if (this.selectedIndex === -1) this.updateSelection(0);
-          else this.updateSelection((this.selectedIndex + 1) % candidatesLength);
+          else
+            this.updateSelection((this.selectedIndex + 1) % candidatesLength);
         }
 
         this.scrollSelectedIntoView();
@@ -120,19 +134,25 @@ export default class SymbolSuggestElement extends HTMLElement {
       }
 
       // complete
-      case 'Tab':
-      case 'ArrowRight': {
+      case "Tab":
+      case "ArrowRight": {
         e.preventDefault();
-        if (this.selectedIndex >= 0) this.complete(this.candidates[this.selectedIndex]! ?? this.candidates[0]!);
+        if (this.selectedIndex >= 0)
+          this.complete(
+            this.candidates[this.selectedIndex]! ?? this.candidates[0]!,
+          );
         else this.complete(this.candidates[0]!);
         return;
       }
 
       // execute
-      case 'Enter': {
+      case "Enter": {
         this.prevEl?.focus();
         e.preventDefault();
-        if (this.selectedIndex >= 0) this.execute(this.candidates[this.selectedIndex]! ?? this.candidates[0]!);
+        if (this.selectedIndex >= 0)
+          this.execute(
+            this.candidates[this.selectedIndex]! ?? this.candidates[0]!,
+          );
         else this.execute(this.candidates[0]!);
         this.close();
         return;
@@ -143,7 +163,11 @@ export default class SymbolSuggestElement extends HTMLElement {
   private complete(symbol: SymbolData) {
     if (symbol.name === this.query) return this.execute(symbol);
 
-    this.plugin.editorHelper.replaceWithLength(symbol.name, this.queryPos!, this.query!.length);
+    this.plugin.editorHelper.replaceWithLength(
+      symbol.name,
+      this.queryPos!,
+      this.query!.length,
+    );
   }
 
   private execute(symbol: SymbolData) {
@@ -151,20 +175,25 @@ export default class SymbolSuggestElement extends HTMLElement {
     if (this.plugin.settings.complementSymbolWithUnicode) content = symbol.sym;
     else content = symbol.name;
 
-    if (!['op', 'Large'].includes(symbol.mathClass)) content = `${content} `;
+    if (!["op", "Large"].includes(symbol.mathClass)) content = `${content} `;
 
-    this.plugin.editorHelper.replaceWithLength(content, this.queryPos!, this.query!.length);
+    this.plugin.editorHelper.replaceWithLength(
+      content,
+      this.queryPos!,
+      this.query!.length,
+    );
   }
 
   private updateSelection(newIndex: number) {
-    if (newIndex === this.selectedIndex) return this.items.children[newIndex]?.classList.add('selected');
-    this.items.children[this.selectedIndex]?.classList.remove('selected');
-    this.items.children[newIndex]?.classList.add('selected');
+    if (newIndex === this.selectedIndex)
+      return this.items.children[newIndex]?.classList.add("selected");
+    this.items.children[this.selectedIndex]?.classList.remove("selected");
+    this.items.children[newIndex]?.classList.add("selected");
     this.selectedIndex = newIndex;
   }
 
   private scrollSelectedIntoView() {
     const el = this.items.children[this.selectedIndex];
-    if (el) el.scrollIntoView({ block: 'nearest', behavior: 'auto' });
+    if (el) el.scrollIntoView({ block: "nearest", behavior: "auto" });
   }
 }

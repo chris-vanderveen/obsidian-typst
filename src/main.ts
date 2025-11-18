@@ -14,13 +14,15 @@ import {
   renderMath,
   requestUrl,
   type WorkspaceLeaf,
-<<<<<<< HEAD
   TFile,
   Modal,
   addIcon,
   setIcon,
 } from "obsidian";
+import { CreateTemplateModal } from "./ui/modals/createTemplate";
+import { TemplatePickerModal } from "./ui/modals/templatePicker";
 import { tex2typst, typst2tex } from "tex2typst";
+import { BASE_COLOR_VAR } from "./constants";
 import { EditorHelper } from "./core/editor/editor";
 import {
   DEFAULT_SETTINGS,
@@ -33,8 +35,6 @@ import type $ from "./libs/worker";
 import Typst from "./libs/worker";
 import TypstWorker from "./libs/worker?worker&inline";
 import { ExcalidrawModal } from "./ui/modals/excalidraw";
-import { CreateTemplateModal } from "./ui/modals/createTemplate";
-import { TemplatePickerModal } from "./ui/modals/templatePicker";
 import { TypstPDFView } from "./ui/views/typst-pdf/typstPDF";
 import { TypstTextView } from "./ui/views/typst-text/typstText";
 import { TypstToolsView } from "./ui/views/typst-tools/typstTools";
@@ -44,26 +44,6 @@ import {
 } from "./utils/findMathSegments";
 import { Observer } from "./utils/observer";
 import { zip } from "./utils/packageCompressor";
-=======
-} from 'obsidian';
-
-import { tex2typst, typst2tex } from 'tex2typst';
-import { BASE_COLOR_VAR } from './constants';
-import { EditorHelper } from './core/editor/editor';
-import { DEFAULT_SETTINGS, type Settings, SettingTab } from './core/settings/settings';
-import ExcalidrawPlugin from './extensions/excalidraw';
-import TypstManager from './libs/typst';
-import type $ from './libs/worker';
-import Typst from './libs/worker';
-import TypstWorker from './libs/worker?worker&inline';
-import { ExcalidrawModal } from './ui/modals/excalidraw';
-import { TypstPDFView } from './ui/views/typst-pdf/typstPDF';
-import { TypstTextView } from './ui/views/typst-text/typstText';
-import { TypstToolsView } from './ui/views/typst-tools/typstTools';
-import { type MathSegment, replaceMathSegments } from './utils/findMathSegments';
-import { Observer } from './utils/observer';
-import { zip } from './utils/packageCompressor';
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
 
 import "./main.css";
 import { TypstEditorView } from "./ui/views/typst-editor/typstEditor";
@@ -87,10 +67,6 @@ export default class ObsidianTypstMate extends Plugin {
   typstManager!: TypstManager;
   observer!: Observer;
 
-<<<<<<< HEAD
-  baseColor = "#000000";
-=======
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
   listeners: EventRef[] = [];
 
   excalidraw?: ExcalidrawPlugin;
@@ -105,7 +81,9 @@ export default class ObsidianTypstMate extends Plugin {
   override async onload() {
     await this.loadSettings(); // ユーザーの設定 (data.json) を読み込む
     if (3 <= (this.settings.crashCount ?? 0)) {
-      new Notice('[Typst Mate] The plugin has been automatically turned off due to three consecutive crashes');
+      new Notice(
+        "[Typst Mate] The plugin has been automatically turned off due to three consecutive crashes",
+      );
       return await this.app.plugins.disablePlugin(this.pluginId);
     }
 
@@ -121,13 +99,7 @@ export default class ObsidianTypstMate extends Plugin {
 
     // 基本的なパスの設定
     this.setPaths();
-<<<<<<< HEAD
-    // SVG のベースにする色を設定
-    const styles = getComputedStyle(document.body);
-    this.baseColor = styles.getPropertyValue("--color-base-100").trim();
-=======
     this.applyBaseColor();
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
     // マニフェストの読み込みと Wasm のパスを設定
     const manifestPath = `${this.pluginDirNPath}/manifest.json`;
     const version = JSON.parse(await adapter.read(manifestPath)).version;
@@ -144,9 +116,18 @@ export default class ObsidianTypstMate extends Plugin {
     // TypstManager を設定する
     await this.prepareTypst();
 
-    this.registerView(TypstToolsView.viewtype, (leaf) => new TypstToolsView(leaf, this));
-    this.registerView(TypstTextView.viewtype, (leaf) => new TypstTextView(leaf));
-    this.registerView(TypstPDFView.viewtype, (leaf) => new TypstPDFView(leaf, this));
+    this.registerView(
+      TypstToolsView.viewtype,
+      (leaf) => new TypstToolsView(leaf, this),
+    );
+    this.registerView(
+      TypstTextView.viewtype,
+      (leaf) => new TypstTextView(leaf),
+    );
+    this.registerView(
+      TypstPDFView.viewtype,
+      (leaf) => new TypstPDFView(leaf, this),
+    );
 
     // ? Obsidian の起動時間を短縮するため onLayoutReady を使用
     this.app.workspace.onLayoutReady(() => {
@@ -168,7 +149,6 @@ export default class ObsidianTypstMate extends Plugin {
       // EditorHelper を初期化
       this.editorHelper = new EditorHelper(this);
 
-<<<<<<< HEAD
       // Typst Tools を登録
       this.registerView(
         TypstToolsView.viewtype,
@@ -184,15 +164,13 @@ export default class ObsidianTypstMate extends Plugin {
       );
       this.registerExtensions(["typ"], TypstEditorView.viewtype);
       if (this.settings.openTypstToolsOnStartup) this.activateLeaf();
-=======
       // View を登録
-      this.registerExtensions(['typ'], TypstPDFView.viewtype);
+      this.registerExtensions(["typ"], TypstPDFView.viewtype);
       if (
         this.settings.openTypstToolsOnStartup &&
         this.app.workspace.getLeavesOfType(TypstToolsView.viewtype).length === 0
       )
         this.activateLeaf();
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
 
       // コマンドを登録する
       this.addCommands();
@@ -346,26 +324,16 @@ export default class ObsidianTypstMate extends Plugin {
 
   private addCommands() {
     this.addCommand({
-<<<<<<< HEAD
-      id: "typst-tools-open",
+      id: "tools-open",
       name: "Open Typst Tools",
-=======
-      id: 'tools-open',
-      name: 'Open Typst Tools',
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
       callback: async () => {
         await this.activateLeaf(true);
       },
     });
 
     this.addCommand({
-<<<<<<< HEAD
-      id: "typst-toggle-background-rendering",
+      id: "toggle-background-rendering",
       name: "Toggle Background Rendering",
-=======
-      id: 'toggle-background-rendering',
-      name: 'Toggle Background Rendering',
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
       callback: async () => {
         this.settings.enableBackgroundRendering =
           !this.settings.enableBackgroundRendering;
@@ -375,13 +343,8 @@ export default class ObsidianTypstMate extends Plugin {
     });
 
     this.addCommand({
-<<<<<<< HEAD
-      id: "typst-tex2typ",
+      id: "tex2typ",
       name: "Replace tex in markdown content or selection to typst",
-=======
-      id: 'tex2typ',
-      name: 'Replace tex in markdown content or selection to typst',
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
       editorCallback: async (editor) => {
         const selection = editor.getSelection();
         const tex2typ = async (seg: MathSegment) => {
@@ -419,8 +382,7 @@ export default class ObsidianTypstMate extends Plugin {
     });
 
     this.addCommand({
-<<<<<<< HEAD
-      id: "typst-box-current-equation",
+      id: "box-current-equation",
       name: "Box current equation",
       editorCallback: this.editorHelper.boxCurrentEquation.bind(
         this.editorHelper,
@@ -428,33 +390,17 @@ export default class ObsidianTypstMate extends Plugin {
     });
 
     this.addCommand({
-      id: "typst-select-current-equation",
+      id: "select-current-equation",
       name: "Select current equation",
       editorCallback: this.editorHelper.selectCurrentEquation.bind(
         this.editorHelper,
       ),
-=======
-      id: 'box-current-equation',
-      name: 'Box current equation',
-      editorCallback: this.editorHelper.boxCurrentEquation.bind(this.editorHelper),
-    });
-
-    this.addCommand({
-      id: 'select-current-equation',
-      name: 'Select current equation',
-      editorCallback: this.editorHelper.selectCurrentEquation.bind(this.editorHelper),
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
     });
 
     if (this.excalidrawPluginInstalled) {
       this.addCommand({
-<<<<<<< HEAD
-        id: "typst-render-to-excalidraw",
+        id: "render-to-excalidraw",
         name: "Render to Excalidraw",
-=======
-        id: 'render-to-excalidraw',
-        name: 'Render to Excalidraw',
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
         callback: () => {
           new ExcalidrawModal(this.app, this).open();
         },
@@ -497,13 +443,8 @@ export default class ObsidianTypstMate extends Plugin {
 
           pdfItems.forEach((pdfItem) => {
             const defaultAction = pdfItem.callback ?? (() => {});
-<<<<<<< HEAD
-            const beforeBaseColor = this.baseColor;
             const beforeEnableBackgroundRendering =
               this.settings.enableBackgroundRendering;
-=======
-            const beforeEnableBackgroundRendering = this.settings.enableBackgroundRendering;
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
 
             let disconnected = false;
             const observer = new MutationObserver(async (mutations) => {
@@ -530,12 +471,7 @@ export default class ObsidianTypstMate extends Plugin {
             let id: NodeJS.Timeout;
             pdfItem.callback = async () => {
               // preprocess
-<<<<<<< HEAD
-              if (this.settings.patchPDFExport)
-                this.baseColor = this.settings.baseColor;
-=======
               if (this.settings.patchPDFExport) this.applyBaseColor(true);
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
               if (this.settings.enableBackgroundRendering) {
                 this.settings.enableBackgroundRendering = false;
                 await this.init();
@@ -574,15 +510,7 @@ export default class ObsidianTypstMate extends Plugin {
     );
   }
 
-<<<<<<< HEAD
-  private addEvents() {
-    this._events.push;
-  }
-
-  async init(wasmPath: string) {
-=======
   async init() {
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
     this.worker?.terminate();
 
     const { fs, path, baseDirPath, packagesDirNPath, cachesDirNPath } = this;
@@ -642,9 +570,7 @@ export default class ObsidianTypstMate extends Plugin {
     if (this.settings.enableBackgroundRendering) {
       this.worker = new TypstWorker();
       const api = wrap<typeof $>(this.worker);
-<<<<<<< HEAD
       this.typst = await new api(
-        wasm,
         this.localPackagesDirPaths,
         this.baseDirPath,
         Platform.isDesktopApp,
@@ -652,17 +578,10 @@ export default class ObsidianTypstMate extends Plugin {
       await this.typst.setMain(proxy(main));
     } else {
       this.typst = new Typst(
-        wasm,
         this.localPackagesDirPaths,
         this.baseDirPath,
         Platform.isDesktopApp,
       );
-=======
-      this.typst = await new api(this.localPackagesDirPaths, this.baseDirPath, Platform.isDesktopApp);
-      await this.typst.setMain(proxy(main));
-    } else {
-      this.typst = new Typst(this.localPackagesDirPaths, this.baseDirPath, Platform.isDesktopApp);
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
       this.typst.setMain(main);
     }
 
@@ -671,30 +590,20 @@ export default class ObsidianTypstMate extends Plugin {
 
   applyBaseColor(forceBaseColor: boolean = false) {
     if (!this.settings.autoBaseColor || forceBaseColor)
-      return document.documentElement.style.setProperty(BASE_COLOR_VAR, this.settings.baseColor);
+      return document.documentElement.style.setProperty(
+        BASE_COLOR_VAR,
+        this.settings.baseColor,
+      );
 
     const bodyStyles = getComputedStyle(document.body);
-<<<<<<< HEAD
-    const beforeColor = this.baseColor;
-    this.baseColor = bodyStyles.getPropertyValue("--color-base-100").trim();
-
-    const svgEls = document.querySelectorAll("svg.typst-doc"); // Typst が typst-doc を自動で付与する
-    for (const svgEl of svgEls)
-      svgEl.innerHTML = svgEl.innerHTML.replaceAll(beforeColor, this.baseColor);
-  }
-
-  override async onunload() {
-    const temporaryEls = document.querySelectorAll(".typstmate-temporary");
-=======
-    const baseColor = bodyStyles.getPropertyValue('--text-normal').trim();
+    const baseColor = bodyStyles.getPropertyValue("--text-normal").trim();
     document.documentElement.style.setProperty(BASE_COLOR_VAR, baseColor);
   }
 
   override async onunload() {
     if (3 <= (this.settings.crashCount ?? 0)) return;
 
-    const temporaryEls = document.querySelectorAll('.typstmate-temporary');
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
+    const temporaryEls = document.querySelectorAll(".typstmate-temporary");
     for (const temporaryEl of temporaryEls) temporaryEl.remove();
 
     // 監視を終了
@@ -729,7 +638,28 @@ export default class ObsidianTypstMate extends Plugin {
     await this.saveData(this.settings);
   }
 
-<<<<<<< HEAD
+  override onConfigFileChange = debounce(
+    this.loadSettings.bind(this),
+    500,
+    true,
+  );
+  override onExternalSettingsChange = debounce(
+    this.loadSettings.bind(this),
+    500,
+    true,
+  );
+
+  updateCrashStatus(crash: boolean) {
+    if (!crash) {
+      this.settings.crashCount = 0;
+      this.saveSettings();
+      return;
+    }
+    if (this.settings.crashCount !== undefined) this.settings.crashCount += 1;
+    else this.settings.crashCount = 1;
+    this.saveSettings();
+  }
+
   private async createTypstTemplate() {
     try {
       const filename = await CreateTemplateModal.show(this.app);
@@ -764,19 +694,5 @@ export default class ObsidianTypstMate extends Plugin {
       console.error("Error creating Typst template:", error);
       new Notice("Error creating Typst template");
     }
-=======
-  override onConfigFileChange = debounce(this.loadSettings.bind(this), 500, true);
-  override onExternalSettingsChange = debounce(this.loadSettings.bind(this), 500, true);
-
-  updateCrashStatus(crash: boolean) {
-    if (!crash) {
-      this.settings.crashCount = 0;
-      this.saveSettings();
-      return;
-    }
-    if (this.settings.crashCount !== undefined) this.settings.crashCount += 1;
-    else this.settings.crashCount = 1;
-    this.saveSettings();
->>>>>>> 79ecf4a6623006f0e5e2c34cb0a0e80e264d1e94
   }
 }

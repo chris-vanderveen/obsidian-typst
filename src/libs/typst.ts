@@ -1,19 +1,19 @@
-import { Notice } from 'obsidian';
+import { Notice } from "obsidian";
 
-import { DEFAULT_FONT_SIZE } from '@/constants';
-import InlinePreviewElement from '@/core/editor/elements/InlinePreview';
-import SnippetSuggestElement from '@/core/editor/elements/SnippetSuggest';
-import SymbolSuggestElement from '@/core/editor/elements/SymbolSuggest';
-import { DEFAULT_SETTINGS } from '@/core/settings/settings';
-import type ObsidianTypstMate from '@/main';
-import TypstSVGElement from '@/ui/elements/SVG';
-import { overwriteCustomElements } from '@/utils/custromElementRegistry';
-import { unzip, zip } from '@/utils/packageCompressor';
+import { DEFAULT_FONT_SIZE } from "@/constants";
+import InlinePreviewElement from "@/core/editor/elements/InlinePreview";
+import SnippetSuggestElement from "@/core/editor/elements/SnippetSuggest";
+import SymbolSuggestElement from "@/core/editor/elements/SymbolSuggest";
+import { DEFAULT_SETTINGS } from "@/core/settings/settings";
+import type ObsidianTypstMate from "@/main";
+import TypstSVGElement from "@/ui/elements/SVG";
+import { overwriteCustomElements } from "@/utils/custromElementRegistry";
+import { unzip, zip } from "@/utils/packageCompressor";
 
-import type { Processor, ProcessorKind } from './processor';
-import type { PackageSpec } from './worker';
+import type { Processor, ProcessorKind } from "./processor";
+import type { PackageSpec } from "./worker";
 
-import './typst.css';
+import "./typst.css";
 
 export default class TypstManager {
   plugin: ObsidianTypstMate;
@@ -21,7 +21,7 @@ export default class TypstManager {
 
   beforeKind?: ProcessorKind;
   beforeId?: string;
-  beforeElement: HTMLElement = document.createElement('span');
+  beforeElement: HTMLElement = document.createElement("span");
 
   constructor(plugin: ObsidianTypstMate) {
     this.plugin = plugin;
@@ -36,49 +36,51 @@ export default class TypstManager {
       this.plugin.app.vault.config.baseFontSize ?? DEFAULT_FONT_SIZE,
     );
 
-    const fontPaths = (await this.plugin.app.vault.adapter.list(this.plugin.fontsDirNPath)).files.filter((file) =>
-      file.endsWith('.font'),
-    );
+    const fontPaths = (
+      await this.plugin.app.vault.adapter.list(this.plugin.fontsDirNPath)
+    ).files.filter((file) => file.endsWith(".font"));
     const fonts = (
       await Promise.all(
         fontPaths.map((fontPath) =>
           this.plugin.app.vault.adapter.readBinary(fontPath).catch(() => {
-            new Notice(`Failed to load font: ${fontPath.split('/').pop()}`);
+            new Notice(`Failed to load font: ${fontPath.split("/").pop()}`);
           }),
         ),
       )
     ).filter((font) => font !== undefined);
 
-    const kind = ['inline', 'display', 'codeblock'];
-    if (this.plugin.excalidrawPluginInstalled) kind.push('excalidraw');
+    const kind = ["inline", "display", "codeblock"];
+    if (this.plugin.excalidrawPluginInstalled) kind.push("excalidraw");
 
     const processors = kind.flatMap(
       (kind) =>
-        this.plugin.settings.processor[kind as 'inline' | 'display' | 'codeblock' | 'excalidraw']?.processors.map(
-          (p) => ({
-            kind,
-            id: p.id,
-            format: this.format(p, ''),
-            styling: p.styling,
-            renderingEngine: p.renderingEngine,
-          }),
-        ) ?? [],
+        this.plugin.settings.processor[
+          kind as "inline" | "display" | "codeblock" | "excalidraw"
+        ]?.processors.map((p) => ({
+          kind,
+          id: p.id,
+          format: this.format(p, ""),
+          styling: p.styling,
+          renderingEngine: p.renderingEngine,
+        })) ?? [],
     );
 
     // キャッシュ
     const sources: Map<string, Uint8Array> = new Map();
     if (!this.plugin.settings.disablePackageCache) {
-      const cachePaths = (await this.plugin.app.vault.adapter.list(this.plugin.cachesDirNPath)).files.filter((file) =>
-        file.endsWith('.cache'),
-      );
+      const cachePaths = (
+        await this.plugin.app.vault.adapter.list(this.plugin.cachesDirNPath)
+      ).files.filter((file) => file.endsWith(".cache"));
       for (const cachePath of cachePaths) {
         try {
-          const cacheMap = unzip(await this.plugin.app.vault.adapter.readBinary(cachePath));
+          const cacheMap = unzip(
+            await this.plugin.app.vault.adapter.readBinary(cachePath),
+          );
           for (const [path, data] of cacheMap) {
             sources.set(`@${path}`, new Uint8Array(data!));
           }
         } catch {
-          new Notice(`Failed to load cache: ${cachePath.split('/').pop()}`);
+          new Notice(`Failed to load cache: ${cachePath.split("/").pop()}`);
         }
       }
     }
@@ -94,11 +96,12 @@ export default class TypstManager {
           this.ready = true;
           this.plugin.updateCrashStatus(false);
 
-          const waitingElements = document.querySelectorAll('.typstmate-waiting');
+          const waitingElements =
+            document.querySelectorAll(".typstmate-waiting");
           for (const el of waitingElements) {
             const content = el.textContent!;
             el.empty();
-            this.render(content, el, el.getAttribute('kind')!);
+            this.render(content, el, el.getAttribute("kind")!);
           }
         });
       } else {
@@ -114,25 +117,29 @@ export default class TypstManager {
   }
 
   registerOnce() {
-    overwriteCustomElements('typstmate-svg', TypstSVGElement);
-    overwriteCustomElements('typstmate-symbols', SymbolSuggestElement);
-    overwriteCustomElements('typstmate-snippets', SnippetSuggestElement);
-    overwriteCustomElements('typstmate-inline-preview', InlinePreviewElement);
+    overwriteCustomElements("typstmate-svg", TypstSVGElement);
+    overwriteCustomElements("typstmate-symbols", SymbolSuggestElement);
+    overwriteCustomElements("typstmate-snippets", SnippetSuggestElement);
+    overwriteCustomElements("typstmate-inline-preview", InlinePreviewElement);
 
     // コードブロックプロセッサーをオーバライド
-    for (const processor of this.plugin.settings.processor.codeblock?.processors ?? []) {
+    for (const processor of this.plugin.settings.processor.codeblock
+      ?.processors ?? []) {
       try {
-        this.plugin.registerMarkdownCodeBlockProcessor(processor.id, (source, el, _ctx) => {
-          if (!this.ready) {
-            el.textContent = source;
-            el.addClass('typstmate-waiting');
-            el.setAttribute('kind', processor.id);
+        this.plugin.registerMarkdownCodeBlockProcessor(
+          processor.id,
+          (source, el, _ctx) => {
+            if (!this.ready) {
+              el.textContent = source;
+              el.addClass("typstmate-waiting");
+              el.setAttribute("kind", processor.id);
 
-            return Promise.resolve(el as HTMLElement);
-          }
+              return Promise.resolve(el as HTMLElement);
+            }
 
-          return Promise.resolve(this.render(source, el, processor.id));
-        });
+            return Promise.resolve(this.render(source, el, processor.id));
+          },
+        );
       } catch {
         new Notice(`Already registered codeblock language: ${processor.id}`);
       }
@@ -141,19 +148,21 @@ export default class TypstManager {
     // MathJax をオーバライド
     window.MathJax!.tex2chtml = (e: string, r: { display?: boolean }) => {
       // タグ名，クラス名，属性がこれ以外だと認識されないない
-      const container = document.createElement('mjx-container');
-      container.className = 'Mathjax';
-      container.setAttribute('jax', 'CHTML');
+      const container = document.createElement("mjx-container");
+      container.className = "Mathjax";
+      container.setAttribute("jax", "CHTML");
 
       if (!this.ready) {
         container.textContent = e;
-        container.addClass('typstmate-waiting');
-        container.setAttribute('kind', r.display ? 'display' : 'inline');
+        container.addClass("typstmate-waiting");
+        container.setAttribute("kind", r.display ? "display" : "inline");
 
         return container;
       }
 
-      return r.display ? this.render(e, container, 'display') : this.render(e, container, 'inline');
+      return r.display
+        ? this.render(e, container, "display")
+        : this.render(e, container, "inline");
     };
   }
 
@@ -161,67 +170,86 @@ export default class TypstManager {
     // プロセッサーを決定
     let processor: Processor;
     switch (kind) {
-      case 'inline':
+      case "inline":
         // ? プラグイン No more flickering inline math との互換性のため
-        if (code.startsWith('{}') && code.endsWith('{}'))
-          code = code.slice(code.at(2) === ' ' ? 3 : 2, code.at(-3) === ' ' ? -3 : -2);
+        if (code.startsWith("{}") && code.endsWith("{}"))
+          code = code.slice(
+            code.at(2) === " " ? 3 : 2,
+            code.at(-3) === " " ? -3 : -2,
+          );
         // ? プラグイン obsidian-equation-citator との互換性のため
-        if (code.startsWith('\\ref'))
+        if (code.startsWith("\\ref"))
           return 10 <= code.length
             ? document.createSpan(code.slice(5, -1))
             : this.plugin.originalTex2chtml(code, {
-                display: kind !== 'inline',
+                display: kind !== "inline",
               });
 
         processor =
-          this.plugin.settings.processor.inline?.processors.find((p) => code.startsWith(`${p.id}:`)) ??
-          DEFAULT_SETTINGS.processor.inline?.processors.at(-1)!;
-        if (processor.id.length !== 0) code = code.slice(processor.id.length + 1);
+          this.plugin.settings.processor.inline?.processors.find((p) =>
+            code.startsWith(`${p.id}:`),
+          ) ?? DEFAULT_SETTINGS.processor.inline?.processors.at(-1)!;
+        if (processor.id.length !== 0)
+          code = code.slice(processor.id.length + 1);
 
         break;
-      case 'display':
-        code = code.replaceAll(/\n[\s\t]*> /g, '\n');
+      case "display":
+        code = code.replaceAll(/\n[\s\t]*> /g, "\n");
 
         processor =
-          this.plugin.settings.processor.display?.processors.find((p) => code.startsWith(`${p.id}`)) ??
-          DEFAULT_SETTINGS.processor.display?.processors.at(-1)!;
+          this.plugin.settings.processor.display?.processors.find((p) =>
+            code.startsWith(`${p.id}`),
+          ) ?? DEFAULT_SETTINGS.processor.display?.processors.at(-1)!;
         if (processor.id.length !== 0) code = code.slice(processor.id.length);
 
         break;
-      case 'excalidraw':
+      case "excalidraw":
         processor =
-          this.plugin.settings.processor.excalidraw?.processors.find((p) => code.startsWith(`${p.id}`)) ??
-          DEFAULT_SETTINGS.processor.excalidraw?.processors.at(-1)!;
+          this.plugin.settings.processor.excalidraw?.processors.find((p) =>
+            code.startsWith(`${p.id}`),
+          ) ?? DEFAULT_SETTINGS.processor.excalidraw?.processors.at(-1)!;
         if (processor.id.length !== 0) code = code.slice(processor.id.length);
 
         break;
       default:
         processor =
-          this.plugin.settings.processor.codeblock?.processors.find((p) => p.id === kind) ??
-          DEFAULT_SETTINGS.processor.codeblock?.processors.at(-1)!;
+          this.plugin.settings.processor.codeblock?.processors.find(
+            (p) => p.id === kind,
+          ) ?? DEFAULT_SETTINGS.processor.codeblock?.processors.at(-1)!;
 
-        if (processor.styling === 'codeblock') {
-          containerEl.addClass('HyperMD-codeblock', 'HyperMD-codeblock-bg', 'cm-line');
-          containerEl = containerEl.createEl('code');
+        if (processor.styling === "codeblock") {
+          containerEl.addClass(
+            "HyperMD-codeblock",
+            "HyperMD-codeblock-bg",
+            "cm-line",
+          );
+          containerEl = containerEl.createEl("code");
         }
 
-        kind = 'codeblock';
+        kind = "codeblock";
     }
-    if (processor.renderingEngine === 'mathjax')
+    if (processor.renderingEngine === "mathjax")
       return this.plugin.originalTex2chtml(code, {
-        display: kind !== 'inline',
+        display: kind !== "inline",
       });
-    containerEl.addClass(`typstmate-${kind}`, `typstmate-style-${processor.styling}`, `typstmate-id-${processor.id}`);
+    containerEl.addClass(
+      `typstmate-${kind}`,
+      `typstmate-style-${processor.styling}`,
+      `typstmate-id-${processor.id}`,
+    );
 
     // レンダリング
-    const typstSVGEl = document.createElement('typstmate-svg') as TypstSVGElement;
+    const typstSVGEl = document.createElement(
+      "typstmate-svg",
+    ) as TypstSVGElement;
     typstSVGEl.plugin = this.plugin;
     typstSVGEl.kind = kind as ProcessorKind;
     typstSVGEl.source = code;
     typstSVGEl.processor = processor;
     containerEl.appendChild(typstSVGEl);
     // ちらつき防止
-    if (this.beforeKind === kind && this.beforeId === processor.id) typstSVGEl.replaceChildren(this.beforeElement);
+    if (this.beforeKind === kind && this.beforeId === processor.id)
+      typstSVGEl.replaceChildren(this.beforeElement);
 
     typstSVGEl.render();
 
@@ -231,8 +259,8 @@ export default class TypstManager {
 
   private format(processer: Processor, code: string) {
     return processer.noPreamble
-      ? processer.format.replace('{CODE}', code)
-      : `${this.plugin.settings.preamble}\n${processer.format.replace('{CODE}', code)}`;
+      ? processer.format.replace("{CODE}", code)
+      : `${this.plugin.settings.preamble}\n${processer.format.replace("{CODE}", code)}`;
   }
 
   private async collectFiles(
@@ -246,15 +274,20 @@ export default class TypstManager {
       filePaths.map(async (filePath) => {
         try {
           const data = new Uint8Array(await this.readBinary(filePath));
-          map.set(filePath.replace(baseDirPath, ''), data);
+          map.set(filePath.replace(baseDirPath, ""), data);
         } catch {}
       }),
     );
 
-    for (const folderPath of folderPaths) await this.collectFiles(baseDirPath, folderPath, map);
+    for (const folderPath of folderPaths)
+      await this.collectFiles(baseDirPath, folderPath, map);
   }
 
-  async createCache(packageSpec: PackageSpec, store: boolean, targetDirPaths?: string[]) {
+  async createCache(
+    packageSpec: PackageSpec,
+    store: boolean,
+    targetDirPaths?: string[],
+  ) {
     const map = new Map<string, Uint8Array>();
 
     const baseDirPaths = targetDirPaths ?? this.plugin.localPackagesDirPaths;
@@ -284,7 +317,9 @@ export default class TypstManager {
     let filePaths: string[] = [];
     let folderPaths: string[] = [];
     if (this.plugin.path?.isAbsolute(dirPath)) {
-      const items = await this.plugin.fs!.promises.readdir(dirPath, { withFileTypes: true });
+      const items = await this.plugin.fs!.promises.readdir(dirPath, {
+        withFileTypes: true,
+      });
 
       for (const item of items) {
         const fullPath = this.plugin.path!.join(dirPath, item.name);

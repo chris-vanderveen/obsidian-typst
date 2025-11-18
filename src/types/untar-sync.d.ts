@@ -1,4 +1,4 @@
-declare module 'untar-sync' {
+declare module "untar-sync" {
   export default function untarSync(buffer: ArrayBuffer): tarFile[];
 }
 

@@ -1,5 +1,5 @@
 export type MathSegment = {
-  type: 'display' | 'inline';
+  type: "display" | "inline";
   raw: string;
   content: string;
   start: number;
@@ -8,7 +8,7 @@ export type MathSegment = {
 
 function isEscaped(input: string, pos: number): boolean {
   let count = 0;
-  for (let j = pos - 1; j >= 0 && input[j] === '\\'; j--) count++;
+  for (let j = pos - 1; j >= 0 && input[j] === "\\"; j--) count++;
   return count % 2 === 1;
 }
 
@@ -20,8 +20,11 @@ export function findMathSegments(input: string): MathSegment[] {
   while (i < n) {
     const ch = input[i];
 
-    if ((ch === '`' && input.startsWith('```', i)) || (ch === '~' && input.startsWith('~~~', i))) {
-      const fence = input.startsWith('```', i) ? '```' : '~~~';
+    if (
+      (ch === "`" && input.startsWith("```", i)) ||
+      (ch === "~" && input.startsWith("~~~", i))
+    ) {
+      const fence = input.startsWith("```", i) ? "```" : "~~~";
       i += fence.length;
       const idx = input.indexOf(fence, i);
       if (idx === -1) i = n;
@@ -29,12 +32,12 @@ export function findMathSegments(input: string): MathSegment[] {
       continue;
     }
 
-    if (ch === '`' && !isEscaped(input, i)) {
+    if (ch === "`" && !isEscaped(input, i)) {
       const open = i;
       i++;
       let close = -1;
       for (let j = i; j < n; j++) {
-        if (input[j] === '`' && !isEscaped(input, j)) {
+        if (input[j] === "`" && !isEscaped(input, j)) {
           close = j;
           break;
         }
@@ -44,18 +47,30 @@ export function findMathSegments(input: string): MathSegment[] {
       continue;
     }
 
-    if (ch === '$' && !isEscaped(input, i)) {
-      const nextIsDollar = i + 1 < n && input[i + 1] === '$' && !isEscaped(input, i + 1);
+    if (ch === "$" && !isEscaped(input, i)) {
+      const nextIsDollar =
+        i + 1 < n && input[i + 1] === "$" && !isEscaped(input, i + 1);
       if (nextIsDollar) {
         let found = false;
         for (let k = i + 2; k < n - 1; k++) {
-          if (input[k] === '$' && input[k + 1] === '$' && !isEscaped(input, k)) {
+          if (
+            input[k] === "$" &&
+            input[k + 1] === "$" &&
+            !isEscaped(input, k)
+          ) {
             const inner = input.slice(i + 2, k);
-            const startsWithDollar = inner.length > 0 && inner[0] === '$';
-            const endsWithDollar = inner.length > 0 && inner[inner.length - 1] === '$';
+            const startsWithDollar = inner.length > 0 && inner[0] === "$";
+            const endsWithDollar =
+              inner.length > 0 && inner[inner.length - 1] === "$";
             if (!startsWithDollar && !endsWithDollar) {
               const raw = input.slice(i, k + 2);
-              out.push({ type: 'display', raw, content: inner, start: i, end: k + 2 });
+              out.push({
+                type: "display",
+                raw,
+                content: inner,
+                start: i,
+                end: k + 2,
+              });
               i = k + 2;
               found = true;
               break;
@@ -68,12 +83,18 @@ export function findMathSegments(input: string): MathSegment[] {
       } else {
         let found = false;
         for (let k = i + 1; k < n; k++) {
-          if (input[k] === '$' && !isEscaped(input, k)) {
+          if (input[k] === "$" && !isEscaped(input, k)) {
             const inner = input.slice(i + 1, k);
             if (inner.length === 0) continue;
-            if (inner.indexOf('\n') !== -1) continue;
+            if (inner.indexOf("\n") !== -1) continue;
             const raw = input.slice(i, k + 1);
-            out.push({ type: 'inline', raw, content: inner, start: i, end: k + 1 });
+            out.push({
+              type: "inline",
+              raw,
+              content: inner,
+              start: i,
+              end: k + 1,
+            });
             i = k + 1;
             found = true;
             break;
@@ -98,7 +119,7 @@ export async function replaceMathSegments(
   const segments = findMathSegments(input);
   if (segments.length === 0) return input;
 
-  let out = '';
+  let out = "";
   let last = 0;
   for (const seg of segments) {
     if (last < seg.start) out += input.slice(last, seg.start);

@@ -1,4 +1,4 @@
-import { ButtonComponent, debounce, Setting } from 'obsidian';
+import { ButtonComponent, debounce, Setting } from "obsidian";
 
 import {
   DefaultNewProcessor,
@@ -6,9 +6,9 @@ import {
   type ProcessorKind,
   type RenderingEngine,
   type Styling,
-} from '@/libs/processor';
-import type ObsidianTypstMate from '@/main';
-import { ProcessorExtModal } from '@/ui/modals/processorExt';
+} from "@/libs/processor";
+import type ObsidianTypstMate from "@/main";
+import { ProcessorExtModal } from "@/ui/modals/processorExt";
 
 export class ProcessorList {
   plugin: ObsidianTypstMate;
@@ -28,93 +28,111 @@ export class ProcessorList {
     this.kind = kind;
     this.simple = simple;
 
-    const detailEl = containerEl.createEl('details');
+    const detailEl = containerEl.createEl("details");
     if (!this.simple) {
       new Setting(detailEl).addButton((button) => {
-        button.setButtonText('New');
+        button.setButtonText("New");
 
         button.onClick(this.newProcessor.bind(this));
       });
     }
 
-    const summaryEl = detailEl.createEl('summary');
+    const summaryEl = detailEl.createEl("summary");
     summaryEl.textContent = summaryText;
 
-    this.processorsEl = detailEl.createEl('div');
+    this.processorsEl = detailEl.createEl("div");
     if (!this.plugin.settings.processor[this.kind]) {
       this.plugin.settings.processor[this.kind] = {
         processors: [],
       };
     }
 
-    this.plugin.settings.processor[this.kind]!.processors.forEach(this.addProcessor.bind(this));
+    this.plugin.settings.processor[this.kind]!.processors.forEach(
+      this.addProcessor.bind(this),
+    );
     this.numbering();
   }
 
   newProcessor() {
-    this.plugin.settings.processor[this.kind]!.processors.unshift(DefaultNewProcessor[this.kind] as any);
+    this.plugin.settings.processor[this.kind]!.processors.unshift(
+      DefaultNewProcessor[this.kind] as any,
+    );
     this.plugin.saveSettings();
 
     this.addProcessor(DefaultNewProcessor[this.kind]);
 
-    this.processorsEl.insertBefore(this.processorsEl.lastChild!, this.processorsEl.firstChild!);
+    this.processorsEl.insertBefore(
+      this.processorsEl.lastChild!,
+      this.processorsEl.firstChild!,
+    );
 
     this.numbering();
   }
 
   addProcessor(processor: Processor) {
-    const processorEl = this.processorsEl.createDiv('typstmate-settings-processor');
+    const processorEl = this.processorsEl.createDiv(
+      "typstmate-settings-processor",
+    );
 
     const setting = new Setting(processorEl);
     if (!this.simple) {
       setting
         .addButton((button) => {
-          button.setIcon('pencil');
-          button.setTooltip('Open more settings');
+          button.setIcon("pencil");
+          button.setTooltip("Open more settings");
           button.onClick(() => {
-            new ProcessorExtModal(this.plugin.app, this.plugin, this.kind, processor.id).open();
+            new ProcessorExtModal(
+              this.plugin.app,
+              this.plugin,
+              this.kind,
+              processor.id,
+            ).open();
           });
         })
         .addDropdown((renderingEngineDropdown) => {
-          renderingEngineDropdown.addOption('typst-svg', 'Typst SVG');
-          renderingEngineDropdown.addOption('mathjax', 'MathJax');
+          renderingEngineDropdown.addOption("typst-svg", "Typst SVG");
+          renderingEngineDropdown.addOption("mathjax", "MathJax");
 
           // @ts-expect-error: 過去バージョンとの互換性を保つため
-          if (processor.renderingEngine === 'typst') {
-            this.plugin.settings.processor[this.kind]!.processors[Number(processorEl.id)]!.renderingEngine =
-              'typst-svg';
-            processor.renderingEngine = 'typst-svg';
+          if (processor.renderingEngine === "typst") {
+            this.plugin.settings.processor[this.kind]!.processors[
+              Number(processorEl.id)
+            ]!.renderingEngine = "typst-svg";
+            processor.renderingEngine = "typst-svg";
           }
 
           renderingEngineDropdown.setValue(processor.renderingEngine);
 
           renderingEngineDropdown.onChange((renderingEngine) => {
-            this.plugin.settings.processor[this.kind]!.processors[Number(processorEl.id)]!.renderingEngine =
-              renderingEngine as RenderingEngine;
+            this.plugin.settings.processor[this.kind]!.processors[
+              Number(processorEl.id)
+            ]!.renderingEngine = renderingEngine as RenderingEngine;
 
             this.plugin.saveSettings();
           });
         })
         .addDropdown((stylingDropdown) => {
           switch (this.kind) {
-            case 'inline':
-              stylingDropdown.addOption('inline', 'inline');
-              stylingDropdown.addOption('inline-middle', 'inline-middle');
+            case "inline":
+              stylingDropdown.addOption("inline", "inline");
+              stylingDropdown.addOption("inline-middle", "inline-middle");
               break;
-            case 'display':
-              stylingDropdown.addOption('block', 'block');
-              stylingDropdown.addOption('block-center', 'block-center');
+            case "display":
+              stylingDropdown.addOption("block", "block");
+              stylingDropdown.addOption("block-center", "block-center");
               break;
-            case 'codeblock':
-              stylingDropdown.addOption('block', 'block');
-              stylingDropdown.addOption('block-center', 'block-center');
-              stylingDropdown.addOption('codeblock', 'codeblock');
+            case "codeblock":
+              stylingDropdown.addOption("block", "block");
+              stylingDropdown.addOption("block-center", "block-center");
+              stylingDropdown.addOption("codeblock", "codeblock");
               break;
           }
           stylingDropdown.setValue(processor.styling);
 
           stylingDropdown.onChange((styling) => {
-            this.plugin.settings.processor[this.kind]!.processors[Number(processorEl.id)]!.styling = styling as Styling;
+            this.plugin.settings.processor[this.kind]!.processors[
+              Number(processorEl.id)
+            ]!.styling = styling as Styling;
 
             this.plugin.saveSettings();
           });
@@ -122,12 +140,14 @@ export class ProcessorList {
     }
     setting.addText((idText) => {
       idText.setValue(processor.id);
-      idText.setPlaceholder('id');
+      idText.setPlaceholder("id");
 
       idText.onChange(
         debounce(
           async (id) => {
-            this.plugin.settings.processor[this.kind]!.processors[Number(processorEl.id)]!.id = id;
+            this.plugin.settings.processor[this.kind]!.processors[
+              Number(processorEl.id)
+            ]!.id = id;
 
             this.plugin.saveSettings();
             await this.plugin.typst.store({
@@ -146,32 +166,34 @@ export class ProcessorList {
       );
     });
 
-    const processorBottomEl = processorEl.createEl('div');
-    processorBottomEl.addClass('typstmate-settings-processor-bottom');
+    const processorBottomEl = processorEl.createEl("div");
+    processorBottomEl.addClass("typstmate-settings-processor-bottom");
 
     if (!this.simple) {
-      const moveButtonsEl = processorBottomEl.createEl('div');
-      moveButtonsEl.addClass('typstmate-settings-processor-move-buttons');
+      const moveButtonsEl = processorBottomEl.createEl("div");
+      moveButtonsEl.addClass("typstmate-settings-processor-move-buttons");
 
       new ButtonComponent(moveButtonsEl)
-        .setButtonText('Move up')
-        .setIcon('chevrons-up')
-        .onClick(() => this.moveProcessor(Number(processorEl.id), 'up'));
+        .setButtonText("Move up")
+        .setIcon("chevrons-up")
+        .onClick(() => this.moveProcessor(Number(processorEl.id), "up"));
       new ButtonComponent(moveButtonsEl)
-        .setButtonText('Move down')
-        .setIcon('chevrons-down')
-        .onClick(() => this.moveProcessor(Number(processorEl.id), 'down'));
+        .setButtonText("Move down")
+        .setIcon("chevrons-down")
+        .onClick(() => this.moveProcessor(Number(processorEl.id), "down"));
     }
 
-    const formatTextEl = processorBottomEl.createEl('textarea');
+    const formatTextEl = processorBottomEl.createEl("textarea");
     formatTextEl.value = processor.format;
-    formatTextEl.placeholder = 'format';
+    formatTextEl.placeholder = "format";
 
     formatTextEl.addEventListener(
-      'input',
+      "input",
       debounce(
         async () => {
-          this.plugin.settings.processor[this.kind]!.processors[Number(processorEl.id)]!.format = formatTextEl.value;
+          this.plugin.settings.processor[this.kind]!.processors[
+            Number(processorEl.id)
+          ]!.format = formatTextEl.value;
 
           this.plugin.saveSettings();
           await this.plugin.typst.store({
@@ -191,10 +213,10 @@ export class ProcessorList {
 
     if (!this.simple) {
       new ButtonComponent(processorBottomEl)
-        .setButtonText('Remove')
-        .setIcon('trash')
+        .setButtonText("Remove")
+        .setIcon("trash")
         .onClick(() => this.removeProcessor(Number(processorEl.id)))
-        .buttonEl.addClasses(['typstmate-button', 'typstmate-button-danger']);
+        .buttonEl.addClasses(["typstmate-button", "typstmate-button-danger"]);
     }
   }
 
@@ -230,7 +252,7 @@ export class ProcessorList {
     const el1 = this.processorsEl.children.namedItem(String(index1))!;
     const el2 = this.processorsEl.children.namedItem(String(index2))!;
 
-    const tmp = document.createElement('div');
+    const tmp = document.createElement("div");
     el1.replaceWith(tmp);
     el2.replaceWith(el1);
     tmp.replaceWith(el2);
@@ -238,8 +260,8 @@ export class ProcessorList {
     this.numbering();
   }
 
-  moveProcessor(index: number, direction: 'up' | 'down') {
-    this.swapProcessor(index, index + (direction === 'up' ? -1 : 1));
+  moveProcessor(index: number, direction: "up" | "down") {
+    this.swapProcessor(index, index + (direction === "up" ? -1 : 1));
   }
 
   numbering() {

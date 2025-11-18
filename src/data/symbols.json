@@ -9551,13 +9551,62 @@
     "mathClass": "Space",
     "latexName": "\\mupzeta"
   },
-  "dif": { "sym": "dif", "unicName": "", "name": "dif", "shorthand": null, "mathClass": "Op", "latexName": "" },
-  "Dif": { "sym": "Dif", "unicName": "", "name": "Dif", "shorthand": null, "mathClass": "Op", "latexName": "" },
-  "det": { "sym": "det", "unicName": "", "name": "det", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "gcd": { "sym": "gcd", "unicName": "", "name": "gcd", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "lcm": { "sym": "lcm", "unicName": "", "name": "lcm", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "inf": { "sym": "inf", "unicName": "", "name": "inf", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "lim": { "sym": "lim", "unicName": "", "name": "lim", "shorthand": null, "mathClass": "op", "latexName": "" },
+  "dif": {
+    "sym": "dif",
+    "unicName": "",
+    "name": "dif",
+    "shorthand": null,
+    "mathClass": "Op",
+    "latexName": ""
+  },
+  "Dif": {
+    "sym": "Dif",
+    "unicName": "",
+    "name": "Dif",
+    "shorthand": null,
+    "mathClass": "Op",
+    "latexName": ""
+  },
+  "det": {
+    "sym": "det",
+    "unicName": "",
+    "name": "det",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "gcd": {
+    "sym": "gcd",
+    "unicName": "",
+    "name": "gcd",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "lcm": {
+    "sym": "lcm",
+    "unicName": "",
+    "name": "lcm",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "inf": {
+    "sym": "inf",
+    "unicName": "",
+    "name": "inf",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "lim": {
+    "sym": "lim",
+    "unicName": "",
+    "name": "lim",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
   "liminf": {
     "sym": "liminf",
     "unicName": "",
@@ -9574,10 +9623,38 @@
     "mathClass": "op",
     "latexName": ""
   },
-  "max": { "sym": "max", "unicName": "", "name": "max", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "min": { "sym": "min", "unicName": "", "name": "min", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "Pr": { "sym": "Pr", "unicName": "", "name": "Pr", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "sup": { "sym": "sup", "unicName": "", "name": "sup", "shorthand": null, "mathClass": "op", "latexName": "" },
+  "max": {
+    "sym": "max",
+    "unicName": "",
+    "name": "max",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "min": {
+    "sym": "min",
+    "unicName": "",
+    "name": "min",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "Pr": {
+    "sym": "Pr",
+    "unicName": "",
+    "name": "Pr",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "sup": {
+    "sym": "sup",
+    "unicName": "",
+    "name": "sup",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
   "arccos": {
     "sym": "arccos",
     "unicName": "",
@@ -9602,32 +9679,228 @@
     "mathClass": "op",
     "latexName": ""
   },
-  "arg": { "sym": "arg", "unicName": "", "name": "arg", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "cos": { "sym": "cos", "unicName": "", "name": "cos", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "cosh": { "sym": "cosh", "unicName": "", "name": "cosh", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "cot": { "sym": "cot", "unicName": "", "name": "cot", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "coth": { "sym": "coth", "unicName": "", "name": "coth", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "csc": { "sym": "csc", "unicName": "", "name": "csc", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "csch": { "sym": "csch", "unicName": "", "name": "csch", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "ctg": { "sym": "ctg", "unicName": "", "name": "ctg", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "deg": { "sym": "deg", "unicName": "", "name": "deg", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "dim": { "sym": "dim", "unicName": "", "name": "dim", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "exp": { "sym": "exp", "unicName": "", "name": "exp", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "hom": { "sym": "hom", "unicName": "", "name": "hom", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "id": { "sym": "id", "unicName": "", "name": "id", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "im": { "sym": "im", "unicName": "", "name": "im", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "ker": { "sym": "ker", "unicName": "", "name": "ker", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "lg": { "sym": "lg", "unicName": "", "name": "lg", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "ln": { "sym": "ln", "unicName": "", "name": "ln", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "log": { "sym": "log", "unicName": "", "name": "log", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "mod": { "sym": "mod", "unicName": "", "name": "mod", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "sec": { "sym": "sec", "unicName": "", "name": "sec", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "sech": { "sym": "sech", "unicName": "", "name": "sech", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "sin": { "sym": "sin", "unicName": "", "name": "sin", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "sinc": { "sym": "sinc", "unicName": "", "name": "sinc", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "sinh": { "sym": "sinh", "unicName": "", "name": "sinh", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "tan": { "sym": "tan", "unicName": "", "name": "tan", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "tanh": { "sym": "tanh", "unicName": "", "name": "tanh", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "tg": { "sym": "tg", "unicName": "", "name": "tg", "shorthand": null, "mathClass": "op", "latexName": "" },
-  "tr": { "sym": "tr", "unicName": "", "name": "tr", "shorthand": null, "mathClass": "op", "latexName": "" }
+  "arg": {
+    "sym": "arg",
+    "unicName": "",
+    "name": "arg",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "cos": {
+    "sym": "cos",
+    "unicName": "",
+    "name": "cos",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "cosh": {
+    "sym": "cosh",
+    "unicName": "",
+    "name": "cosh",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "cot": {
+    "sym": "cot",
+    "unicName": "",
+    "name": "cot",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "coth": {
+    "sym": "coth",
+    "unicName": "",
+    "name": "coth",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "csc": {
+    "sym": "csc",
+    "unicName": "",
+    "name": "csc",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "csch": {
+    "sym": "csch",
+    "unicName": "",
+    "name": "csch",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "ctg": {
+    "sym": "ctg",
+    "unicName": "",
+    "name": "ctg",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "deg": {
+    "sym": "deg",
+    "unicName": "",
+    "name": "deg",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "dim": {
+    "sym": "dim",
+    "unicName": "",
+    "name": "dim",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "exp": {
+    "sym": "exp",
+    "unicName": "",
+    "name": "exp",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "hom": {
+    "sym": "hom",
+    "unicName": "",
+    "name": "hom",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "id": {
+    "sym": "id",
+    "unicName": "",
+    "name": "id",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "im": {
+    "sym": "im",
+    "unicName": "",
+    "name": "im",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "ker": {
+    "sym": "ker",
+    "unicName": "",
+    "name": "ker",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "lg": {
+    "sym": "lg",
+    "unicName": "",
+    "name": "lg",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "ln": {
+    "sym": "ln",
+    "unicName": "",
+    "name": "ln",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "log": {
+    "sym": "log",
+    "unicName": "",
+    "name": "log",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "mod": {
+    "sym": "mod",
+    "unicName": "",
+    "name": "mod",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "sec": {
+    "sym": "sec",
+    "unicName": "",
+    "name": "sec",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "sech": {
+    "sym": "sech",
+    "unicName": "",
+    "name": "sech",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "sin": {
+    "sym": "sin",
+    "unicName": "",
+    "name": "sin",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "sinc": {
+    "sym": "sinc",
+    "unicName": "",
+    "name": "sinc",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "sinh": {
+    "sym": "sinh",
+    "unicName": "",
+    "name": "sinh",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "tan": {
+    "sym": "tan",
+    "unicName": "",
+    "name": "tan",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "tanh": {
+    "sym": "tanh",
+    "unicName": "",
+    "name": "tanh",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "tg": {
+    "sym": "tg",
+    "unicName": "",
+    "name": "tg",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  },
+  "tr": {
+    "sym": "tr",
+    "unicName": "",
+    "name": "tr",
+    "shorthand": null,
+    "mathClass": "op",
+    "latexName": ""
+  }
 }

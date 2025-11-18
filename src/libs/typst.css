@@ -1,36 +1,36 @@
 .typstmate-error {
-  color: red;
-  background-color: yellow;
-  cursor: pointer;
+    color: red;
+    background-color: yellow;
+    cursor: pointer;
 }
 
 .typstmate-inline-preview {
-  position: fixed;
-  left: var(--preview-left, 0);
-  top: var(--preview-top, 0);
-  z-index: 200;
-  background: var(--background-secondary);
-  padding: 6px 12px;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgb(0 0 0 / 0.18);
-  user-select: none;
-  pointer-events: none;
-  transition: opacity 0.13s;
-  opacity: 0.97;
-  border: 1px solid var(--background-modifier-border);
+    position: fixed;
+    left: var(--preview-left, 0);
+    top: var(--preview-top, 0);
+    z-index: 200;
+    background: var(--background-secondary);
+    padding: 6px 12px;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.18);
+    user-select: none;
+    pointer-events: none;
+    transition: opacity 0.13s;
+    opacity: 0.97;
+    border: 1px solid var(--background-modifier-border);
 }
 
 /* inline */
 .typstmate-inline {
-  display: inline-block;
+    display: inline-block;
 }
 
 .typstmate-inline.typstmate-style-inline {
-  vertical-align: baseline;
+    vertical-align: baseline;
 }
 
 .typstmate-inline.typstmate-style-inline-middle {
-  vertical-align: middle;
+    vertical-align: middle;
 }
 
 /* display */
@@ -40,13 +40,13 @@
 }
 
 .typstmate-display.typstmate-style-block-center {
-  text-align: center;
+    text-align: center;
 }
 
 /* codeblock */
 .typstmate-codeblock.typstmate-style-codeblock svg {
-  margin-top: 1em;
-  margin-bottom: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
 }
 
 /* biome-ignore lint/suspicious/noEmptyBlock: readability */
@@ -54,23 +54,23 @@
 }
 
 .typstmate-codeblock.typstmate-style-block-center {
-  text-align: center;
+    text-align: center;
 }
 
 /* share */
 .typstmate-display,
 .typstmate-codeblock,
 .typstmate-excalidraw {
-  margin-left: 0px;
-  margin-right: 0px;
-  display: block;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+    margin-left: 0px;
+    margin-right: 0px;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .typstmate-inline,
 .typstmate-display,
 .typstmate-codeblock,
 .typstmate-excalidraw {
-  overflow: visible;
+    overflow: visible;
 }

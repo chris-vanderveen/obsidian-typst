@@ -1,8 +1,8 @@
-declare module 'obsidian-excalidraw-plugin/docs/API/ExcalidrawAutomate' {
+declare module "obsidian-excalidraw-plugin/docs/API/ExcalidrawAutomate" {
   type FileId = string & {
-    _brand: 'FileId';
+    _brand: "FileId";
   };
-  import type { ExcalidrawElement } from '@zsviczian/excalidraw/types/element/src/types';
+  import type { ExcalidrawElement } from "@zsviczian/excalidraw/types/element/src/types";
 
   interface ImageInfo {
     mimeType: string;
