@@ -116,19 +116,6 @@ export default class ObsidianTypstMate extends Plugin {
     // TypstManager を設定する
     await this.prepareTypst();
 
-    this.registerView(
-      TypstToolsView.viewtype,
-      (leaf) => new TypstToolsView(leaf, this),
-    );
-    this.registerView(
-      TypstTextView.viewtype,
-      (leaf) => new TypstTextView(leaf),
-    );
-    this.registerView(
-      TypstPDFView.viewtype,
-      (leaf) => new TypstPDFView(leaf, this),
-    );
-
     // ? Obsidian の起動時間を短縮するため onLayoutReady を使用
     this.app.workspace.onLayoutReady(() => {
       // 他のプラグインとの連携
