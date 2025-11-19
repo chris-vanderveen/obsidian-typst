@@ -21,6 +21,7 @@
 		"@zsviczian/excalidraw": "^0.18.0-52",
 		"autoprefixer": "^10.4.22",
 		"builtin-modules": "^5.0.0",
+		"codemirror": "^6.0.2",
 		"i18next": "^25.6.2",
 		"obsidian": "^1.10.3",
 		"obsidian-excalidraw-plugin": "github:zsviczian/obsidian-excalidraw-plugin#master",

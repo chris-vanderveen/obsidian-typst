@@ -149,10 +149,11 @@ export default class ObsidianTypstMate extends Plugin {
         TypstPDFView.viewtype,
         (leaf) => new TypstPDFView(leaf, this),
       );
+
       this.registerExtensions(["typ"], TypstEditorView.viewtype);
+
       if (this.settings.openTypstToolsOnStartup) this.activateLeaf();
       // View を登録
-      this.registerExtensions(["typ"], TypstPDFView.viewtype);
       if (
         this.settings.openTypstToolsOnStartup &&
         this.app.workspace.getLeavesOfType(TypstToolsView.viewtype).length === 0
