@@ -24,6 +24,7 @@
         "obsidian": "^1.10.3",
         "obsidian-excalidraw-plugin": "github:zsviczian/obsidian-excalidraw-plugin#master",
         "obsidian-typings": "^4.63.0",
+        "pandoc-ts": "^1.0.5",
         "postcss": "^8.5.6",
         "vite": "npm:rolldown-vite@^7.2.5",
         "vite-plugin-static-copy": "^3.1.4",
@@ -1005,6 +1006,8 @@
     "package-manager-detector": ["package-manager-detector@1.5.0", "", {}, "sha512-uBj69dVlYe/+wxj8JOpr97XfsxH/eumMt6HqjNTmJDf/6NO9s+0uxeOneIz3AsPt2m6y9PqzDzd3ATcU17MNfw=="],
 
     "pako": ["pako@2.1.0", "", {}, "sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug=="],
+
+    "pandoc-ts": ["pandoc-ts@1.0.5", "", {}, "sha512-heyotAzKnSiBRvXhKb0gkAQAl7Z+WZL087pHNKvU12dUq7j6GzKvLne+fRfXSMJYmFxEBMYyGjloHTvrwHYYrQ=="],
 
     "parent-module": ["parent-module@1.0.1", "", { "dependencies": { "callsites": "^3.0.0" } }, "sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g=="],
 

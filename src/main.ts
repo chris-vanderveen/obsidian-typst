@@ -121,15 +121,6 @@ export default class ObsidianTypstMate extends Plugin {
       // 他のプラグインとの連携
       this.connectOtherPlugins();
 
-      // Add icon to the ribbon. Opens a modal to a picker for selecting a template.
-      const typstRibbonIcon = this.addRibbonIcon(
-        "type",
-        "Typst Template",
-        (_evt: MouseEvent) => {
-          new TemplatePickerModal(this.app, this).open();
-        },
-      );
-
       // 設定タブを登録
       this.addSettingTab(new SettingTab(this.app, this));
 
@@ -163,7 +154,7 @@ export default class ObsidianTypstMate extends Plugin {
       // コマンドを登録する
       this.addCommands();
 
-      // 監視を登録する
+      // 監視を登録する`
       this.registerListeners();
     });
 
@@ -490,7 +481,7 @@ export default class ObsidianTypstMate extends Plugin {
           item.setTitle("Open as PDF").onClick(async () => {
             await leaf.setViewState({
               type: TypstPDFView.viewtype,
-              state: { file: (leaf.view as TypstTextView).file },
+              state: { file: (leaf.view as TypstEditorView).file },
             });
           });
         });
